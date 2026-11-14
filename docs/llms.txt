@@ -1,4 +1,4 @@
-# Uno MD (UNOEditor)
+# UNOEditor
 
 > 零依赖、本地优先的 Markdown 排版主题编辑器：左侧写稿、右侧实时预览，内置 11 套排版主题，可一键复制到公众号、导出 HTML / Markdown / PDF。纯静态前端，双击即用、离线可用，另附 Tauri 2 桌面壳。当前版本 v0.1.0，MIT 许可证，官网 https://unoeditor.zhenzhidaole.com/ 。
 

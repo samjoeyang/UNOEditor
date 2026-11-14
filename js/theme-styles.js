@@ -1,4 +1,4 @@
-/* Uno MD — theme stylesheet. Kept as a string so it can be injected live AND
+/* UNOEditor — theme stylesheet. Kept as a string so it can be injected live AND
    embedded into exported standalone HTML without any network request. */
 (function (global) {
   'use strict';

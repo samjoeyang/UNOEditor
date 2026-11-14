@@ -1,0 +1,191 @@
+name: Release
+
+# 触发「发版」的两种方式：
+#   1) 推送版本标签：  git tag v0.1.0 && git push origin v0.1.0
+#   2) 在 Actions 页面手动运行（Actions → Release → Run workflow），可勾选 prerelease
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      prerelease:
+        description: '标记为预发布 (pre-release)'
+        required: false
+        default: false
+        type: boolean
+
+# 创建 / 上传 GitHub Release 需要写权限
+permissions:
+  contents: write
+
+jobs:
+  # ---------- 桌面端：Windows / macOS / Linux ----------
+  release-desktop:
+    name: Desktop (${{ matrix.platform }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: 'macos-latest'
+            args: '--target aarch64-apple-darwin'
+          - platform: 'macos-latest'
+            args: '--target x86_64-apple-darwin'
+          - platform: 'ubuntu-22.04'
+            args: ''
+          - platform: 'windows-latest'
+            args: ''
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Linux system deps
+        if: matrix.platform == 'ubuntu-22.04'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libwebkit2gtk-4.1-dev \
+            libappindicator3-dev \
+            librsvg2-dev \
+            patchelf \
+            libfuse2
+
+      - name: Setup Node.js (仅用于安装 Tauri CLI 工具链)
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+
+      - name: Install Tauri CLI (build tooling only)
+        run: npm install
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
+
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: './src-tauri -> target'
+
+      - name: Build & upload to GitHub Release
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # 更新器签名（可选；不配置则跳过签名）
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          # macOS 代码签名 + 公证（可选；留空则产出未签名 App）
+          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        with:
+          projectPath: src-tauri
+          # 4 个矩阵 job 并发写同一个 tag 的草稿 Release，重试可兜住创建竞态与偶发上传失败
+          retryAttempts: 2
+          tagName: ${{ github.ref_name }}
+          releaseName: 'UNOEditor ${{ github.ref_name }}'
+          releaseBody: '见下方资产，下载对应平台安装包：macOS 选 .dmg，Windows 选 .msi，Linux 选 .deb / .AppImage。'
+          releaseDraft: true          # 默认先作草稿，人工确认后再发布
+          prerelease: ${{ github.event_name == 'workflow_dispatch' && inputs.prerelease || false }}
+          args: ${{ matrix.args }}
+
+  # ---------- Android（默认关闭）----------
+  # 官方限制：secrets / env 不能用于 jobs.<id>.if，只允许 github/needs/vars/inputs。
+  # 启用步骤：① `tauri android init` 并提交 src-tauri/gen/android；
+  # ② 配置 ANDROID_KEYSTORE_* secrets；③ 仓库 Settings → Variables 设 ENABLE_ANDROID_RELEASE=true。
+  release-android:
+    name: Android (aarch64)
+    if: ${{ vars.ENABLE_ANDROID_RELEASE == 'true' }}
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+      - name: Install NDK
+        run: sdkmanager "ndk;26.0.10792818"
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: 'aarch64-linux-android,armv7-linux-androideabi,i686-linux-android,x86_64-linux-android'
+      - run: npm install
+      - name: Decode keystore
+        run: echo "$ANDROID_KEYSTORE_BASE64" | base64 -d > $RUNNER_TEMP/keystore.jks
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+      - name: Build & upload
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          NDK_HOME: ${{ env.ANDROID_HOME }}/ndk/26.0.10792818
+          # Android 签名
+          TAURI_ANDROID_KEYSTORE_PATH: ${{ runner.temp }}/keystore.jks
+          TAURI_ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          TAURI_ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          TAURI_ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        with:
+          projectPath: src-tauri
+          args: '--target aarch64-linux-android'
+          tagName: ${{ github.ref_name }}
+          releaseName: 'UNOEditor ${{ github.ref_name }}'
+          releaseBody: 'Android (arm64) 构建产物。'
+          releaseDraft: true
+          prerelease: ${{ github.event_name == 'workflow_dispatch' && inputs.prerelease || false }}
+
+  # ---------- iOS（默认关闭）----------
+  # 启用步骤：① `tauri ios init` 并提交 src-tauri/gen/apple；
+  # ② 配置 APPLE_* secrets；③ 仓库 Settings → Variables 设 ENABLE_IOS_RELEASE=true。
+  release-ios:
+    name: iOS (aarch64)
+    if: ${{ vars.ENABLE_IOS_RELEASE == 'true' }}
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: 'aarch64-apple-ios,x86_64-apple-ios'
+      - run: npm install
+      - name: Import Apple certificate
+        run: |
+          KEYCHAIN=$RUNNER_TEMP/build.keychain-db
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN"
+          echo "$APPLE_CERTIFICATE" | base64 -d > $RUNNER_TEMP/cert.p12
+          security import "$RUNNER_TEMP/cert.p12" -P "$APPLE_CERTIFICATE_PASSWORD" -A -t cert -f pkcs12 -k "$KEYCHAIN"
+          security list-keychains -d user -s "$KEYCHAIN"
+        env:
+          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+      - name: Build & upload
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        with:
+          projectPath: src-tauri
+          args: '--target aarch64-apple-ios'
+          tagName: ${{ github.ref_name }}
+          releaseName: 'UNOEditor ${{ github.ref_name }}'
+          releaseBody: 'iOS (arm64) 构建产物。'
+          releaseDraft: true
+          prerelease: ${{ github.event_name == 'workflow_dispatch' && inputs.prerelease || false }}

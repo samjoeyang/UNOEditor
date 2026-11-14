@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Uno MD 官网 AI 友好文件一致性校验。
+"""UNOEditor 官网 AI 友好文件一致性校验。
 
 在 scripts/sync-site.sh 末尾自动运行，也可单独执行：
     python3 scripts/check-ai-files.py
@@ -85,7 +85,7 @@ if m:
 
 # --- 4. llms.txt v2 结构 ---
 llms = read("llms.txt")
-check(llms.startswith("# Uno MD"), "llms.txt 以 H1 项目名开头")
+check(llms.startswith("# UNOEditor"), "llms.txt 以 H1 项目名开头")
 check("\n> " in llms, "llms.txt 含 blockquote 摘要")
 check("## Optional" in llms, "llms.txt 含 Optional 分节")
 check("index.zh.md" in llms and "index.en.md" in llms, "llms.txt 链接指向 Markdown 镜像")
@@ -171,6 +171,24 @@ dist_index = ROOT / "dist/index.html"
 if dist_index.is_file():
     check("googletagmanager.com" not in dist_index.read_text(encoding="utf-8"),
           "dist/index.html 无外部统计请求")
+
+# --- 11. 品牌名一致性：正式名称 UNOEditor，旧称 "Uno MD" 不得残留 ---
+BRAND = "UNOEditor"
+for rel in ["index.html", "assets/app.js", "index.zh.md", "index.en.md",
+            "llms.txt", "robots.txt", "app/index.html", "app/index.md"]:
+    txt = read(rel)
+    check("Uno MD" not in txt and "UNO MD" not in txt, f"{rel} 无旧称 Uno MD")
+    check(BRAND in txt, f"{rel} 使用正式名称 {BRAND}")
+check("Uno MD" not in shell_index and "UNO MD" not in shell_index,
+      "桌面端源码无旧称 Uno MD")
+if dist_index.is_file():
+    check("Uno MD" not in dist_index.read_text(encoding="utf-8"),
+          "dist/index.html 无旧称 Uno MD")
+# 技术标识符不是品牌文案，必须保留，否则会丢失用户本地已存文稿
+for rel, key in [("js/app.js", "uno-md-v1"),
+                 ("js/markdown.js", "global.UnoMD")]:
+    check(key in (ROOT / rel).read_text(encoding="utf-8"),
+          f"保留技术标识符 {key}")
 
 # --- 输出 ---
 for line in ok:

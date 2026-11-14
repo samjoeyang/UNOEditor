@@ -1,8 +1,8 @@
-# Uno MD · Web app (online demo)
+# UNOEditor · Web app (online demo)
 
 > This page is the Markdown mirror of https://unoeditor.zhenzhidaole.com/app/ . The HTML page is an interactive editor with almost no static prose; this file describes what it is so AI agents and text-only crawlers can understand it.
 
-The online demo is a full copy of Uno MD v0.1.0 running entirely in the browser. It is not a trimmed-down teaser: the theme system, outline, live preview, WeChat copy, and HTML / Markdown / PDF export all work the same way as the local build. It requires no account, no install and no build step.
+The online demo is a full copy of UNOEditor v0.1.0 running entirely in the browser. It is not a trimmed-down teaser: the theme system, outline, live preview, WeChat copy, and HTML / Markdown / PDF export all work the same way as the local build. It requires no account, no install and no build step.
 
 - **Version**: 0.1.0 (fact-checked 2026-11-14)
 - **Licence**: MIT

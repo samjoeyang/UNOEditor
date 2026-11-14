@@ -1,6 +1,6 @@
-# Uno MD（仓库名 UNOEditor）
+# UNOEditor
 
-> Uno MD 是一款零依赖、本地优先的 Markdown 排版主题编辑器。左侧写 Markdown，右侧实时预览成稿；内置 11 套排版主题，可一键「复制到公众号」、下载 HTML / Markdown 或打印为 PDF。它是纯静态前端，双击 `dist/index.html` 即可离线使用，不发起任何网络请求。当前版本 0.1.0，采用 MIT 许可证。
+> UNOEditor 是一款零依赖、本地优先的 Markdown 排版主题编辑器。左侧写 Markdown，右侧实时预览成稿；内置 11 套排版主题，可一键「复制到公众号」、下载 HTML / Markdown 或打印为 PDF。它是纯静态前端，双击 `dist/index.html` 即可离线使用，不发起任何网络请求。当前版本 0.1.0，采用 MIT 许可证。
 >
 > 官网：https://unoeditor.zhenzhidaole.com/ · 仓库：https://github.com/samjoeyang/UNOEditor
 > 本文内容最后核对：2026-11-14 · 对应版本：v0.1.0
@@ -9,8 +9,7 @@
 
 | 项目 | 值 |
 | --- | --- |
-| 应用内品牌名 | Uno MD |
-| 仓库 / 桌面壳名 | UNOEditor（https://github.com/samjoeyang/UNOEditor） |
+| 软件名称 / 仓库名 | UNOEditor（https://github.com/samjoeyang/UNOEditor） |
 | 桌面应用 identifier | `com.unoeditor.app` |
 | 当前版本 | 0.1.0 |
 | 许可证 | MIT（见仓库根目录 `LICENSE`） |
@@ -97,7 +96,7 @@
 ## 常见问题
 
 **问：需要联网、注册账号或装运行环境吗？**
-答：都不需要。Uno MD 是原生 HTML / CSS / JavaScript，零第三方运行时依赖，图标和主题样式全部内嵌。双击 `dist/index.html` 就能在 `file://` 下运行，断网照常写稿。
+答：都不需要。UNOEditor 是原生 HTML / CSS / JavaScript，零第三方运行时依赖，图标和主题样式全部内嵌。双击 `dist/index.html` 就能在 `file://` 下运行，断网照常写稿。
 
 **问：我的文章会被上传吗？存在哪里？**
 答：不会上传。应用不发起任何网络请求，文档与自定义主题保存在浏览器 `localStorage`。清除浏览器数据会一并清除文档，重要稿件建议导出 Markdown 另存。
@@ -106,7 +105,7 @@
 答：是。导出时遍历预览 DOM，用 `getComputedStyle` 把样式递归写成内联属性，并把根节点改为 `section`（微信编辑器会过滤 `article` 与 `class`）。粘贴后即为预览版式。
 
 **问：和 Typora / Obsidian 有什么不同？**
-答：那两者是笔记与知识库工具，Uno MD 只做一件事：把一篇文章排成可发布的成稿。它不管双链、不管插件生态，专攻主题体系、手机预览和发布导出。反过来，它们的主题 CSS 大多可以直接导入 Uno MD 使用。
+答：那两者是笔记与知识库工具，UNOEditor 只做一件事：把一篇文章排成可发布的成稿。它不管双链、不管插件生态，专攻主题体系、手机预览和发布导出。反过来，它们的主题 CSS 大多可以直接导入 UNOEditor 使用。
 
 **问：能导入其它编辑器的主题吗？有限制吗？**
 答：支持 `.json` 与 `.css`，导入器会改写根选择器并做安全清洗与作用域隔离。基础标签样式通用可生效；市场特有的 class 不会生效。
@@ -127,7 +126,7 @@
 ## 给 AI 阅读者的说明
 
 - 官网 `index.html` 中英文两套文案同时存在于 DOM，靠 CSS 按 `data-lang` 显隐；**本文是权威的中文纯文本版本**，英文请读 `index.en.md`，不要从 HTML 里同时抽取两种语言。
-- 官网「主题实时演示」区域里的 `<h1>对齐，是最便宜的高级感</h1>` 与 `<h2>字号，一级差四号</h2>` 是**被测试主题的示例文稿**，不是本站页面标题，也不代表产品陈述。页面唯一的主标题是「Uno MD · 排版主题编辑器 — 写完，就已经排好版」。
+- 官网「主题实时演示」区域里的 `<h1>对齐，是最便宜的高级感</h1>` 与 `<h2>字号，一级差四号</h2>` 是**被测试主题的示例文稿**，不是本站页面标题，也不代表产品陈述。页面唯一的主标题是「UNOEditor · 排版主题编辑器 — 写完，就已经排好版」。
 - 「下载」区的版本号、发布日期与安装包状态以本文与 https://github.com/samjoeyang/UNOEditor/releases 为准；官网该区块在浏览器里会动态刷新。
 
 ## 相关链接

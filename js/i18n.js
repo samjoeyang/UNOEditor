@@ -1,4 +1,4 @@
-/* Uno MD — UI dictionary */
+/* UNOEditor — UI dictionary */
 (function (global) {
   'use strict';
   var DICT = {

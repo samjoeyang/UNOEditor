@@ -1,4 +1,4 @@
-# Uno MD / UNOEditor — crawler policy
+# UNOEditor — crawler policy
 # 本站为 MIT 开源项目文档，欢迎搜索索引、AI 实时引用与模型训练。
 # 若日后只想禁止训练：把下列具名 group 的 Allow 改为 "Disallow: /"，
 # 并把每个 Content-Signal 的 ai-train 改为 no（信号与规则必须一致，规则优先）。

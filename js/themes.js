@@ -1,4 +1,4 @@
-/* Uno MD — theme catalogue (metadata only; see theme-styles.js for CSS) */
+/* UNOEditor — theme catalogue (metadata only; see theme-styles.js for CSS) */
 (function (global) {
   'use strict';
   var THEMES = [

@@ -1,4 +1,4 @@
-/* Uno MD — dependency-free Markdown renderer */
+/* UNOEditor — dependency-free Markdown renderer */
 (function (global) {
   'use strict';
 

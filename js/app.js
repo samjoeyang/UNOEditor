@@ -1,4 +1,4 @@
-/* Uno MD — application logic */
+/* UNOEditor — application logic */
 (function () {
   'use strict';
 
@@ -379,7 +379,7 @@
     $('paper').classList.toggle('dark', !!theme().dark);
     $('previewStage').style.background = theme().bg;
     $('previewThemeName').innerHTML = '<b>' + loc(theme()).name + '</b> · ' + I.t('previewLabel');
-    $('articleMeta').textContent = 'Uno MD · ' + loc(theme()).name;
+    $('articleMeta').textContent = 'UNOEditor · ' + loc(theme()).name;
   }
 
   function renderMeta() {

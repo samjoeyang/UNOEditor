@@ -1,0 +1,9 @@
+{
+  "name": "unoeditor",
+  "version": "0.1.0",
+  "private": true,
+  "description": "UNOEditor build tooling. NOTE: this file exists ONLY for CI — the app itself is a zero-runtime-dependency static frontend + Rust binary. The only dependency is the Tauri CLI used by GitHub Actions to build/release.",
+  "devDependencies": {
+    "@tauri-apps/cli": "^2"
+  }
+}

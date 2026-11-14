@@ -1,4 +1,4 @@
-/* Uno MD 官网交互
+/* UNOEditor 官网交互
    1) 中英切换（纯 CSS 显隐 + 少量 JS 属性同步）
    2) 11 套主题实时演示（直接复用应用同一份 themes.js / theme-styles.js）
    3) 截图画廊
@@ -18,24 +18,24 @@
 
   var TEXT = {
     zh: {
-      title: 'Uno MD · 排版主题编辑器 — 写完，就已经排好版',
-      desc: 'Uno MD 是零依赖、本地优先的 Markdown 排版主题编辑器：左侧写稿、右侧实时预览，内置 11 套排版主题，一键复制到公众号、导出 HTML / Markdown / PDF。',
+      title: 'UNOEditor · 排版主题编辑器 — 写完，就已经排好版',
+      desc: 'UNOEditor 是零依赖、本地优先的 Markdown 排版主题编辑器：左侧写稿、右侧实时预览，内置 11 套排版主题，一键复制到公众号、导出 HTML / Markdown / PDF。',
       langTitle: 'Switch to English',
       copied: '已复制到剪贴板',
       copyFail: '复制失败，请手动选择文本',
       dlChecking: '正在检查 GitHub Releases…',
-      dlNone: 'Uno MD v0.1.0 · 截至 2026-11-14 尚未发布预编译安装包 · 可直接在线试用或查看源码',
+      dlNone: 'UNOEditor v0.1.0 · 截至 2026-11-14 尚未发布预编译安装包 · 可直接在线试用或查看源码',
       dlError: '暂时无法连接 GitHub Releases，可稍后重试或直接前往 Releases 查看',
       dlReady: '最新版本 <b>v{ver}</b> · 发布于 {date} · 已为你的系统推荐 ↓'
     },
     en: {
-      title: 'Uno MD — Markdown Theme Editor | Write once, publish beautifully',
-      desc: 'Uno MD is a local-first, zero-dependency Markdown theme editor with 11 typesetting themes, live preview, WeChat-ready rich-text copy and HTML / Markdown / PDF export.',
+      title: 'UNOEditor — Markdown Theme Editor | Write once, publish beautifully',
+      desc: 'UNOEditor is a local-first, zero-dependency Markdown theme editor with 11 typesetting themes, live preview, WeChat-ready rich-text copy and HTML / Markdown / PDF export.',
       langTitle: '切换为中文',
       copied: 'Copied to clipboard',
       copyFail: 'Copy failed — select the text manually',
       dlChecking: 'Checking GitHub Releases…',
-      dlNone: 'Uno MD v0.1.0 · No prebuilt installer published as of 2026-11-14 · Try online or browse the source',
+      dlNone: 'UNOEditor v0.1.0 · No prebuilt installer published as of 2026-11-14 · Try online or browse the source',
       dlError: "Couldn't reach GitHub Releases — retry later or open Releases directly",
       dlReady: 'Latest <b>v{ver}</b> · published {date} · recommended for your system ↓'
     }
@@ -44,10 +44,10 @@
   var SHOTS = [
     { file: 'overview.png', zh: '三栏总览', en: 'Workspace',
       capZh: '三栏工作区：大纲、Markdown 编辑器与实时排版预览。', capEn: 'Three-pane workspace: outline, Markdown editor and live typeset preview.',
-      altZh: 'Uno MD 三栏工作区', altEn: 'Uno MD three-pane workspace' },
+      altZh: 'UNOEditor 三栏工作区', altEn: 'UNOEditor three-pane workspace' },
     { file: 'themes.png', zh: '主题抽屉', en: 'Theme drawer',
       capZh: '右侧主题抽屉：11 套内置主题，点选即换，支持导入自定义主题文件。', capEn: 'Theme drawer: 11 built-in themes, one click to switch, plus custom theme import.',
-      altZh: 'Uno MD 主题抽屉', altEn: 'Uno MD theme drawer' },
+      altZh: 'UNOEditor 主题抽屉', altEn: 'UNOEditor theme drawer' },
     { file: 'theme-swiss.png', zh: '瑞士国际主义', en: 'Swiss grid',
       capZh: '「瑞士国际主义」主题：严格左对齐网格、细线与一点红。', capEn: 'Swiss International theme: strict left grid, hairlines and a single red.',
       altZh: '瑞士国际主义主题预览', altEn: 'Swiss International theme preview' },
@@ -59,13 +59,13 @@
       altZh: '莫兰迪编辑主题预览', altEn: 'Morandi theme preview' },
     { file: 'export.png', zh: '导出菜单', en: 'Export menu',
       capZh: '导出菜单：复制到公众号、下载 HTML / Markdown、打印或存为 PDF。', capEn: 'Export menu: WeChat copy, HTML / Markdown download, print or save as PDF.',
-      altZh: 'Uno MD 导出菜单', altEn: 'Uno MD export menu' },
+      altZh: 'UNOEditor 导出菜单', altEn: 'UNOEditor export menu' },
     { file: 'english.png', zh: '英文界面', en: 'English UI',
       capZh: '一键切换英文界面，主题名称与说明同样提供中英双语。', capEn: 'One-click English UI; theme names and descriptions are bilingual too.',
-      altZh: 'Uno MD 英文界面', altEn: 'Uno MD English interface' },
+      altZh: 'UNOEditor 英文界面', altEn: 'UNOEditor English interface' },
     { file: 'mobile.png', zh: '手机端', en: 'Mobile', portrait: true,
       capZh: '窄屏自动变为编辑 / 预览 / 大纲三个底部标签，主题走抽屉。', capEn: 'On narrow screens: edit / preview / outline tabs and a theme drawer.',
-      altZh: 'Uno MD 手机端预览', altEn: 'Uno MD mobile preview' }
+      altZh: 'UNOEditor 手机端预览', altEn: 'UNOEditor mobile preview' }
   ];
 
   function esc(s) {
