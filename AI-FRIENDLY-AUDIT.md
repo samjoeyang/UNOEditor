@@ -353,7 +353,14 @@ Sitemap: https://samjoeyang.github.io/UNOEditor/sitemap.xml
 
 ### 7.4 仍然成立的限制
 
-- macOS `.dmg` **未签名、未公证**，首次打开需在 Finder 右键「打开」或系统设置中手动允许；要免警告分发需 Apple Developer 证书与公证密钥。
+- macOS `.dmg` **未做 Developer ID 签名与公证**（v0.1.0 的 bundle 签名无效，源码已改为 ad-hoc 签名，见 7.5），首次打开需在 Finder 右键「打开」或系统设置中手动允许；要免警告分发需 Apple Developer 证书与公证密钥。
 - 6.3 的 `ai-train=yes` 策略未变，与 MIT 许可一致；若要改，robots 规则与 Content-Signal 必须同步。
 - 6.4 的两处「缓解但未根治」（HTML 仍含 2 个 `<h1>`、双语 DOM 共存）仍在。
+
+### 7.5 上线后用户反馈的两个故障（2026-11-14 复测）
+
+1. **在线版长文档无法上下滚动**：`grid` / `flex` 子项默认 `min-height:auto`，内容超高时 `.editor-pane` / `.preview-pane` / `.preview-stage` 被撑到内容高度，`overflow:auto` 失效，超出部分又被 `body{overflow:hidden}` 裁掉。Playwright 实测（1440×900，注入 250 段 Markdown）：修复前 `body.scrollHeight=51359`，`#editor` 与 `#previewStage` 设 `scrollTop=400` 后均回读 `0`；加入 `min-height:0` 与 `grid-template-rows:minmax(0,1fr)` 后 `body.scrollHeight=900`、`#editor=764/31259`、`#previewStage=798/51257`，两者均可滚到 400。窄屏（390×844）编辑 / 预览两个 Tab 同样通过。顺带补 `100dvh` 回退，避免移动端浏览器工具栏占位。
+2. **macOS 安装包报「已损坏」**：`hdiutil verify` 对两个 `.dmg` 均返回 VALID，排除文件损坏；`codesign -dv` 显示 x64 包 `code object is not signed at all`，aarch64 包只有 linker 生成的 ad-hoc 签名且 `codesign --verify --deep --strict` 报 `code has no resources but signature indicates they must be present`。浏览器下载的 `com.apple.quarantine` 叠加无效 bundle 签名 → Gatekeeper 判为损坏。Tauri v2 官方文档 <https://v2.tauri.app/distribute/sign/macos/> 明确写出签名用于避免「application is broken and can not be started, when downloaded from the browser」，并给出 `signingIdentity: "-"` 做 ad-hoc 签名。本地实测：把 `.app` 拷出后执行 `codesign --force --deep --sign -`，`codesign --verify --deep --strict` 返回 `valid on disk` / `satisfies its Designated Requirement`。已写入 `src-tauri/tauri.conf.json`，并在官网下载区、Release 说明、两份 md 镜像与 llms.txt 写明首次打开步骤。
+
+**限制**：ad-hoc 签名只消除「已损坏」，未公证的 app 首次仍需在「隐私与安全性」放行一次；彻底免提示需 Apple Developer ID + 公证。已发布的 v0.1.0 资产不会自动变好，必须重新打包发版；用户当下可执行 `xattr -cr /Applications/UNOEditor.app` 直接使用现有包。
 

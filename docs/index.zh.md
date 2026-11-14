@@ -89,6 +89,8 @@
 
 UNOEditor **v0.1.0 已于 2026-11-14 发布**，GitHub Releases 提供预编译桌面安装包：macOS（Apple Silicon / Intel）选 `.dmg`，Windows 选 `.msi` / `.exe`，Linux 选 `.deb` / `.AppImage` / `.rpm`。官网下载区动态读取 GitHub Releases API，自动列出最新版本并按访问者系统高亮推荐。在线版与本地文件无需安装即可使用。
 
+**macOS 首次打开（v0.1.0 用户必读）**：v0.1.0 的 `.dmg` 内 `.app` 没有有效的 bundle 签名，浏览器下载后 Gatekeeper 会报「已损坏，无法打开」——文件经校验完整，并非下载出错。临时解法：执行 `xattr -cr /Applications/UNOEditor.app` 清除隔离属性后打开，或右键「打开」/「系统设置 → 隐私与安全性 → 仍要打开」。源码已加 `bundle.macOS.signingIdentity: "-"`，下一版重新打包后不再报「已损坏」，但因未做 Apple 公证，首次仍需手动放行一次。另请选对架构：Apple Silicon 用 `aarch64.dmg`，Intel 用 `x64.dmg`。
+
 ## 隐私与数据
 
 应用不发起任何网络请求，文档与自定义主题只保存在浏览器 `localStorage`（桌面壳中是 WebView 本地存储），不上传服务器，断网可用。清除浏览器数据会一并清除文档，重要稿件建议用「下载 Markdown」另存一份。官网页面使用 Google Tag Manager 统计访问量，不读取编辑器内的文稿；官网不加载第三方字体或 CDN。

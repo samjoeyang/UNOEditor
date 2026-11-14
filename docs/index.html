@@ -498,6 +498,11 @@ cd src-tauri &amp;&amp; cargo tauri build</pre></div>
       </div>
       <p class="dl-status" id="dlStatus"><span lang="zh-CN" data-lang="zh">UNOEditor v0.1.0 已于 2026-11-14 发布，GitHub Releases 提供 macOS / Windows / Linux 桌面安装包；也可直接在线试用或打开本地文件。</span><span lang="en" data-lang="en">UNOEditor v0.1.0 was released on 2026-11-14 with macOS, Windows and Linux desktop installers on GitHub Releases; the web app and the local file also work today.</span></p>
 
+      <div class="mac-note" role="note">
+        <p><strong><span lang="zh-CN" data-lang="zh">macOS 首次打开请注意</span><span lang="en" data-lang="en">First launch on macOS</span></strong></p>
+        <p><span lang="zh-CN" data-lang="zh">桌面包未经 Apple Developer ID 签名与公证，系统可能提示「已损坏」或「无法验证开发者」——这不是文件损坏。先确认架构（Apple Silicon 选 aarch64.dmg，Intel 选 x64.dmg），然后在访达中右键点击 UNOEditor →「打开」，或到「系统设置 → 隐私与安全性 → 仍要打开」；也可在终端执行 <code>xattr -cr /Applications/UNOEditor.app</code> 清除隔离属性。</span><span lang="en" data-lang="en">Desktop builds are not signed with an Apple Developer ID and are not notarized, so macOS may report the app as "damaged" or from an unidentified developer — the file itself is fine. Pick the right architecture (aarch64.dmg for Apple Silicon, x64.dmg for Intel), then right-click UNOEditor in Finder and choose Open, or use System Settings &rarr; Privacy &amp; Security &rarr; Open Anyway. Alternatively run <code>xattr -cr /Applications/UNOEditor.app</code> to remove the quarantine attribute.</span></p>
+      </div>
+
       <div class="dl-grid" id="dlGrid" hidden>
         <div class="dl-card" data-plat="macos-arm">
           <div class="dl-ico"><svg class="ic"><use href="#i-monitor"/></svg></div>

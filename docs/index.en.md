@@ -89,6 +89,8 @@ All images are real captures of the running app, not mockups or composites. They
 
 **UNOEditor v0.1.0 was released on 2026-11-14.** GitHub Releases ships prebuilt desktop installers: `.dmg` for macOS (Apple Silicon / Intel), `.msi` / `.exe` for Windows, and `.deb` / `.AppImage` / `.rpm` for Linux. The website's download section reads the GitHub Releases API dynamically, lists the latest version and highlights the visitor's platform. The online app and the local file need no installation.
 
+**First launch on macOS (v0.1.0 users)**: the `.app` inside the v0.1.0 `.dmg` has no valid bundle signature, so Gatekeeper may say it "is damaged and can't be opened" after a browser download — the file is intact, not a broken download. Workaround: run `xattr -cr /Applications/UNOEditor.app` to remove the quarantine attribute, or right-click → Open / System Settings → Privacy & Security → Open Anyway. The source now sets `bundle.macOS.signingIdentity: "-"`; the next build will no longer be reported as damaged, but because it is not notarized, a one-time manual approval is still required. Also pick the right architecture: `aarch64.dmg` for Apple Silicon, `x64.dmg` for Intel.
+
 ## Privacy and data
 
 The app makes no network requests. Documents and imported themes live only in browser `localStorage` (WebView storage in the desktop shell); nothing is uploaded and it works offline. Clearing browser data removes them, so export important drafts as Markdown. The website uses Google Tag Manager for visit analytics; it does not read anything typed into the editor. No third-party fonts or CDNs are loaded.

@@ -82,18 +82,23 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # 更新器签名（可选；secret 为空时 Tauri 跳过）
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
-          # 故意不注入 APPLE_*：本项目暂无 Apple 签名证书。Tauri 2 只要检测到这些
-          # 变量「存在」就会执行 `security import -f pkcs12`，空值同样导致 codesign
-          # 失败（2026-11-14 首轮 Release 的 2 个 macOS job 即因此失败）。产出未签名
-          # .dmg。将来有证书时，用受 vars.ENABLE_MACOS_SIGNING 控制的 step 写入
-          # $GITHUB_ENV，而不是在这里写空值。
+          # 故意不注入 APPLE_*：本项目暂无 Apple Developer ID 证书。Tauri 2 只要检测到
+          # 这些变量「存在」就会执行 `security import -f pkcs12`，空值同样导致 codesign
+          # 失败（2026-11-14 首轮 Release 的 2 个 macOS job 即因此失败）。
+          # 改由 tauri.conf.json 的 bundle.macOS.signingIdentity="-" 做 ad-hoc 签名：
+          # 未签名的 .app 被浏览器下载后，Gatekeeper 会判为「已损坏」而拒绝启动。
+          # ad-hoc 仍需用户在「隐私与安全性」放行一次；要彻底免提示须 Developer ID
+          # + 公证，届时用受 vars.ENABLE_MACOS_SIGNING 控制的 step 写入 $GITHUB_ENV。
         with:
           projectPath: src-tauri
           # 4 个矩阵 job 并发写同一个 tag 的草稿 Release，重试可兜住创建竞态与偶发上传失败
           retryAttempts: 2
           tagName: ${{ env.RELEASE_TAG }}
           releaseName: 'UNOEditor ${{ env.RELEASE_TAG }}'
-          releaseBody: '见下方资产，下载对应平台安装包：macOS 选 .dmg，Windows 选 .msi，Linux 选 .deb / .AppImage。'
+          releaseBody: |
+            见下方资产，下载对应平台安装包：macOS Apple Silicon 选 aarch64.dmg、Intel 选 x64.dmg，Windows 选 .msi，Linux 选 .deb / .AppImage。
+
+            macOS 首次打开：本包为 ad-hoc 签名、未经 Apple 公证，系统可能提示「已损坏」或「无法验证开发者」（并非文件损坏）。右键点击 UNOEditor →「打开」，或到「系统设置 → 隐私与安全性 → 仍要打开」；也可在终端执行 `xattr -cr /Applications/UNOEditor.app` 清除隔离属性。
           releaseDraft: true          # 默认先作草稿，人工确认后再发布
           prerelease: ${{ github.event_name == 'workflow_dispatch' && inputs.prerelease || false }}
           args: ${{ matrix.args }}
