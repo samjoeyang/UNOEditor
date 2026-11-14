@@ -92,6 +92,7 @@ body[data-ui-lang="en"] [data-lang="zh"] { display: none !important; }
 .sec-head p { color: var(--muted); font-size: 15px; margin: 0; }
 .grid { display: grid; gap: 16px; }
 .cards-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.cards-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 
 /* ---------- Hero ---------- */
 .hero { padding: 76px 0 56px; text-align: center; background: radial-gradient(1000px 420px at 50% -12%, rgba(91,139,255,.16), transparent 68%); }
@@ -216,6 +217,18 @@ body[data-ui-lang="en"] [data-lang="zh"] { display: none !important; }
 .faq-item[open] .chev { transform: rotate(180deg); }
 .faq-body { padding: 0 18px 18px 47px; color: var(--muted); font-size: 13.5px; line-height: 1.8; }
 
+/* ---------- 赞赏支持 ---------- */
+.donate-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; max-width: 640px; margin: 0 auto; }
+.donate-card { display: flex; flex-direction: column; align-items: center; padding: 26px 20px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); text-decoration: none; transition: border-color .2s, transform .2s, background .2s; }
+.donate-card:hover { border-color: var(--line-strong); transform: translateY(-3px); background: rgba(255,255,255,.06); }
+.donate-qr { width: 186px; height: 186px; border-radius: 14px; overflow: hidden; background: #fff; display: grid; place-items: center; }
+.donate-qr img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.donate-name { display: flex; align-items: center; gap: 8px; margin-top: 16px; font-size: 14.5px; font-weight: 680; color: var(--txt); }
+.donate-name .ic { width: 16px; height: 16px; color: var(--cyan); }
+.donate-hint { margin-top: 6px; font-size: 12px; color: var(--muted); }
+.donate-note { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 22px auto 0; color: var(--muted); font-size: 12.5px; text-align: center; }
+.donate-note .ic { width: 15px; height: 15px; color: var(--red); flex: none; }
+
 /* ---------- 底部 CTA / Footer ---------- */
 .cta-band { padding: 64px 0; background: radial-gradient(700px 260px at 50% 0%, rgba(123,92,255,.2), transparent 70%); border-top: 1px solid var(--line); }
 .cta-inner { text-align: center; }
@@ -245,6 +258,7 @@ body[data-ui-lang="en"] [data-lang="zh"] { display: none !important; }
   .navlinks { gap: 14px; }
   .brand-tag { display: none; }
   .cards-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .cards-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .dl-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .theme-stage { grid-template-columns: 250px minmax(0, 1fr); }
 }
@@ -262,6 +276,7 @@ body[data-ui-lang="en"] [data-lang="zh"] { display: none !important; }
   .section { padding: 56px 0; }
   .sec-head { margin-bottom: 30px; }
   .cards-3 { grid-template-columns: minmax(0, 1fr); }
+  .cards-4 { grid-template-columns: minmax(0, 1fr); }
   .theme-stage { grid-template-columns: minmax(0, 1fr); }
   .theme-picker { flex-direction: row; flex-wrap: nowrap; overflow-x: auto; max-height: none; padding: 0 0 8px; }
   .theme-chip { width: auto; flex: none; padding: 7px 10px; }

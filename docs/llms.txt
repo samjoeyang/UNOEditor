@@ -18,3 +18,4 @@
 - [GitHub 仓库](https://github.com/samjoeyang/UNOEditor): 源码、主题文件、Tauri 配置、MIT 许可证
 - [Releases](https://github.com/samjoeyang/UNOEditor/releases): 安装包发布状态
 - [Issues](https://github.com/samjoeyang/UNOEditor/issues) / [Discussions](https://github.com/samjoeyang/UNOEditor/discussions): 反馈与讨论
+- [Telegram 讨论组](https://t.me/+3KH9Cn8-yIQ1ZDI1): 即时交流（官网 [#community](https://unoeditor.zhenzhidaole.com/#community) 与 [#support](https://unoeditor.zhenzhidaole.com/#support) 区块；#support 为微信/支付宝自愿赞赏入口）

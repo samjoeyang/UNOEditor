@@ -119,7 +119,7 @@ Any modern browser. On narrow screens it switches to edit / preview / outline ta
 Yes. The downloaded file embeds the full theme CSS (including any imported theme), so a single file keeps its look when shared, hosted, or printed to PDF.
 
 **Is it free? What licence? How do I contribute?**
-Free, ad-free and unrestricted, and the source is **MIT licensed**. Report bugs in Issues and suggest features in Discussions at https://github.com/samjoeyang/UNOEditor .
+Free, ad-free and unrestricted, and the source is **MIT licensed**. Report bugs in Issues, suggest features in Discussions, or join the Telegram group (https://t.me/+3KH9Cn8-yIQ1ZDI1 ) for real-time chat at https://github.com/samjoeyang/UNOEditor . To support development, there's an optional WeChat/Alipay donation section ("Buy the author a coffee") on the site — entirely voluntary, unlocks nothing.
 
 ## Internationalisation and deep links
 
@@ -142,3 +142,4 @@ The UI switches between Chinese and English with one click; theme names and desc
 - Releases: https://github.com/samjoeyang/UNOEditor/releases
 - Issues: https://github.com/samjoeyang/UNOEditor/issues
 - Discussions: https://github.com/samjoeyang/UNOEditor/discussions
+- Telegram group: https://t.me/+3KH9Cn8-yIQ1ZDI1

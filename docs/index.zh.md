@@ -119,7 +119,7 @@ UNOEditor **v0.1.0 已于 2026-11-14 发布**，GitHub Releases 提供预编译�
 答：能。下载 HTML 会把当前主题样式整段内嵌进文件，导入的自定义主题也会一并写入，单文件分享、托管或打印成 PDF 都不丢样式。
 
 **问：免费吗？采用什么许可证？怎么参与？**
-答：完全免费、无广告、无功能限制，源码采用 **MIT 许可证**。在 https://github.com/samjoeyang/UNOEditor 提 Issue 反馈问题、在 Discussions 提建议。
+答：完全免费、无广告、无功能限制，源码采用 **MIT 许可证**。在 https://github.com/samjoeyang/UNOEditor 提 Issue 反馈问题、在 Discussions 提建议，或加入 Telegram 讨论组（https://t.me/+3KH9Cn8-yIQ1ZDI1 ）即时交流。想支持开发可扫码赞赏（微信/支付宝，见官网「请作者喝杯咖啡」区块），完全自愿、不影响任何功能。
 
 ## 国际化与深链
 
@@ -142,3 +142,4 @@ UNOEditor **v0.1.0 已于 2026-11-14 发布**，GitHub Releases 提供预编译�
 - Releases：https://github.com/samjoeyang/UNOEditor/releases
 - Issues：https://github.com/samjoeyang/UNOEditor/issues
 - Discussions：https://github.com/samjoeyang/UNOEditor/discussions
+- Telegram 讨论组：https://t.me/+3KH9Cn8-yIQ1ZDI1
