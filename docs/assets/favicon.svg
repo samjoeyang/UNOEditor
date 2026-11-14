@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <!-- UNOEditor app icon · 主题色卡方案 (source of truth) -->
+  <rect width="1024" height="1024" rx="230" fill="#16181d"/>
+  <g stroke="#f4f5f7" stroke-width="110" stroke-linecap="round" fill="none">
+    <path d="M366 262 V452 A146 146 0 0 0 658 452 V262"/>
+  </g>
+  <circle cx="316" cy="759" r="58" fill="#e2231a"/>
+  <circle cx="447" cy="759" r="58" fill="#6b4f8a"/>
+  <circle cx="578" cy="759" r="58" fill="#1d9e75"/>
+  <circle cx="709" cy="759" r="58" fill="#ef9f27"/>
+</svg>
