@@ -20,7 +20,13 @@ fi
 
 rm -rf "$SITE"
 mkdir -p "$SITE"
-cp -R "$ROOT/dist/" "$SITE/"
+# BSD cp 与 GNU cp 对 "src/" 尾斜杠的处理不同（GitHub Actions 是 GNU cp，
+# 会把 dist 复制成 docs/app/dist 子目录）；用 "/." 明确复制目录内容，两边一致。
+cp -R "$ROOT/dist/." "$SITE/"
+if [ ! -f "$SITE/index.html" ]; then
+  echo "同步失败：$SITE/index.html 不存在" >&2
+  exit 1
+fi
 cp "$ROOT/js/theme-styles.js" "$ROOT/docs/assets/theme-styles.js"
 cp "$ROOT/js/themes.js" "$ROOT/docs/assets/themes.js"
 cp "$ROOT/scripts/app-index.md" "$SITE/index.md"
