@@ -31,7 +31,14 @@
       outline: '大纲', outlineEmpty: '暂无标题，用 # 开头写标题即可生成大纲', openTheme: '选择排版主题', openDocs: '文档列表',
       importTheme: '导入主题', importFormat: '支持 .json / .css，GitHub / Typora / Obsidian 主题文件可自动适配',
       importError: '主题文件无法识别，请检查格式', importSuccess: '已导入主题：',
-      customBadge: '自定义', deleteTheme: '删除主题', themeRemoved: '主题已删除'
+      customBadge: '自定义', deleteTheme: '删除主题', themeRemoved: '主题已删除',
+      about: '关于 / 帮助', versionLabel: '当前版本', envLabel: '运行环境',
+      envWeb: '网页版', envDesktop: '桌面版 (Tauri)', checkUpdate: '检查更新',
+      checkingUpdate: '正在检查更新…', upToDate: '已是最新版本', updateAvailable: '发现新版本',
+      currentVersion: '当前', newVersion: '最新', releaseNotes: '更新说明',
+      downloadUpdate: '前往下载', retry: '重试', checkFailed: '检查失败，请检查网络后重试',
+      rateLimit: 'GitHub 接口限流，请稍后再试', noRelease: '暂未发布正式版本（当前为开发构建）',
+      checkHint: '点击下方按钮，检查是否有新版本可用', updateToast: '发现新版本', github: 'GitHub 仓库'
     },
     en: {
       tagline: 'Themed Markdown Editor', toggleSidebar: 'Show / hide outline', untitled: 'Untitled',
@@ -62,7 +69,14 @@
       outline: 'Outline', outlineEmpty: 'No headings yet — start a line with # to build an outline', openTheme: 'Choose a theme', openDocs: 'Documents',
       importTheme: 'Import theme', importFormat: 'Accepts .json / .css — GitHub / Typora / Obsidian files auto-adapt',
       importError: 'Unrecognized theme file — check the format', importSuccess: 'Theme imported: ',
-      customBadge: 'Custom', deleteTheme: 'Delete theme', themeRemoved: 'Theme deleted'
+      customBadge: 'Custom', deleteTheme: 'Delete theme', themeRemoved: 'Theme deleted',
+      about: 'About / Help', versionLabel: 'Current version', envLabel: 'Environment',
+      envWeb: 'Web', envDesktop: 'Desktop (Tauri)', checkUpdate: 'Check for Updates',
+      checkingUpdate: 'Checking for updates…', upToDate: 'You are up to date', updateAvailable: 'A new version is available',
+      currentVersion: 'Current', newVersion: 'Latest', releaseNotes: 'Release notes',
+      downloadUpdate: 'Download', retry: 'Retry', checkFailed: 'Check failed — check your connection and retry',
+      rateLimit: 'GitHub API rate limited — try again later', noRelease: 'No stable release published yet (development build)',
+      checkHint: 'Click below to check for a newer version', updateToast: 'New version available', github: 'GitHub repository'
     }
   };
   var lang = 'zh';

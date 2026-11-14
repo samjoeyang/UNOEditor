@@ -1,0 +1,49 @@
+# Uno MD / UNOEditor — crawler policy
+# 本站为 MIT 开源项目文档，欢迎搜索索引、AI 实时引用与模型训练。
+# 若日后只想禁止训练：把下列具名 group 的 Allow 改为 "Disallow: /"，
+# 并把每个 Content-Signal 的 ai-train 改为 no（信号与规则必须一致，规则优先）。
+# User-agent 依据 2026-11 官方文档：developers.openai.com/docs/bots、
+# support.claude.com/...8896518、developers.google.com/search/docs/crawling-indexing/google-common-crawlers
+
+# --- OpenAI：搜索 / 用户触发 / 训练 / 广告校验 ---
+User-agent: OAI-SearchBot
+Allow: /
+Content-Signal: search=yes, ai-input=yes, ai-train=yes
+
+User-agent: ChatGPT-User
+Allow: /
+Content-Signal: search=yes, ai-input=yes, ai-train=yes
+
+User-agent: GPTBot
+Allow: /
+Content-Signal: search=yes, ai-input=yes, ai-train=yes
+
+User-agent: OAI-AdsBot
+Allow: /
+Content-Signal: search=yes, ai-input=yes, ai-train=yes
+
+# --- Anthropic：训练 / 用户触发 / 搜索索引 ---
+User-agent: ClaudeBot
+Allow: /
+Content-Signal: search=yes, ai-input=yes, ai-train=yes
+
+User-agent: Claude-User
+Allow: /
+Content-Signal: search=yes, ai-input=yes, ai-train=yes
+
+User-agent: Claude-SearchBot
+Allow: /
+Content-Signal: search=yes, ai-input=yes, ai-train=yes
+
+# --- Google：product token，不是独立 HTTP UA；不影响 Google Search 收录与排名 ---
+User-agent: Google-Extended
+Allow: /
+Content-Signal: search=yes, ai-input=yes, ai-train=yes
+
+# --- 其余爬虫（含其它 AI 抓取器）兜底 ---
+User-agent: *
+Allow: /
+Content-Signal: search=yes, ai-input=yes, ai-train=yes
+
+Sitemap: https://unoeditor.zhenzhidaole.com/sitemap.xml
+# llms-txt: https://unoeditor.zhenzhidaole.com/llms.txt

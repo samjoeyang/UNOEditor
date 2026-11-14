@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-TWSF3DDK');</script>
+<!-- End Google Tag Manager -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Uno MD · 排版主题编辑器</title>
+<meta name="description" content="Uno MD 在线版：零依赖、本地优先的 Markdown 排版主题编辑器。左侧写稿、右侧实时预览，内置 11 套主题，一键复制到公众号、导出 HTML / Markdown / PDF。文档只存在自己的浏览器里，不上传。">
+<meta name="robots" content="index, follow">
+<!-- 官网部署在 /app/；llms.txt 在上一级，Markdown 镜像与本页同目录 -->
+<link rel="canonical" href="https://unoeditor.zhenzhidaole.com/app/">
+<link rel="describedby" type="text/markdown" href="../llms.txt">
+<link rel="alternate" type="text/markdown" href="index.md">
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-TWSF3DDK"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+
+<!-- 纯文本 / 无 JS 抓取器说明：本页主体是交互式编辑器，用户文稿不属于页面内容 -->
+<noscript>
+  <div style="max-width:760px;margin:24px auto;padding:20px 24px;border:1px solid #d0d7de;border-radius:12px;font:14px/1.8 system-ui,-apple-system,sans-serif;color:#24292f;background:#fff">
+    <h1 style="font-size:20px;margin:0 0 8px">Uno MD · 在线版</h1>
+    <p style="margin:0 0 8px">这是 Uno MD v0.1.0（MIT 许可证）的在线编辑器页面：零依赖、本地优先的 Markdown 排版主题编辑器，内置 11 套主题，支持实时预览、一键复制到公众号、导出 HTML / Markdown / PDF。文档只保存在当前浏览器的 localStorage，不上传服务器。本页需要 JavaScript 才能编辑；本段是无脚本时给人与抓取器看的静态说明。</p>
+    <p style="margin:0">Uno MD is a zero-dependency, local-first Markdown theme editor (v0.1.0, MIT). This interactive page needs JavaScript; documents stay in your browser's localStorage and are never uploaded. Full documentation: <a href="../index.zh.md">中文</a> · <a href="../index.en.md">English</a> · <a href="../llms.txt">llms.txt</a> · <a href="index.md">this page in Markdown</a>.</p>
+  </div>
+</noscript>
+
+<!-- Lucide icon sprite (inline, zero network dependency) -->
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
+  <defs><g id="ls" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></g></defs>
+  <symbol id="i-panel" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6M10 11v5M14 11v5"/></symbol>
+  <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+  <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18 15 15 0 0 1 0-18"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 17v3h16v-3"/></symbol>
+  <symbol id="i-printer" viewBox="0 0 24 24"><path d="M6 9V3h12v6M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v7H6z"/></symbol>
+  <symbol id="i-smartphone" viewBox="0 0 24 24"><rect x="6" y="2" width="12" height="20" rx="2"/><path d="M11 18h2"/></symbol>
+  <symbol id="i-monitor" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></symbol>
+  <symbol id="i-bold" viewBox="0 0 24 24"><path d="M6 4h7a4 4 0 0 1 0 8H6zM6 12h8a4 4 0 0 1 0 8H6z"/></symbol>
+  <symbol id="i-italic" viewBox="0 0 24 24"><path d="M19 4h-9M14 20H5M15 4 9 20"/></symbol>
+  <symbol id="i-strike" viewBox="0 0 24 24"><path d="M4 12h16M17 7c-.6-1.5-2.2-2.5-4.5-2.5C9.5 4.5 7 6 7 8.5c0 1.4.8 2.4 2 3M7 16c.5 2 2.5 3.5 5.5 3.5 2.8 0 4.5-1.2 5-2.8"/></symbol>
+  <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.5.5l2-2a5 5 0 0 0-7-7l-1.2 1.2M14 11a5 5 0 0 0-7.5-.5l-2 2a5 5 0 0 0 7 7l1.2-1.2"/></symbol>
+  <symbol id="i-quote" viewBox="0 0 24 24"><path d="M9 7H5a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h2v1a3 3 0 0 1-3 3M20 7h-4a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h2v1a3 3 0 0 1-3 3"/></symbol>
+  <symbol id="i-list" viewBox="0 0 24 24"><path d="M9 6h12M9 12h12M9 18h12M3.5 6h.01M3.5 12h.01M3.5 18h.01"/></symbol>
+  <symbol id="i-list-ordered" viewBox="0 0 24 24"><path d="M10 6h11M10 12h11M10 18h11M4 6h1v4M4 10h2M4 15c0-1 2-1.5 2-1s-2 .5-2 2.5h2"/></symbol>
+  <symbol id="i-code" viewBox="0 0 24 24"><path d="m16 18 6-6-6-6M8 6l-6 6 6 6M14 4l-4 16"/></symbol>
+  <symbol id="i-image" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></symbol>
+  <symbol id="i-table" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="1"/><path d="M3 10h18M3 15h18M9 4v16M15 4v16"/></symbol>
+  <symbol id="i-hr" viewBox="0 0 24 24"><path d="M3 12h18M6 7h12M6 17h12"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+  <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 7h9M17 7h3M4 17h3M11 17h9M15 4v6M8 14v6"/></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></symbol>
+  <symbol id="i-type" viewBox="0 0 24 24"><path d="M4 7V4h16v3M9 20h6M12 4v16"/></symbol>
+  <symbol id="i-palette" viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 0 18h1.5a2 2 0 0 0 0-4H12a2 2 0 0 1 0-4h5a4 4 0 0 0 4-4 6 6 0 0 0-9-6z"/><circle cx="7.5" cy="10.5" r="1"/><circle cx="12" cy="7.5" r="1"/><circle cx="16.5" cy="10.5" r="1"/></symbol>
+  <symbol id="i-sparkles" viewBox="0 0 24 24"><path d="m12 3 1.6 4.4L18 9l-4.4 1.6L12 15l-1.6-4.4L6 9l4.4-1.6zM19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></symbol>
+  <symbol id="i-align" viewBox="0 0 24 24"><path d="M4 6h16M4 12h10M4 18h14"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></symbol>
+  <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-3-6.7L21 8M21 3v5h-5"/></symbol>
+  <symbol id="i-github" viewBox="0 0 24 24"><path d="M9 19c-4 1.5-4-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6 0 0 0-1.3-3.2 4.3 4.3 0 0 0-.1-3.2s-1-.3-3.4 1.3a11.5 11.5 0 0 0-6 0C6.2 2.9 5.2 3.2 5.2 3.2a4.3 4.3 0 0 0-.1 3.2A4.6 4.6 0 0 0 3.8 9.6c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></symbol>
+  <symbol id="i-external" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M19 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h5"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></symbol>
+</svg>
+
+<header class="topbar">
+  <div class="brand">
+    <button class="icon-btn" id="toggleSidebar" data-i18n-title="toggleSidebar" title="切换侧栏"><svg class="icon"><use href="#i-panel"/></svg></button>
+    <div class="brand-mark">U</div>
+    <div class="brand-text"><strong>Uno MD</strong><span data-i18n="tagline">排版主题编辑器</span></div>
+  </div>
+
+  <div class="doc-title-wrap">
+    <input id="docTitle" type="text" spellcheck="false" data-i18n-placeholder="untitled" placeholder="未命名文档">
+    <span class="save-state" id="saveState" data-i18n="saved">已保存</span>
+  </div>
+
+  <div class="top-actions">
+    <span class="meta" id="metaInfo"></span>
+    <div class="dropdown" id="docDropdown">
+      <button class="ghost-btn" id="docBtn" data-i18n-title="openDocs" title="文档列表"><svg class="icon"><use href="#i-file"/></svg><span class="th-label" data-i18n="docs">文档</span><svg class="icon sm"><use href="#i-chevron"/></svg></button>
+      <div class="doc-panel" id="docPanel" hidden>
+        <div class="doc-list" id="docList"></div>
+        <div class="panel-div"></div>
+        <button class="text-btn" id="newDocBtn"><svg class="icon sm"><use href="#i-plus"/></svg><span data-i18n="newDoc">新建文档</span></button>
+        <button class="text-btn" id="loadSampleBtn"><svg class="icon sm"><use href="#i-sparkles"/></svg><span data-i18n="loadSample">载入示例文档</span></button>
+      </div>
+    </div>
+    <button class="ghost-btn" id="themeBtn" data-i18n-title="openTheme" title="选择排版主题"><svg class="icon"><use href="#i-palette"/></svg><span class="th-label" data-i18n="themeGroup">主题</span></button>
+    <button class="ghost-btn" id="langBtn" data-i18n-title="switchLang" title="切换语言"><svg class="icon"><use href="#i-globe"/></svg><span id="langLabel">EN</span></button>
+    <div class="dropdown" id="exportDropdown">
+      <button class="primary-btn" id="exportBtn"><svg class="icon"><use href="#i-download"/></svg><span data-i18n="export">导出</span><svg class="icon sm"><use href="#i-chevron"/></svg></button>
+      <div class="dropdown-panel" id="exportPanel" hidden>
+        <button data-act="wechat"><svg class="icon"><use href="#i-copy"/></svg><span><b data-i18n="copyWechat">复制到公众号</b><small data-i18n="copyWechatHint">带内联样式，粘贴即所见</small></span></button>
+        <button data-act="html"><svg class="icon"><use href="#i-code"/></svg><span><b data-i18n="downloadHtml">下载 HTML</b><small data-i18n="downloadHtmlHint">独立文件，样式内嵌</small></span></button>
+        <button data-act="md"><svg class="icon"><use href="#i-file"/></svg><span><b data-i18n="downloadMd">下载 Markdown</b><small data-i18n="downloadMdHint">纯文本源文件</small></span></button>
+        <button data-act="print"><svg class="icon"><use href="#i-printer"/></svg><span><b data-i18n="printPdf">打印 / 存为 PDF</b><small data-i18n="printPdfHint">按当前主题输出</small></span></button>
+      </div>
+    </div>
+    <button class="ghost-btn" id="aboutBtn" data-i18n-title="about" title="关于 / 帮助"><svg class="icon"><use href="#i-info"/></svg></button>
+  </div>
+</header>
+
+<main class="workspace" id="workspace">
+  <aside class="sidebar" id="sidebar">
+    <div class="drawer-head">
+      <span data-i18n="outline">大纲</span>
+      <button class="icon-btn" id="drawerClose" data-i18n-title="close" title="关闭"><svg class="icon"><use href="#i-x"/></svg></button>
+    </div>
+    <div class="side-scroll">
+      <div class="side-head"><span data-i18n="outline">大纲</span><span class="count" id="outlineCount">0</span></div>
+      <div class="outline-list" id="outlineList"></div>
+      <p class="outline-empty" id="outlineEmpty" data-i18n="outlineEmpty">暂无标题，用 # 开头即可生成大纲</p>
+    </div>
+  </aside>
+
+  <section class="editor-pane">
+    <div class="toolbar" id="toolbar">
+      <div class="tool-group">
+        <button class="tool" data-cmd="h1" data-i18n-title="h1" title="一级标题">H1</button>
+        <button class="tool" data-cmd="h2" data-i18n-title="h2" title="二级标题">H2</button>
+        <button class="tool" data-cmd="h3" data-i18n-title="h3" title="三级标题">H3</button>
+      </div>
+      <div class="tool-sep"></div>
+      <div class="tool-group">
+        <button class="tool" data-cmd="bold" data-i18n-title="bold" title="粗体 ⌘B"><svg class="icon"><use href="#i-bold"/></svg></button>
+        <button class="tool" data-cmd="italic" data-i18n-title="italic" title="斜体 ⌘I"><svg class="icon"><use href="#i-italic"/></svg></button>
+        <button class="tool" data-cmd="strike" data-i18n-title="strike" title="删除线"><svg class="icon"><use href="#i-strike"/></svg></button>
+        <button class="tool" data-cmd="link" data-i18n-title="link" title="链接 ⌘K"><svg class="icon"><use href="#i-link"/></svg></button>
+      </div>
+      <div class="tool-sep"></div>
+      <div class="tool-group">
+        <button class="tool" data-cmd="quote" data-i18n-title="quote" title="引用"><svg class="icon"><use href="#i-quote"/></svg></button>
+        <button class="tool" data-cmd="ul" data-i18n-title="ul" title="无序列表"><svg class="icon"><use href="#i-list"/></svg></button>
+        <button class="tool" data-cmd="ol" data-i18n-title="ol" title="有序列表"><svg class="icon"><use href="#i-list-ordered"/></svg></button>
+        <button class="tool" data-cmd="task" data-i18n-title="task" title="任务列表"><svg class="icon"><use href="#i-check"/></svg></button>
+      </div>
+      <div class="tool-sep"></div>
+      <div class="tool-group">
+        <button class="tool" data-cmd="code" data-i18n-title="inlineCode" title="行内代码"><svg class="icon"><use href="#i-code"/></svg></button>
+        <button class="tool" data-cmd="codeblock" data-i18n-title="codeblock" title="代码块"><svg class="icon"><use href="#i-code"/></svg><span class="tool-badge">▣</span></button>
+        <button class="tool" data-cmd="table" data-i18n-title="table" title="表格"><svg class="icon"><use href="#i-table"/></svg></button>
+        <button class="tool" data-cmd="image" data-i18n-title="image" title="图片"><svg class="icon"><use href="#i-image"/></svg></button>
+        <button class="tool" data-cmd="hr" data-i18n-title="hr" title="分隔线"><svg class="icon"><use href="#i-hr"/></svg></button>
+      </div>
+    </div>
+    <textarea id="editor" spellcheck="false" data-i18n-placeholder="editorPlaceholder" placeholder="在这里写 Markdown…"></textarea>
+    <div class="editor-foot">
+      <span data-i18n="editorHint">Markdown 实时渲染 · ⌘B 粗体 · ⌘I 斜体 · ⌘K 链接 · ⌘S 保存</span>
+      <span id="caretInfo">Ln 1, Col 1</span>
+    </div>
+  </section>
+
+  <section class="preview-pane view-mobile" id="previewPane">
+    <div class="preview-bar">
+      <div class="seg" id="viewSeg">
+        <button data-view="mobile" class="active" data-i18n-title="mobileView" title="手机预览"><svg class="icon sm"><use href="#i-smartphone"/></svg></button>
+        <button data-view="web" data-i18n-title="webView" title="网页预览"><svg class="icon sm"><use href="#i-monitor"/></svg></button>
+      </div>
+      <div class="preview-theme-name" id="previewThemeName"></div>
+      <button class="ghost-btn small" id="tweakBtn"><svg class="icon sm"><use href="#i-sliders"/></svg><span data-i18n="tweak">微调</span></button>
+    </div>
+
+    <div class="tweak-panel" id="tweakPanel" hidden>
+      <label><span data-i18n="fontSize">字号</span><input type="range" id="tweakSize" min="13" max="20" step="1"><output id="tweakSizeVal"></output></label>
+      <label><span data-i18n="lineHeight">行高</span><input type="range" id="tweakLeading" min="1.4" max="2.4" step="0.05"><output id="tweakLeadingVal"></output></label>
+      <label><span data-i18n="accent">强调色</span><span class="swatch-row" id="swatchRow"></span></label>
+      <button class="text-btn mini" id="tweakReset"><span data-i18n="reset">重置</span></button>
+    </div>
+
+    <div class="preview-stage" id="previewStage">
+      <div class="paper" id="paper">
+        <div class="phone-bar"><span>9:41</span><span class="phone-notch"></span><span class="phone-signal">●●● ▰</span></div>
+        <div class="article-head"><span id="articleMeta">Uno MD · 预览</span></div>
+        <article class="md-body" id="preview" data-theme="swiss"></article>
+        <div class="article-foot"><span data-i18n="previewFoot">— 预览结束 —</span></div>
+      </div>
+    </div>
+  </section>
+
+  <aside class="theme-drawer" id="themeDrawer">
+    <div class="panel-head">
+      <span data-i18n="themeGroup">排版主题</span>
+      <button class="icon-btn" id="themeDrawerClose" data-i18n-title="close" title="关闭"><svg class="icon"><use href="#i-x"/></svg></button>
+    </div>
+    <div class="import-row">
+      <button class="primary-btn sm" id="themeImportBtn"><svg class="icon sm"><use href="#i-download"/></svg><span data-i18n="importTheme">导入主题</span></button>
+      <span class="import-hint" data-i18n="importFormat">支持 .json / .css，CSS 需以 .md-body 选择器编写</span>
+    </div>
+    <div class="drawer-scroll">
+      <div class="side-section">
+        <div class="side-head"><span data-i18n="themeGroup">排版主题</span><span class="count" id="themeCount"></span></div>
+        <div class="theme-list" id="themeList"></div>
+      </div>
+      <section class="side-section theme-detail" id="themeDetail"></section>
+    </div>
+  </aside>
+</main>
+
+<nav class="mobile-tabbar" id="mobileTabbar">
+  <button data-mtab="edit" class="active"><svg class="icon"><use href="#i-panel"/></svg><span data-i18n="tabEdit">编辑</span></button>
+  <button data-mtab="preview"><svg class="icon"><use href="#i-smartphone"/></svg><span data-i18n="tabPreview">预览</span></button>
+  <button data-mtab="outline"><svg class="icon"><use href="#i-list"/></svg><span data-i18n="tabOutline">大纲</span></button>
+</nav>
+<input type="file" id="themeFileInput" accept=".json,application/json,.css,text/css" hidden>
+<div class="drawer-mask" id="drawerMask"></div>
+
+<div class="toast" id="toast"></div>
+
+<!-- About / Check for Updates (PDF Studio style) -->
+<div class="modal-mask" id="aboutModal" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-label="About UNOEditor">
+    <div class="modal-head">
+      <div class="modal-title"><svg class="icon"><use href="#i-info"/></svg><span>UNOEditor</span></div>
+      <button class="icon-btn" id="aboutClose" data-i18n-title="close" title="关闭"><svg class="icon"><use href="#i-x"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <div class="about-version-row">
+        <div class="av-block"><span class="av-label" data-i18n="versionLabel">当前版本</span><b id="aboutVersion">v0.1.0</b></div>
+        <div class="av-block"><span class="av-label" data-i18n="envLabel">运行环境</span><b id="aboutEnv">网页版</b></div>
+      </div>
+      <div class="update-state" id="updateState"></div>
+      <div class="update-notes" id="updateNotes" hidden></div>
+    </div>
+    <div class="modal-foot">
+      <a class="text-btn ghost-link" id="aboutGithub" href="https://github.com/samjoeyang/UNOEditor" target="_blank" rel="noopener"><svg class="icon sm"><use href="#i-github"/></svg><span data-i18n="github">GitHub 仓库</span></a>
+      <span class="foot-spacer"></span>
+      <button class="ghost-btn" id="downloadUpdateBtn" hidden><svg class="icon"><use href="#i-download"/></svg><span data-i18n="downloadUpdate">前往下载</span></button>
+      <button class="primary-btn" id="checkUpdateBtn"><svg class="icon"><use href="#i-refresh"/></svg><span data-i18n="checkUpdate">检查更新</span></button>
+    </div>
+  </div>
+</div>
+
+<script src="js/version.js"></script>
+<script src="js/markdown.js"></script>
+<script src="js/i18n.js"></script>
+<script src="js/themes.js"></script>
+<script src="js/theme-styles.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

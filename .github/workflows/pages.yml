@@ -1,8 +1,10 @@
 name: Deploy Pages
 
-# 将静态前端(dist/)部署到 GitHub Pages。
-# 自定义域名在仓库 Settings → Pages 中配置(cname=unoeditor.zhenzhidaole.com)，
-# 由 GitHub 自动注入 CNAME，无需在仓库里提交 CNAME 文件。
+# 将官网 docs/ 部署到 GitHub Pages（docs/ 内已包含完整应用副本 docs/app/）。
+# 自定义域名 unoeditor.zhenzhidaole.com 已在仓库 Settings → Pages 中配置；
+# docs/CNAME 必须随 artifact 一起上传，否则 actions/deploy-pages 部署的站点
+# 不会写入 CNAME，自定义域名会返回 404。
+# docs/.nojekyll 保证 .md 镜像按原文提供，不被 Jekyll 渲染成 HTML。
 on:
   push:
     branches: [main]
@@ -12,6 +14,8 @@ on:
       - 'js/**'
       - 'themes/**'
       - 'copy-dist.sh'
+      - 'scripts/**'
+      - 'docs/**'
       - '.github/workflows/pages.yml'
   workflow_dispatch:
 
@@ -36,8 +40,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Build static site into dist/
-        run: sh copy-dist.sh
+      # 同步最新应用到 docs/app/ 与官网主题演示资源
+      - name: Build static site and sync into docs/app
+        run: sh copy-dist.sh && sh scripts/sync-site.sh && touch docs/.nojekyll
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
@@ -45,7 +50,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: dist
+          path: docs
 
       - name: Deploy to GitHub Pages
         id: deployment

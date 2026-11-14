@@ -601,6 +601,117 @@
     }
   }
 
+  /* ---------------- check for updates (PDF Studio style) ---------------- */
+  function currentVersion() { return window.UNO_VERSION || '0.0.0'; }
+  function runtimeEnvText() {
+    var tauri = !!(window.__TAURI_INTERNALS__ || window.__TAURI__ ||
+      (navigator.userAgent || '').toLowerCase().indexOf('tauri') >= 0);
+    return tauri ? I.t('envDesktop') : I.t('envWeb');
+  }
+  function repoApi() {
+    var r = window.UNO_REPO || { owner: 'samjoeyang', repo: 'UNOEditor' };
+    return 'https://api.github.com/repos/' + r.owner + '/' + r.repo + '/releases/latest';
+  }
+  function repoReleasesPage() {
+    var r = window.UNO_REPO || { owner: 'samjoeyang', repo: 'UNOEditor' };
+    return 'https://github.com/' + r.owner + '/' + r.repo + '/releases';
+  }
+  function openExternal(url) {
+    try {
+      if (window.__TAURI__ && window.__TAURI__.shell && window.__TAURI__.shell.open) {
+        window.__TAURI__.shell.open(url); return;
+      }
+    } catch (e) { /* fall through to window.open */ }
+    window.open(url, '_blank', 'noopener');
+  }
+  function parseVer(v) {
+    v = ('' + (v || '')).replace(/^v/i, '').trim();
+    var p = v.split('.');
+    return [parseInt(p[0], 10) || 0, parseInt(p[1], 10) || 0, parseInt(p[2], 10) || 0];
+  }
+  function cmpVer(a, b) {
+    var x = parseVer(a), y = parseVer(b);
+    for (var i = 0; i < 3; i++) { if (x[i] !== y[i]) return x[i] < y[i] ? -1 : 1; }
+    return 0;
+  }
+  function setUpdateState(html) { $('updateState').innerHTML = html; }
+  function renderNotes(notes) {
+    var box = $('updateNotes');
+    if (notes && notes.trim()) {
+      box.hidden = false;
+      box.innerHTML = '<div class="detail-label">' + I.t('releaseNotes') + '</div>' +
+        (M.render ? M.render(notes) : '<pre>' + notes + '</pre>');
+    } else { box.hidden = true; box.innerHTML = ''; }
+  }
+  function checkForUpdates() {
+    var cur = currentVersion();
+    setUpdateState('<div class="update-loading"><span class="spinner"></span>' + I.t('checkingUpdate') + '</div>');
+    renderNotes('');
+    $('downloadUpdateBtn').hidden = true;
+    fetch(repoApi(), { headers: { 'Accept': 'application/vnd.github+json' } })
+      .then(function (r) {
+        if (!r.ok) {
+          if (r.status === 404) throw { kind: 'norelease' };
+          if (r.status === 403) throw { kind: 'ratelimit' };
+          throw { kind: 'http', status: r.status };
+        }
+        return r.json();
+      })
+      .then(function (data) {
+        var latest = (data.tag_name || '').replace(/^v/i, '') || (data.name || '').replace(/^v/i, '');
+        if (!latest) throw { kind: 'norelease' };
+        if (cmpVer(latest, cur) > 0) {
+          setUpdateState(
+            '<div class="update-available"><svg class="icon"><use href="#i-alert"/></svg>' +
+            '<div><b>' + I.t('updateAvailable') + '</b> <span class="up-ver">v' + latest + '</span>' +
+            '<div class="up-sub">' + I.t('currentVersion') + ': v' + cur + '</div></div></div>');
+          renderNotes(data.body || '');
+          var dl = $('downloadUpdateBtn');
+          dl.hidden = false;
+          dl.onclick = function () { openExternal(data.html_url || repoReleasesPage()); };
+        } else {
+          setUpdateState('<div class="update-ok"><svg class="icon"><use href="#i-check"/></svg>' +
+            '<div><b>' + I.t('upToDate') + '</b><div class="up-sub">v' + cur + '</div></div></div>');
+          renderNotes('');
+        }
+      })
+      .catch(function (err) {
+        var msg = I.t('checkFailed');
+        if (err && err.kind === 'norelease') msg = I.t('noRelease');
+        else if (err && err.kind === 'ratelimit') msg = I.t('rateLimit');
+        setUpdateState('<div class="update-error"><svg class="icon"><use href="#i-alert"/></svg><div><b>' + msg + '</b></div></div>');
+      });
+  }
+  function openAbout() {
+    $('aboutVersion').textContent = 'v' + currentVersion();
+    $('aboutEnv').textContent = runtimeEnvText();
+    setUpdateState('<div class="update-idle">' + I.t('checkHint') + '</div>');
+    renderNotes('');
+    $('downloadUpdateBtn').hidden = true;
+    $('aboutModal').hidden = false;
+    document.body.classList.add('modal-open');
+  }
+  function closeAbout() {
+    $('aboutModal').hidden = true;
+    document.body.classList.remove('modal-open');
+  }
+  function autoCheck() {
+    if (!window.UNO_AUTO_CHECK) return;
+    try {
+      var KEY = 'uno-md-update-lastauto', DAY = 24 * 3600 * 1000;
+      var last = parseInt(localStorage.getItem(KEY) || '0', 10);
+      if (Date.now() - last < DAY) return;
+      localStorage.setItem(KEY, String(Date.now()));
+      fetch(repoApi(), { headers: { 'Accept': 'application/vnd.github+json' } })
+        .then(function (r) { if (!r.ok) throw 0; return r.json(); })
+        .then(function (d) {
+          var latest = (d.tag_name || '').replace(/^v/i, '');
+          if (latest && cmpVer(latest, currentVersion()) > 0) toast(I.t('updateToast') + ' v' + latest);
+        })
+        .catch(function () { /* silent on failure */ });
+    } catch (e) { /* ignore */ }
+  }
+
   /* ---------------- events ---------------- */
   function bind() {
     $('themeList').addEventListener('click', function (e) {
@@ -768,6 +879,19 @@
       if (!e.target.closest('#docDropdown')) $('docPanel').hidden = true;
     });
 
+    /* about / check-for-updates */
+    $('aboutBtn').addEventListener('click', function (e) {
+      e.stopPropagation(); openAbout();
+    });
+    $('aboutClose').addEventListener('click', closeAbout);
+    $('aboutModal').addEventListener('click', function (e) {
+      if (e.target === this) closeAbout();
+    });
+    $('checkUpdateBtn').addEventListener('click', checkForUpdates);
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && !$('aboutModal').hidden) closeAbout();
+    });
+
     /* ---- 移动端：底部 Tab + 抽屉 ---- */
     var ws = $('workspace');
     function isMobile() { return window.matchMedia('(max-width:900px)').matches; }
@@ -800,6 +924,7 @@
     if (q.has('view')) state.view = q.get('view') === 'web' ? 'web' : 'mobile';
   } catch (e) { }
   I.set(state.lang); bind(); renderAll();
+  if (window.UNO_AUTO_CHECK) autoCheck();
 
   // deep links for sharing a mobile view / opening a drawer
   try {
@@ -814,12 +939,14 @@
     if (location.hash === '#theme' || location.hash === '#themes') openTheme();
     if (location.hash === '#outline' || location.hash === '#toc') wsk.classList.add('drawer-open');
     if (location.hash === '#doc' || location.hash === '#docs') { $('docPanel').hidden = false; renderDocs(); }
+    if (location.hash === '#about' || location.search.indexOf('about=1') >= 0) openAbout();
   } catch (e) { }
 
   // small public surface for embedding / automation
   window.UnoApp = {
     state: state, themes: T.list,
     renderAll: renderAll, richHtml: richHtml, standaloneHtml: standaloneHtml,
-    importThemeFile: importThemeFile, getThemes: getThemes
+    importThemeFile: importThemeFile, getThemes: getThemes,
+    checkForUpdates: checkForUpdates, openAbout: openAbout, currentVersion: currentVersion
   };
 })();
