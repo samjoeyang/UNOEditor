@@ -190,6 +190,14 @@ for rel, key in [("js/app.js", "uno-md-v1"),
     check(key in (ROOT / rel).read_text(encoding="utf-8"),
           f"保留技术标识符 {key}")
 
+# --- 12. 发布状态：v0.1.0 已发布，静态文案不得停留在「尚未发布」 ---
+STALE_RELEASE = ["尚无预编译安装包", "尚未发布预编译安装包", "暂未上传预编译安装包",
+                 "No prebuilt installer", "no prebuilt installers", "not published yet"]
+for rel in ["index.html", "index.zh.md", "index.en.md", "llms.txt", "assets/app.js"]:
+    txt = read(rel)
+    check(not any(s in txt for s in STALE_RELEASE), f"{rel} 无过时的「未发布」表述")
+    check("v0.1.0" in txt, f"{rel} 标注 v0.1.0")
+
 # --- 输出 ---
 for line in ok:
     print(f"  PASS  {line}")

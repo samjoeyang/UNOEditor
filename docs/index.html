@@ -140,7 +140,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         {
           "@type": "Question",
           "name": "支持哪些系统？手机能用吗？",
-          "acceptedAnswer": { "@type": "Answer", "text": "任意现代浏览器均可。窄屏会自动切换为「编辑 / 预览 / 大纲」底部标签与抽屉式主题面板。仓库另附 Tauri 2 桌面壳（src-tauri），可自行构建 macOS / Windows / Linux 原生窗口；目前尚无预编译安装包。" }
+          "acceptedAnswer": { "@type": "Answer", "text": "任意现代浏览器均可。窄屏会自动切换为「编辑 / 预览 / 大纲」底部标签与抽屉式主题面板。仓库另附 Tauri 2 桌面壳（src-tauri），可自行构建 macOS / Windows / Linux 原生窗口；v0.1.0 起提供预编译安装包。" }
         },
         {
           "@type": "Question",
@@ -247,7 +247,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div class="wrap noscript-note">
       <p><strong>UNOEditor</strong>是一款零依赖、本地优先的 Markdown 排版主题编辑器，当前版本 0.1.0，采用 MIT 许可证。左侧写 Markdown，右侧实时预览；内置 11 套主题，支持一键复制到公众号、下载 HTML / Markdown、打印为 PDF。纯静态前端，文档只保存在浏览器 localStorage，不发起任何网络请求。</p>
       <p>11 套内置主题：默认公众号风格 / WeChat Classic、红黑社论 / Editorial Red、墨白长文 / Ink &amp; Paper、瑞士国际主义 / Swiss International、莫兰迪编辑 / Morandi、留白 / Whitespace、净灰 / Clean Grey、深夜电台 / Nocturne、系统灰 / System Grey、暗色笔记 / Dark Notes、纯净书写 / Pure Writing。</p>
-      <p>三种用法：在线试用 <a href="app/index.html">app/</a>；克隆仓库后双击 dist/index.html（file:// 可用）；或用 Tauri 2 自行构建桌面应用。截至 2026-11-14，GitHub Releases 尚未发布预编译安装包。</p>
+      <p>三种用法：在线试用 <a href="app/index.html">app/</a>；克隆仓库后双击 dist/index.html（file:// 可用）；或安装 GitHub Releases 提供的 v0.1.0 桌面安装包（macOS / Windows / Linux），也可用 Tauri 2 自行构建。</p>
       <p>机器可读版本：<a href="index.zh.md">index.zh.md</a> · <a href="index.en.md">index.en.md</a> · <a href="llms.txt">llms.txt</a></p>
       <p><strong>UNOEditor</strong> is a zero-dependency, local-first Markdown theme editor, version 0.1.0, MIT licensed. See <a href="index.en.md">index.en.md</a> for the full English text.</p>
     </div>
@@ -494,9 +494,9 @@ cd src-tauri &amp;&amp; cargo tauri build</pre></div>
       <div class="sec-head">
         <div class="kicker">Download</div>
         <h2><span lang="zh-CN" data-lang="zh">下载 UNOEditor</span><span lang="en" data-lang="en">Download UNOEditor</span></h2>
-        <p><span lang="zh-CN" data-lang="zh">桌面安装包发布后，这里会自动读取 GitHub Releases 的最新版本并按你的系统高亮推荐。</span><span lang="en" data-lang="en">Once a desktop build is published, this section reads the latest GitHub Release and highlights your platform.</span></p>
+        <p><span lang="zh-CN" data-lang="zh">这里会自动读取 GitHub Releases 的最新版本，并按你的系统高亮推荐对应安装包。</span><span lang="en" data-lang="en">This section reads the latest GitHub Release automatically and highlights the installer for your platform.</span></p>
       </div>
-      <p class="dl-status" id="dlStatus"><span lang="zh-CN" data-lang="zh">UNOEditor 当前版本 v0.1.0（2026-11-14）。截至本页更新时，GitHub Releases 尚未发布预编译安装包；可直接使用在线版或本地文件。</span><span lang="en" data-lang="en">UNOEditor is at v0.1.0 (as of 2026-11-14). No prebuilt installer has been published to GitHub Releases yet; the web app and the local file both work today.</span></p>
+      <p class="dl-status" id="dlStatus"><span lang="zh-CN" data-lang="zh">UNOEditor v0.1.0 已于 2026-11-14 发布，GitHub Releases 提供 macOS / Windows / Linux 桌面安装包；也可直接在线试用或打开本地文件。</span><span lang="en" data-lang="en">UNOEditor v0.1.0 was released on 2026-11-14 with macOS, Windows and Linux desktop installers on GitHub Releases; the web app and the local file also work today.</span></p>
 
       <div class="dl-grid" id="dlGrid" hidden>
         <div class="dl-card" data-plat="macos-arm">
@@ -531,14 +531,14 @@ cd src-tauri &amp;&amp; cargo tauri build</pre></div>
 
       <div class="dl-empty" id="dlEmpty">
         <div class="dl-empty-ic"><svg class="ic"><use href="#i-package"/></svg></div>
-        <h3><span lang="zh-CN" data-lang="zh">当前还没有发布桌面安装包</span><span lang="en" data-lang="en">No desktop installer published yet</span></h3>
-        <p><span lang="zh-CN" data-lang="zh">项目处于 v0.1.0，仓库里是完整可用的静态前端与 Tauri 配置，暂未上传预编译安装包。不需要等发布：现在就能在线使用或直接打开本地文件。</span><span lang="en" data-lang="en">The project is at v0.1.0. The repo contains the complete static frontend and a Tauri config, but no prebuilt installers yet. You don't have to wait — the app already works online and as a local file.</span></p>
+        <h3><span lang="zh-CN" data-lang="zh">暂时没有显示下载按钮</span><span lang="en" data-lang="en">Download buttons are unavailable</span></h3>
+        <p><span lang="zh-CN" data-lang="zh">若上方未列出下载按钮，可直接前往 GitHub Releases 获取 v0.1.0 的 macOS / Windows / Linux 安装包；在线版与本地文件无需安装即可使用。</span><span lang="en" data-lang="en">If no download buttons appear above, get the v0.1.0 installers for macOS, Windows and Linux from GitHub Releases. The online app and the local file need no installation.</span></p>
         <div class="dl-empty-btns">
           <a class="btn btn-primary try-link" href="app/index.html?lang=zh"><svg class="ic"><use href="#i-zap"/></svg><span lang="zh-CN" data-lang="zh">在线试用</span><span lang="en" data-lang="en">Try online</span></a>
           <a class="btn btn-ghost" href="https://github.com/samjoeyang/UNOEditor" target="_blank" rel="noopener"><svg class="ic"><use href="#i-github"/></svg>GitHub</a>
           <a class="btn btn-ghost" href="https://github.com/samjoeyang/UNOEditor/releases" target="_blank" rel="noopener"><svg class="ic"><use href="#i-external"/></svg>Releases</a>
         </div>
-        <p class="dl-hint"><span lang="zh-CN" data-lang="zh">发布后本区块会自动出现对应平台的下载按钮，无需改代码。</span><span lang="en" data-lang="en">Once a release exists, download buttons appear here automatically — no code change needed.</span></p>
+        <p class="dl-hint"><span lang="zh-CN" data-lang="zh">本区块按 GitHub Releases 的最新版本自动更新下载按钮，无需改代码。</span><span lang="en" data-lang="en">Download buttons here update automatically from the latest GitHub Release — no code change needed.</span></p>
       </div>
     </div>
   </section>
@@ -574,7 +574,7 @@ cd src-tauri &amp;&amp; cargo tauri build</pre></div>
         </details>
         <details class="faq-item">
           <summary><svg class="ic"><use href="#i-monitor"/></svg><span><span lang="zh-CN" data-lang="zh">支持哪些系统？手机能用吗？</span><span lang="en" data-lang="en">Which platforms? Does it work on phones?</span></span><svg class="ic chev"><use href="#i-chevron"/></svg></summary>
-          <div class="faq-body"><span lang="zh-CN" data-lang="zh">任意现代浏览器均可。窄屏会自动切换为「编辑 / 预览 / 大纲」底部标签与抽屉式主题面板。仓库另附 Tauri 2 桌面壳（src-tauri），可自行构建 macOS / Windows / Linux 原生窗口；目前尚无预编译安装包。</span><span lang="en" data-lang="en">Any modern browser. On narrow screens it switches to edit / preview / outline tabs plus a theme drawer. The repo also includes a Tauri 2 shell (src-tauri) for native macOS / Windows / Linux builds; prebuilt installers are not published yet.</span></div>
+          <div class="faq-body"><span lang="zh-CN" data-lang="zh">任意现代浏览器均可。窄屏会自动切换为「编辑 / 预览 / 大纲」底部标签与抽屉式主题面板。仓库另附 Tauri 2 桌面壳（src-tauri），可自行构建 macOS / Windows / Linux 原生窗口；v0.1.0 起提供预编译安装包。</span><span lang="en" data-lang="en">Any modern browser. On narrow screens it switches to edit / preview / outline tabs plus a theme drawer. The repo also includes a Tauri 2 shell (src-tauri) for native macOS / Windows / Linux builds; prebuilt installers ship with v0.1.0.</span></div>
         </details>
         <details class="faq-item">
           <summary><svg class="ic"><use href="#i-printer"/></svg><span><span lang="zh-CN" data-lang="zh">导出的 HTML 能脱离应用单独打开吗？</span><span lang="en" data-lang="en">Does exported HTML work on its own?</span></span><svg class="ic chev"><use href="#i-chevron"/></svg></summary>

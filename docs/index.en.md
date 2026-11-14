@@ -21,7 +21,7 @@
 | UI languages | Chinese and English, one-click switch |
 | Storage | Browser `localStorage` only (WebView local storage in the desktop shell) |
 | Network requests | 0 from the app itself; the website's download section queries the GitHub Releases API |
-| Prebuilt installers | None published as of 2026-11-14 (GitHub Releases is empty) |
+| Prebuilt installers | Shipped with v0.1.0: macOS / Windows / Linux desktop installers (see GitHub Releases) |
 
 ## Features
 
@@ -87,7 +87,7 @@ All images are real captures of the running app, not mockups or composites. They
 
 ## Download status
 
-As of **2026-11-14**, the GitHub repository `samjoeyang/UNOEditor` has **no prebuilt installers** in Releases. The project is at v0.1.0 and the repository contains the complete, working static frontend plus the Tauri config. The website's download section reads the GitHub Releases API dynamically; once a release exists, download buttons for macOS (Apple Silicon / Intel), Windows and Linux appear automatically and the visitor's platform is highlighted. There is no need to wait — the app works online and as a local file today.
+**UNOEditor v0.1.0 was released on 2026-11-14.** GitHub Releases ships prebuilt desktop installers: `.dmg` for macOS (Apple Silicon / Intel), `.msi` / `.exe` for Windows, and `.deb` / `.AppImage` / `.rpm` for Linux. The website's download section reads the GitHub Releases API dynamically, lists the latest version and highlights the visitor's platform. The online app and the local file need no installation.
 
 ## Privacy and data
 
@@ -111,7 +111,7 @@ Those are note-taking and knowledge-base tools. UNOEditor does one job: turn a s
 Yes, `.json` and `.css`. The importer rewrites root selectors, then sanitises and scopes the CSS. Generic tag styles work; editor-specific classes do not.
 
 **Which platforms? Does it work on phones?**
-Any modern browser. On narrow screens it switches to edit / preview / outline tabs plus a theme drawer. The repo also includes a Tauri 2 shell for native macOS / Windows / Linux builds; prebuilt installers are not published yet.
+Any modern browser. On narrow screens it switches to edit / preview / outline tabs plus a theme drawer. The repo also includes a Tauri 2 shell for native macOS / Windows / Linux builds; prebuilt installers ship with v0.1.0.
 
 **Does exported HTML work on its own?**
 Yes. The downloaded file embeds the full theme CSS (including any imported theme), so a single file keeps its look when shared, hosted, or printed to PDF.

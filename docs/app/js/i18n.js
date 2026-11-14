@@ -37,7 +37,7 @@
       checkingUpdate: '正在检查更新…', upToDate: '已是最新版本', updateAvailable: '发现新版本',
       currentVersion: '当前', newVersion: '最新', releaseNotes: '更新说明',
       downloadUpdate: '前往下载', retry: '重试', checkFailed: '检查失败，请检查网络后重试',
-      rateLimit: 'GitHub 接口限流，请稍后再试', noRelease: '暂未发布正式版本（当前为开发构建）',
+      rateLimit: 'GitHub 接口限流，请稍后再试', noRelease: '暂时无法获取发布信息（当前为开发构建）',
       checkHint: '点击下方按钮，检查是否有新版本可用', updateToast: '发现新版本', github: 'GitHub 仓库'
     },
     en: {
@@ -75,7 +75,7 @@
       checkingUpdate: 'Checking for updates…', upToDate: 'You are up to date', updateAvailable: 'A new version is available',
       currentVersion: 'Current', newVersion: 'Latest', releaseNotes: 'Release notes',
       downloadUpdate: 'Download', retry: 'Retry', checkFailed: 'Check failed — check your connection and retry',
-      rateLimit: 'GitHub API rate limited — try again later', noRelease: 'No stable release published yet (development build)',
+      rateLimit: 'GitHub API rate limited — try again later', noRelease: 'Release information unavailable (development build)',
       checkHint: 'Click below to check for a newer version', updateToast: 'New version available', github: 'GitHub repository'
     }
   };

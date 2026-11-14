@@ -323,3 +323,37 @@ Sitemap: https://samjoeyang.github.io/UNOEditor/sitemap.xml
 2. 部署后 `curl -I https://unoeditor.zhenzhidaole.com/` 复测 200，并检查 `/llms.txt` 与 `/index.zh.md` 的 `Content-Type`。
 3. 若要禁止 AI 训练，按 6.3 改 `docs/robots.txt`。
 
+---
+
+## 7. 发版与上线记录（2026-11-14 17:45 GMT+8 补充）
+
+本节覆盖 6.6 的待办与 6.2 的待复测项；6.1–6.6 保留为当时快照。
+
+### 7.1 结果
+
+| 项 | 结果 |
+|---|---|
+| 提交 / 推送 | `a8532c1` → `3fd2833` → `dc7c870` → 官网文案提交，均已推送 `main`；tag `v0.1.0` 指向发布提交（首轮失败后 force-move，草稿当时未公开） |
+| CI | 3 平台（macOS / Ubuntu / Windows）全绿 |
+| Pages | 部署成功，自定义域名 `unoeditor.zhenzhidaole.com` HTTPS 证书已签发 |
+| Release v0.1.0 | **正式发布**（非草稿、非预发布），9 个资产：macOS `.dmg` ×2（aarch64 / x64）+ `.app.tar.gz` ×2、Windows `.msi` / `.exe` ×2、Linux `.deb` / `.AppImage` / `.rpm` ×3 |
+| 官网文案 | 「尚无预编译安装包」全量改为「v0.1.0 已发布」，覆盖 HTML、JSON-LD FAQ、两份 md、llms.txt、app.js 兜底；校验从 107 项扩到 117 项 |
+
+### 7.2 上线复测（6.2 / 6.6 待办关闭）
+
+全部 200：`/` `text/html`、`/llms.txt` `text/plain`、`/index.zh.md` `/index.en.md` `/app/index.md` `text/markdown`、`/robots.txt` `text/plain`、`/sitemap.xml` `application/xml`、`/app/` `text/html`。证实 6.4 的 MIME 预判，且 6.2 的 404 根因确为「代码未 push、Pages 未首次部署」。
+
+### 7.3 过程中定位并修复的三个真实故障（有日志依据）
+
+1. **Pages 首次部署失败**：`sync-site.sh` 用 `cp -R dist/ docs/app/`。macOS BSD cp 复制目录内容，GitHub Actions 的 GNU cp 却生成 `docs/app/dist/`，导致 `docs/app/index.html` 缺失、GTM 注入抛 FileNotFoundError。改为 `cp -R "$ROOT/dist/." "$SITE/"` 并加存在性断言。
+2. **Release job-level `if` 不能引用 `secrets`**：GitHub 官方 contexts 表限定 `jobs.<id>.if` 仅允许 `github/needs/vars/inputs`（2026-11 现行）。原 Android/iOS job 的 `if: ${{ secrets.X != '' }}` 会使 workflow 解析失败；改为 `vars.ENABLE_*` 开关，默认跳过。
+3. **macOS 签名 env 空值**：Tauri 2 只要检测到 `APPLE_CERTIFICATE` 变量存在就执行 `security import -f pkcs12`，空字符串同样报「certificate must be a PKCS#12 file」。首轮 Release 的 2 个 macOS job 因此失败，而 CI（未注入这些 env）的 macOS 构建成功。删掉 6 个 `APPLE_*` env 后产出**未签名** `.dmg`。将来有证书时应用受 `vars` 控制的 step 写入 `$GITHUB_ENV`，不要写空值。
+
+另：补 `src-tauri/icons/` 全套图标（PNG / ICNS / ICO），否则 `bundle.icon` 找不到文件；`release.yml` 加 `retryAttempts: 2` 兜底 4 个矩阵 job 并发写同一草稿；新增 `workflow_dispatch.tag` 输入便于手动重发。
+
+### 7.4 仍然成立的限制
+
+- macOS `.dmg` **未签名、未公证**，首次打开需在 Finder 右键「打开」或系统设置中手动允许；要免警告分发需 Apple Developer 证书与公证密钥。
+- 6.3 的 `ai-train=yes` 策略未变，与 MIT 许可一致；若要改，robots 规则与 Content-Signal 必须同步。
+- 6.4 的两处「缓解但未根治」（HTML 仍含 2 个 `<h1>`、双语 DOM 共存）仍在。
+

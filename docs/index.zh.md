@@ -21,7 +21,7 @@
 | 界面语言 | 中文、英文，一键切换 |
 | 数据存储 | 仅浏览器 `localStorage`（桌面壳为 WebView 本地存储） |
 | 网络请求 | 应用本身 0 次；官网下载区会查询 GitHub Releases API |
-| 预编译安装包 | 截至 2026-11-14 尚未发布（GitHub Releases 为空） |
+| 预编译安装包 | v0.1.0 已发布：macOS / Windows / Linux 桌面安装包（见 GitHub Releases） |
 
 ## 它能做什么
 
@@ -87,7 +87,7 @@
 
 ## 下载状态
 
-截至 **2026-11-14**，GitHub 仓库 `samjoeyang/UNOEditor` 的 Releases **尚无预编译安装包**。项目处于 v0.1.0，仓库里是完整可用的静态前端与 Tauri 配置。官网下载区会动态读取 GitHub Releases API，发布后自动出现 macOS（Apple Silicon / Intel）、Windows、Linux 四个平台的下载按钮并高亮当前系统。不需要等发布：现在就能在线使用或直接打开本地文件。
+UNOEditor **v0.1.0 已于 2026-11-14 发布**，GitHub Releases 提供预编译桌面安装包：macOS（Apple Silicon / Intel）选 `.dmg`，Windows 选 `.msi` / `.exe`，Linux 选 `.deb` / `.AppImage` / `.rpm`。官网下载区动态读取 GitHub Releases API，自动列出最新版本并按访问者系统高亮推荐。在线版与本地文件无需安装即可使用。
 
 ## 隐私与数据
 
@@ -111,7 +111,7 @@
 答：支持 `.json` 与 `.css`，导入器会改写根选择器并做安全清洗与作用域隔离。基础标签样式通用可生效；市场特有的 class 不会生效。
 
 **问：支持哪些系统？手机能用吗？**
-答：任意现代浏览器均可。窄屏自动切换为底部标签与抽屉式主题面板。仓库另附 Tauri 2 桌面壳，可自行构建；目前尚无预编译安装包。
+答：任意现代浏览器均可。窄屏自动切换为底部标签与抽屉式主题面板。另附 Tauri 2 桌面壳可自行构建；v0.1.0 起同时提供 macOS / Windows / Linux 预编译安装包。
 
 **问：导出的 HTML 能脱离应用单独打开吗？**
 答：能。下载 HTML 会把当前主题样式整段内嵌进文件，导入的自定义主题也会一并写入，单文件分享、托管或打印成 PDF 都不丢样式。
