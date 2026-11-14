@@ -1,0 +1,15 @@
+{
+  "name": "暮山紫",
+  "desc": "取暮色山峦的紫调，沉静而有书卷气。",
+  "tags": ["随笔", "诗词"],
+  "font": "宋体 / 楷体",
+  "accent": "#6b4f8a",
+  "surface": "#f7f4fa",
+  "text": "#3a3340",
+  "line": "#e3dcec",
+  "dark": false,
+  "size": 16,
+  "leading": 1.9,
+  "rule": "紫调 · 衬线标题",
+  "css": ".md-body {\n  --font-body: Georgia, \"Songti SC\", serif;\n  --c-surface:#f7f4fa; --c-text:#3a3340; --c-heading:#2c2640; --c-accent:#6b4f8a; --c-line:#e3dcec;\n  --c-quote-bg:#efeaf5; --c-code-bg:#efeaf5; --c-table-head:#efeaf5; --c-muted:#8a7f95;\n  --fs-body:16px; --lh-body:1.9; --space-h:2.2em 0 .9em; --radius:8px;\n}\n.md-body h1{letter-spacing:.04em; border-bottom:2px solid #6b4f8a; padding-bottom:.4em}\n.md-body h2{color:#6b4f8a}\n.md-body blockquote{border-left:3px solid #6b4f8a; background:#efeaf5}\n.md-body a{color:#6b4f8a}"
+}
