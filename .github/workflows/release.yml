@@ -2,13 +2,18 @@ name: Release
 
 # 触发「发版」的两种方式：
 #   1) 推送版本标签：  git tag v0.1.0 && git push origin v0.1.0
-#   2) 在 Actions 页面手动运行（Actions → Release → Run workflow），可勾选 prerelease
+#   2) 手动运行（Actions → Release → Run workflow）：填 tag，可勾选 prerelease
 on:
   push:
     tags:
       - 'v*'
   workflow_dispatch:
     inputs:
+      tag:
+        description: '发布标签（已有草稿 Release 则续传资产）'
+        required: true
+        default: 'v0.1.0'
+        type: string
       prerelease:
         description: '标记为预发布 (pre-release)'
         required: false
@@ -36,6 +41,8 @@ jobs:
           - platform: 'windows-latest'
             args: ''
     runs-on: ${{ matrix.platform }}
+    env:
+      RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -73,21 +80,19 @@ jobs:
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # 更新器签名（可选；不配置则跳过签名）
+          # 更新器签名（可选；secret 为空时 Tauri 跳过）
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
-          # macOS 代码签名 + 公证（可选；留空则产出未签名 App）
-          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
-          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
-          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
-          APPLE_ID: ${{ secrets.APPLE_ID }}
-          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
-          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          # 故意不注入 APPLE_*：本项目暂无 Apple 签名证书。Tauri 2 只要检测到这些
+          # 变量「存在」就会执行 `security import -f pkcs12`，空值同样导致 codesign
+          # 失败（2026-11-14 首轮 Release 的 2 个 macOS job 即因此失败）。产出未签名
+          # .dmg。将来有证书时，用受 vars.ENABLE_MACOS_SIGNING 控制的 step 写入
+          # $GITHUB_ENV，而不是在这里写空值。
         with:
           projectPath: src-tauri
           # 4 个矩阵 job 并发写同一个 tag 的草稿 Release，重试可兜住创建竞态与偶发上传失败
           retryAttempts: 2
-          tagName: ${{ github.ref_name }}
-          releaseName: 'UNOEditor ${{ github.ref_name }}'
+          tagName: ${{ env.RELEASE_TAG }}
+          releaseName: 'UNOEditor ${{ env.RELEASE_TAG }}'
           releaseBody: '见下方资产，下载对应平台安装包：macOS 选 .dmg，Windows 选 .msi，Linux 选 .deb / .AppImage。'
           releaseDraft: true          # 默认先作草稿，人工确认后再发布
           prerelease: ${{ github.event_name == 'workflow_dispatch' && inputs.prerelease || false }}
@@ -101,6 +106,8 @@ jobs:
     name: Android (aarch64)
     if: ${{ vars.ENABLE_ANDROID_RELEASE == 'true' }}
     runs-on: ubuntu-22.04
+    env:
+      RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -136,8 +143,8 @@ jobs:
         with:
           projectPath: src-tauri
           args: '--target aarch64-linux-android'
-          tagName: ${{ github.ref_name }}
-          releaseName: 'UNOEditor ${{ github.ref_name }}'
+          tagName: ${{ env.RELEASE_TAG }}
+          releaseName: 'UNOEditor ${{ env.RELEASE_TAG }}'
           releaseBody: 'Android (arm64) 构建产物。'
           releaseDraft: true
           prerelease: ${{ github.event_name == 'workflow_dispatch' && inputs.prerelease || false }}
@@ -149,6 +156,8 @@ jobs:
     name: iOS (aarch64)
     if: ${{ vars.ENABLE_IOS_RELEASE == 'true' }}
     runs-on: macos-latest
+    env:
+      RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -184,8 +193,8 @@ jobs:
         with:
           projectPath: src-tauri
           args: '--target aarch64-apple-ios'
-          tagName: ${{ github.ref_name }}
-          releaseName: 'UNOEditor ${{ github.ref_name }}'
+          tagName: ${{ env.RELEASE_TAG }}
+          releaseName: 'UNOEditor ${{ env.RELEASE_TAG }}'
           releaseBody: 'iOS (arm64) 构建产物。'
           releaseDraft: true
           prerelease: ${{ github.event_name == 'workflow_dispatch' && inputs.prerelease || false }}
