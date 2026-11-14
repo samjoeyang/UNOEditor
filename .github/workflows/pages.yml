@@ -1,0 +1,52 @@
+name: Deploy Pages
+
+# 将静态前端(dist/)部署到 GitHub Pages。
+# 自定义域名在仓库 Settings → Pages 中配置(cname=unoeditor.zhenzhidaole.com)，
+# 由 GitHub 自动注入 CNAME，无需在仓库里提交 CNAME 文件。
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - 'css/**'
+      - 'js/**'
+      - 'themes/**'
+      - 'copy-dist.sh'
+      - '.github/workflows/pages.yml'
+  workflow_dispatch:
+
+# 允许 Actions 部署到 Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# 同一时间只跑一个部署，避免互相覆盖
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build static site into dist/
+        run: sh copy-dist.sh
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
