@@ -3,7 +3,7 @@
   'use strict';
   var DICT = {
     zh: {
-      tagline: '排版主题编辑器', toggleSidebar: '展开 / 收起大纲', untitled: '未命名文档',
+      tagline: '排版主题编辑器', toggleSidebar: '展开 / 收起大纲', togglePreview: '展开 / 收起预览', untitled: '未命名文档',
       saved: '已保存', saving: '保存中…', switchLang: 'Switch to English', export: '导出',
       copyWechat: '复制到公众号', copyWechatHint: '内联样式，粘贴即所见',
       downloadHtml: '下载 HTML', downloadHtmlHint: '独立文件，样式内嵌',
@@ -41,7 +41,7 @@
       checkHint: '点击下方按钮，检查是否有新版本可用', updateToast: '发现新版本', github: 'GitHub 仓库'
     },
     en: {
-      tagline: 'Themed Markdown Editor', toggleSidebar: 'Show / hide outline', untitled: 'Untitled',
+      tagline: 'Themed Markdown Editor', toggleSidebar: 'Show / hide outline', togglePreview: 'Show / hide preview', untitled: 'Untitled',
       saved: 'Saved', saving: 'Saving…', switchLang: '切换为中文', export: 'Export',
       copyWechat: 'Copy for WeChat', copyWechatHint: 'Inline styles, paste as-is',
       downloadHtml: 'Download HTML', downloadHtmlHint: 'Standalone file, embedded CSS',

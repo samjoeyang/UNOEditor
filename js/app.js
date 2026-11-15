@@ -98,7 +98,7 @@
   /* ---------------- state ---------------- */
   function uid() { return 'd' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
   var state = {
-    lang: 'zh', themeId: 'wechat', view: 'mobile', sidebar: true, tweak: {},
+    lang: 'zh', themeId: 'wechat', view: 'mobile', sidebar: true, preview: true, tweak: {},
     docs: [{ id: uid(), title: SAMPLE.zh.title, content: SAMPLE.zh.body }],
     activeId: null, imported: []
   };
@@ -115,6 +115,7 @@
         state.themeId = resolveThemeId(d.themeId);
         state.view = d.view === 'web' ? 'web' : 'mobile';
         state.sidebar = d.sidebar !== false;
+        state.preview = d.preview !== false;
         state.tweak = d.tweak || {};
         state.docs = d.docs;
         state.activeId = d.activeId && d.docs.some(function (x) { return x.id === d.activeId; })
@@ -414,6 +415,7 @@
     $('editor').value = activeDoc().content;
     $('langLabel').textContent = state.lang === 'zh' ? 'EN' : '中';
     $('workspace').classList.toggle('sidebar-collapsed', !state.sidebar);
+    $('workspace').classList.toggle('preview-collapsed', !state.preview);
     $('previewPane').classList.toggle('view-mobile', state.view === 'mobile');
     $('previewPane').classList.toggle('view-web', state.view === 'web');
     document.querySelectorAll('#viewSeg button').forEach(function (b) {
@@ -802,6 +804,20 @@
     $('toggleSidebar').addEventListener('click', function () {
       state.sidebar = !state.sidebar;
       $('workspace').classList.toggle('sidebar-collapsed', !state.sidebar);
+      scheduleSave();
+    });
+
+    $('togglePreview').addEventListener('click', function () {
+      state.preview = !state.preview;
+      $('workspace').classList.toggle('preview-collapsed', !state.preview);
+      scheduleSave();
+    });
+
+    /* close button inside the outline panel header (next to the count) */
+    $('sideClose').addEventListener('click', function () {
+      ws.classList.remove('drawer-open');
+      state.sidebar = false;
+      $('workspace').classList.add('sidebar-collapsed');
       scheduleSave();
     });
 
