@@ -57,7 +57,7 @@ for token in [
     'rel="describedby"', 'rel="alternate" type="text/markdown"',
     'hreflang="en"', 'rel="canonical" href="' + DOMAIN + '/"',
     'og:image:alt', 'lang="zh-CN" data-lang="zh"', 'lang="en" data-lang="en"',
-    '<time datetime="2026-11-14">', '<noscript>',
+    '<time datetime="2026-11-15">', '<noscript>',
 ]:
     check(token in home, f"首页含 {token[:52]}")
 
@@ -109,9 +109,14 @@ for target in re.findall(r"\]\(https://unoeditor\.zhenzhidaole\.com/([^)#?]+)\)"
         check((DOCS / target).is_file(), f"llms.txt 链接可解析: {target}")
 
 # --- 7. Markdown 镜像关键事实 ---
+# 版本号从 js/version.js 动态读取，避免每次发版都要改这里
+m_ver = re.search(r"UNO_VERSION\s*=\s*'([^']+)'", (ROOT / "js" / "version.js").read_text())
+VER = m_ver.group(1) if m_ver else ""
+check(bool(VER), f"js/version.js 可解析出版本号（{VER or '未找到'}）")
 for rel in ["index.zh.md", "index.en.md"]:
     txt = read(rel)
-    check("0.1.1" in txt and "2026-11-14" in txt, f"{rel} 含版本与核对日期")
+    check(VER in txt, f"{rel} 含当前版本 {VER}")
+    check(re.search(r"2026-\d\d-\d\d", txt) is not None, f"{rel} 含核对日期")
     check("MIT" in txt, f"{rel} 含 MIT 许可证")
     theme_ids = ["wechat", "economist", "nyt", "swiss", "morandi", "hara",
                  "apple", "nocturne", "gfm", "obsidian", "typora"]
@@ -190,13 +195,13 @@ for rel, key in [("js/app.js", "uno-md-v1"),
     check(key in (ROOT / rel).read_text(encoding="utf-8"),
           f"保留技术标识符 {key}")
 
-# --- 12. 发布状态：v0.1.1 已发布，静态文案不得停留在「尚未发布」 ---
+# --- 12. 发布状态：当前版本已发布，静态文案不得停留在「尚未发布」或旧版本 ---
 STALE_RELEASE = ["尚无预编译安装包", "尚未发布预编译安装包", "暂未上传预编译安装包",
                  "No prebuilt installer", "no prebuilt installers", "not published yet"]
 for rel in ["index.html", "index.zh.md", "index.en.md", "llms.txt", "assets/app.js"]:
     txt = read(rel)
     check(not any(s in txt for s in STALE_RELEASE), f"{rel} 无过时的「未发布」表述")
-    check("v0.1.1" in txt, f"{rel} 标注 v0.1.1")
+    check(bool(VER) and f"v{VER}" in txt, f"{rel} 标注 v{VER}")
 
 # --- 输出 ---
 for line in ok:

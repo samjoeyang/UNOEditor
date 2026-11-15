@@ -98,7 +98,7 @@
   /* ---------------- state ---------------- */
   function uid() { return 'd' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
   var state = {
-    lang: 'zh', themeId: 'wechat', view: 'mobile', sidebar: true, tweak: {},
+    lang: 'zh', themeId: 'wechat', view: 'mobile', sidebar: true, preview: true, tweak: {},
     docs: [{ id: uid(), title: SAMPLE.zh.title, content: SAMPLE.zh.body }],
     activeId: null, imported: []
   };
@@ -115,6 +115,7 @@
         state.themeId = resolveThemeId(d.themeId);
         state.view = d.view === 'web' ? 'web' : 'mobile';
         state.sidebar = d.sidebar !== false;
+        state.preview = d.preview !== false;
         state.tweak = d.tweak || {};
         state.docs = d.docs;
         state.activeId = d.activeId && d.docs.some(function (x) { return x.id === d.activeId; })
@@ -414,6 +415,7 @@
     $('editor').value = activeDoc().content;
     $('langLabel').textContent = state.lang === 'zh' ? 'EN' : '中';
     $('workspace').classList.toggle('sidebar-collapsed', !state.sidebar);
+    $('workspace').classList.toggle('preview-collapsed', !state.preview);
     $('previewPane').classList.toggle('view-mobile', state.view === 'mobile');
     $('previewPane').classList.toggle('view-web', state.view === 'web');
     document.querySelectorAll('#viewSeg button').forEach(function (b) {
@@ -799,11 +801,26 @@
       }
     });
 
-    $('toggleSidebar').addEventListener('click', function () {
-      state.sidebar = !state.sidebar;
-      $('workspace').classList.toggle('sidebar-collapsed', !state.sidebar);
+    /* pane toggles: collapse buttons live inside each pane's own header,
+       and a thin rail on the workspace edge brings a collapsed pane back. */
+    function setSidebar(on) {
+      state.sidebar = on;
+      $('workspace').classList.toggle('sidebar-collapsed', !on);
       scheduleSave();
+    }
+    function setPreview(on) {
+      state.preview = on;
+      $('workspace').classList.toggle('preview-collapsed', !on);
+      scheduleSave();
+    }
+
+    $('sideClose').addEventListener('click', function () {
+      $('workspace').classList.remove('drawer-open');
+      setSidebar(false);
     });
+    $('expandSidebar').addEventListener('click', function () { setSidebar(true); });
+    $('previewClose').addEventListener('click', function () { setPreview(false); });
+    $('expandPreview').addEventListener('click', function () { setPreview(true); });
 
     /* outline: click a heading to jump the caret there */
     $('outlineList').addEventListener('click', function (e) {
