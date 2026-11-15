@@ -1,9 +1,9 @@
 # UNOEditor
 
-> UNOEditor 是一款零依赖、本地优先的 Markdown 排版主题编辑器。左侧写 Markdown，右侧实时预览成稿；内置 11 套排版主题，可一键「复制到公众号」、下载 HTML / Markdown 或打印为 PDF。它是纯静态前端，双击 `dist/index.html` 即可离线使用，不发起任何网络请求。当前版本 0.1.0，采用 MIT 许可证。
+> UNOEditor 是一款零依赖、本地优先的 Markdown 排版主题编辑器。左侧写 Markdown，右侧实时预览成稿；内置 11 套排版主题，可一键「复制到公众号」、下载 HTML / Markdown 或打印为 PDF。它是纯静态前端，双击 `dist/index.html` 即可离线使用，不发起任何网络请求。当前版本 0.1.1，采用 MIT 许可证。
 >
 > 官网：https://unoeditor.zhenzhidaole.com/ · 仓库：https://github.com/samjoeyang/UNOEditor
-> 本文内容最后核对：2026-11-14 · 对应版本：v0.1.0
+> 本文内容最后核对：2026-11-14 · 对应版本：v0.1.1
 
 ## 关键事实
 
@@ -11,7 +11,7 @@
 | --- | --- |
 | 软件名称 / 仓库名 | UNOEditor（https://github.com/samjoeyang/UNOEditor） |
 | 桌面应用 identifier | `com.unoeditor.app` |
-| 当前版本 | 0.1.0 |
+| 当前版本 | 0.1.1 |
 | 许可证 | MIT（见仓库根目录 `LICENSE`） |
 | 费用 | 免费、无广告、无功能限制 |
 | 技术栈 | 原生 HTML / CSS / JavaScript，零第三方运行时依赖；图标为内联 Lucide SVG sprite；主题 CSS 以字符串内嵌并运行时注入 |
@@ -21,7 +21,7 @@
 | 界面语言 | 中文、英文，一键切换 |
 | 数据存储 | 仅浏览器 `localStorage`（桌面壳为 WebView 本地存储） |
 | 网络请求 | 应用本身 0 次；官网下载区会查询 GitHub Releases API |
-| 预编译安装包 | v0.1.0 已发布：macOS / Windows / Linux 桌面安装包（见 GitHub Releases） |
+| 预编译安装包 | v0.1.1 已发布：macOS / Windows / Linux 桌面安装包（见 GitHub Releases） |
 
 ## 它能做什么
 
@@ -87,9 +87,9 @@
 
 ## 下载状态
 
-UNOEditor **v0.1.0 已于 2026-11-14 发布**，GitHub Releases 提供预编译桌面安装包：macOS（Apple Silicon / Intel）选 `.dmg`，Windows 选 `.msi` / `.exe`，Linux 选 `.deb` / `.AppImage` / `.rpm`。官网下载区动态读取 GitHub Releases API，自动列出最新版本并按访问者系统高亮推荐。在线版与本地文件无需安装即可使用。
+UNOEditor **v0.1.1 已于 2026-11-14 发布**，GitHub Releases 提供预编译桌面安装包：macOS（Apple Silicon / Intel）选 `.dmg`，Windows 选 `.msi` / `.exe`，Linux 选 `.deb` / `.AppImage` / `.rpm`。官网下载区动态读取 GitHub Releases API，自动列出最新版本并按访问者系统高亮推荐。在线版与本地文件无需安装即可使用。
 
-**macOS 首次打开（v0.1.0 用户必读）**：v0.1.0 的 `.dmg` 内 `.app` 没有有效的 bundle 签名，浏览器下载后 Gatekeeper 会报「已损坏，无法打开」——文件经校验完整，并非下载出错。临时解法：执行 `xattr -cr /Applications/UNOEditor.app` 清除隔离属性后打开，或右键「打开」/「系统设置 → 隐私与安全性 → 仍要打开」。源码已加 `bundle.macOS.signingIdentity: "-"`，下一版重新打包后不再报「已损坏」，但因未做 Apple 公证，首次仍需手动放行一次。另请选对架构：Apple Silicon 用 `aarch64.dmg`，Intel 用 `x64.dmg`。
+**macOS 首次打开**：v0.1.1 的 `.dmg` 内 `.app` 已做 ad-hoc 签名（`bundle.macOS.signingIdentity: "-"`），不会再报「已损坏」。但因未做 Apple 公证，首次打开可能提示「无法验证开发者」，在访达中右键点击 UNOEditor →「打开」，或到「系统设置 → 隐私与安全性 → 仍要打开」放行一次即可；也可执行 `xattr -cr /Applications/UNOEditor.app` 清除隔离属性。若仍在使用 v0.1.0 旧包（无 bundle 签名、会被报「已损坏」），请直接下载 v0.1.1。另请选对架构：Apple Silicon 用 `aarch64.dmg`，Intel 用 `x64.dmg`。
 
 ## 隐私与数据
 
@@ -113,7 +113,7 @@ UNOEditor **v0.1.0 已于 2026-11-14 发布**，GitHub Releases 提供预编译�
 答：支持 `.json` 与 `.css`，导入器会改写根选择器并做安全清洗与作用域隔离。基础标签样式通用可生效；市场特有的 class 不会生效。
 
 **问：支持哪些系统？手机能用吗？**
-答：任意现代浏览器均可。窄屏自动切换为底部标签与抽屉式主题面板。另附 Tauri 2 桌面壳可自行构建；v0.1.0 起同时提供 macOS / Windows / Linux 预编译安装包。
+答：任意现代浏览器均可。窄屏自动切换为底部标签与抽屉式主题面板。另附 Tauri 2 桌面壳可自行构建；v0.1.1 起同时提供 macOS / Windows / Linux 预编译安装包。
 
 **问：导出的 HTML 能脱离应用单独打开吗？**
 答：能。下载 HTML 会把当前主题样式整段内嵌进文件，导入的自定义主题也会一并写入，单文件分享、托管或打印成 PDF 都不丢样式。

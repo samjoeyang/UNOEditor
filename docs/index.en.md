@@ -1,9 +1,9 @@
 # UNOEditor
 
-> UNOEditor is a zero-dependency, local-first Markdown typesetting editor. Draft Markdown on the left, see the finished article on the right; 11 built-in themes, one-click rich-text copy for WeChat, and HTML / Markdown / PDF export. It is a plain static frontend: double-click `dist/index.html` and it works offline without making a single network request. Current version 0.1.0, MIT licensed.
+> UNOEditor is a zero-dependency, local-first Markdown typesetting editor. Draft Markdown on the left, see the finished article on the right; 11 built-in themes, one-click rich-text copy for WeChat, and HTML / Markdown / PDF export. It is a plain static frontend: double-click `dist/index.html` and it works offline without making a single network request. Current version 0.1.1, MIT licensed.
 >
 > Website: https://unoeditor.zhenzhidaole.com/ · Repository: https://github.com/samjoeyang/UNOEditor
-> Last fact-checked: 2026-11-14 · Applies to version: v0.1.0
+> Last fact-checked: 2026-11-14 · Applies to version: v0.1.1
 
 ## Key facts
 
@@ -11,7 +11,7 @@
 | --- | --- |
 | Product / repository name | UNOEditor (https://github.com/samjoeyang/UNOEditor) |
 | Desktop identifier | `com.unoeditor.app` |
-| Current version | 0.1.0 |
+| Current version | 0.1.1 |
 | Licence | MIT (see `LICENSE` at the repository root) |
 | Price | Free, ad-free, no feature limits |
 | Stack | Plain HTML / CSS / JavaScript, zero third-party runtime dependencies; icons are an inline Lucide SVG sprite; theme CSS is stored as strings and injected at runtime |
@@ -21,7 +21,7 @@
 | UI languages | Chinese and English, one-click switch |
 | Storage | Browser `localStorage` only (WebView local storage in the desktop shell) |
 | Network requests | 0 from the app itself; the website's download section queries the GitHub Releases API |
-| Prebuilt installers | Shipped with v0.1.0: macOS / Windows / Linux desktop installers (see GitHub Releases) |
+| Prebuilt installers | Shipped with v0.1.1: macOS / Windows / Linux desktop installers (see GitHub Releases) |
 
 ## Features
 
@@ -87,9 +87,9 @@ All images are real captures of the running app, not mockups or composites. They
 
 ## Download status
 
-**UNOEditor v0.1.0 was released on 2026-11-14.** GitHub Releases ships prebuilt desktop installers: `.dmg` for macOS (Apple Silicon / Intel), `.msi` / `.exe` for Windows, and `.deb` / `.AppImage` / `.rpm` for Linux. The website's download section reads the GitHub Releases API dynamically, lists the latest version and highlights the visitor's platform. The online app and the local file need no installation.
+**UNOEditor v0.1.1 was released on 2026-11-14.** GitHub Releases ships prebuilt desktop installers: `.dmg` for macOS (Apple Silicon / Intel), `.msi` / `.exe` for Windows, and `.deb` / `.AppImage` / `.rpm` for Linux. The website's download section reads the GitHub Releases API dynamically, lists the latest version and highlights the visitor's platform. The online app and the local file need no installation.
 
-**First launch on macOS (v0.1.0 users)**: the `.app` inside the v0.1.0 `.dmg` has no valid bundle signature, so Gatekeeper may say it "is damaged and can't be opened" after a browser download — the file is intact, not a broken download. Workaround: run `xattr -cr /Applications/UNOEditor.app` to remove the quarantine attribute, or right-click → Open / System Settings → Privacy & Security → Open Anyway. The source now sets `bundle.macOS.signingIdentity: "-"`; the next build will no longer be reported as damaged, but because it is not notarized, a one-time manual approval is still required. Also pick the right architecture: `aarch64.dmg` for Apple Silicon, `x64.dmg` for Intel.
+**First launch on macOS**: the `.app` inside the v0.1.1 `.dmg` is ad-hoc signed (`bundle.macOS.signingIdentity: "-"`), so it is no longer reported as "damaged". It is still not notarized, so the first launch may warn about an unidentified developer — right-click UNOEditor in Finder → Open, or use System Settings → Privacy & Security → Open Anyway, and it will be trusted from then on. Alternatively run `xattr -cr /Applications/UNOEditor.app` to remove the quarantine attribute. If you are still on the v0.1.0 build (no bundle signature, reported as damaged), download v0.1.1 instead. Also pick the right architecture: `aarch64.dmg` for Apple Silicon, `x64.dmg` for Intel.
 
 ## Privacy and data
 
@@ -113,7 +113,7 @@ Those are note-taking and knowledge-base tools. UNOEditor does one job: turn a s
 Yes, `.json` and `.css`. The importer rewrites root selectors, then sanitises and scopes the CSS. Generic tag styles work; editor-specific classes do not.
 
 **Which platforms? Does it work on phones?**
-Any modern browser. On narrow screens it switches to edit / preview / outline tabs plus a theme drawer. The repo also includes a Tauri 2 shell for native macOS / Windows / Linux builds; prebuilt installers ship with v0.1.0.
+Any modern browser. On narrow screens it switches to edit / preview / outline tabs plus a theme drawer. The repo also includes a Tauri 2 shell for native macOS / Windows / Linux builds; prebuilt installers ship with v0.1.1.
 
 **Does exported HTML work on its own?**
 Yes. The downloaded file embeds the full theme CSS (including any imported theme), so a single file keeps its look when shared, hosted, or printed to PDF.

@@ -52,8 +52,8 @@ body[data-ui-lang="en"] [data-lang="zh"] { display: none !important; }
 .nav { position: sticky; top: 0; z-index: 50; background: rgba(9, 11, 18, .72); backdrop-filter: saturate(180%) blur(16px); border-bottom: 1px solid var(--line); }
 .nav-inner { height: 64px; display: flex; align-items: center; gap: 18px; }
 .brand { display: flex; align-items: center; gap: 10px; flex: none; }
-.brand-mark { width: 32px; height: 32px; border-radius: 9px; background: #16181d; border: 1px solid rgba(255,255,255,.16); color: #fff; display: grid; place-items: center; font-weight: 800; font-size: 17px; letter-spacing: -.05em; }
-.brand-mark.sm { width: 30px; height: 30px; font-size: 15px; }
+.brand-mark { width: 32px; height: 32px; display: block; flex: none; border-radius: 9px; }
+.brand-mark.sm { width: 30px; height: 30px; }
 .brand-name { font-size: 16px; font-weight: 700; letter-spacing: -.02em; }
 .brand-tag { font-size: 11px; color: var(--muted); padding-left: 10px; border-left: 1px solid var(--line); }
 .navlinks { display: flex; gap: 22px; margin-left: auto; font-size: 13.5px; color: var(--muted); }
