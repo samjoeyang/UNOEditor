@@ -349,8 +349,30 @@ body.modal-open{overflow:hidden}
 }
 [hidden]{display:none!important}
 
+/* 专用打印根：导出 PDF 时只把正文挂进来，界面上不可见，
+   打印时把其余所有节点 display:none 掉 —— 避免整页 UI 参与分页（卡顿的主因）。 */
+#unoPrintRoot{display:none}
+
 @media print{
-  body{overflow:visible;background:#fff}
+  @page{size:A4;margin:14mm 13mm}
+  html,body{height:auto!important;overflow:visible!important;background:#fff}
+
+  /* ---------- 富文本导出路径（导出菜单 / ⌘P） ---------- */
+  body.uno-printing>*:not(#unoPrintRoot){display:none!important}
+  body.uno-printing>#unoPrintRoot{display:block!important;width:auto;max-width:none;margin:0;padding:0}
+  #unoPrintRoot .md-body{padding:0!important;margin:0!important;max-width:none!important;min-height:0!important;
+    border:0!important;border-radius:0!important;box-shadow:none!important;overflow:visible!important}
+  #unoPrintRoot .md-body h1,#unoPrintRoot .md-body h2,#unoPrintRoot .md-body h3,
+  #unoPrintRoot .md-body h4,#unoPrintRoot .md-body h5,#unoPrintRoot .md-body h6{break-after:avoid;page-break-after:avoid}
+  #unoPrintRoot .md-body pre,#unoPrintRoot .md-body blockquote,#unoPrintRoot .md-body table,
+  #unoPrintRoot .md-body figure,#unoPrintRoot .md-body img,#unoPrintRoot .md-body li{break-inside:avoid;page-break-inside:avoid}
+  #unoPrintRoot .md-body img{max-width:100%!important;height:auto!important}
+  #unoPrintRoot .md-body pre{white-space:pre-wrap;word-break:break-word}
+  #unoPrintRoot .md-body p{orphans:3;widows:3}
+  #unoPrintRoot *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+
+  /* ---------- 兜底：浏览器自带 ⌘P（没有打印根时的整页打印） ---------- */
+  body:not(.uno-printing){overflow:visible;background:#fff}
   .topbar,.sidebar,.editor-pane,.preview-bar,.tweak-panel,.phone-bar,.article-foot,.article-head,.toast,.theme-drawer,.doc-panel,.mobile-tabbar,.drawer-mask,.pane-rail{display:none!important}
   .workspace,.workspace.sidebar-collapsed{display:block;height:auto;min-height:0;overflow:visible}
   .preview-pane{display:block;background:#fff}

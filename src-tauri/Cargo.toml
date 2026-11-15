@@ -1,6 +1,6 @@
 [package]
 name = "unoeditor"
-version = "0.1.1"
+version = "0.1.3"
 description = "UNOEditor - 多主题 Markdown 排版编辑器"
 authors = ["UNOEditor"]
 edition = "2021"
