@@ -594,12 +594,90 @@
     }
   }
 
+  /* ---------------- print / export PDF ---------------- */
+  function isTauri() {
+    return !!(window.__TAURI_INTERNALS__ || window.__TAURI__ ||
+      (navigator.userAgent || '').toLowerCase().indexOf('tauri') >= 0);
+  }
+
+  // Resolve when fonts + every <img> in the print root are ready, capped by a timeout
+  // so a broken/remote image can never block the print dialog forever.
+  function waitForAssets(root, ms) {
+    var waits = [];
+    try { if (document.fonts && document.fonts.ready) waits.push(document.fonts.ready); } catch (e) { /* ignore */ }
+    var imgs = root.querySelectorAll('img');
+    for (var i = 0; i < imgs.length; i++) {
+      (function (img) {
+        if (img.complete) return;
+        waits.push(new Promise(function (res) {
+          img.addEventListener('load', res, { once: true });
+          img.addEventListener('error', res, { once: true });
+        }));
+      })(imgs[i]);
+    }
+    var cap = new Promise(function (res) { setTimeout(res, ms || 2500); });
+    return Promise.race([Promise.all(waits), cap]);
+  }
+
+  var printTeardown = null;
+  function endPrintMode() {
+    if (!printTeardown) return;
+    var off = printTeardown; printTeardown = null;
+    off();
+  }
+
+  // Print only the article, not the whole app shell: the editor UI is a fixed-height
+  // viewport layout with scroll containers, and paginating it is what made export slow
+  // (or appear to do nothing at all).
+  function exportPdf() {
+    var doc = activeDoc();
+    if (!(doc.content || '').trim()) { toast(I.t('printEmpty')); return; }
+    endPrintMode();
+
+    var th = theme();
+    var root = document.createElement('div');
+    root.id = 'unoPrintRoot';
+    var art = document.createElement('article');
+    art.className = 'md-body';
+    art.setAttribute('data-theme', state.themeId);
+    if (th.imported) art.setAttribute('data-import', th.id);
+    var tw = tweakStyleString();
+    if (tw) art.setAttribute('style', tw);
+    art.innerHTML = M.render(doc.content);
+    root.appendChild(art);
+    document.body.appendChild(root);
+
+    var prevTitle = document.title;
+    document.title = doc.title || I.t('untitledDoc');   // becomes the PDF filename
+    var timer = setTimeout(endPrintMode, 60000);
+    printTeardown = function () {
+      clearTimeout(timer);
+      document.body.classList.remove('uno-printing');
+      var r = document.getElementById('unoPrintRoot'); if (r) r.remove();
+      document.title = prevTitle;
+      window.removeEventListener('afterprint', endPrintMode);
+    };
+    document.body.classList.add('uno-printing');
+    window.addEventListener('afterprint', endPrintMode);
+    toast(I.t('printPreparing'));
+
+    // One frame so the print root is laid out before the (blocking) print dialog opens.
+    requestAnimationFrame(function () {
+      waitForAssets(root, 2500).then(function () {
+        try { window.print(); } catch (e) { endPrintMode(); toast(I.t('printFail')); return; }
+        // Native macOS print panel (Tauri) never fires afterprint; drop the print root
+        // once the job has been captured so the next export starts clean.
+        if (isTauri()) setTimeout(endPrintMode, 2500);
+      });
+    });
+  }
+
   function runExport(act) {
     switch (act) {
       case 'wechat': copyWechat(); break;
       case 'html': download(fileName('html'), standaloneHtml(), 'text/html;charset=utf-8'); toast(I.t('htmlSaved')); break;
       case 'md': download(fileName('md'), activeDoc().content, 'text/markdown;charset=utf-8'); toast(I.t('mdSaved')); break;
-      case 'print': window.print(); break;
+      case 'print': exportPdf(); break;
     }
   }
 
@@ -791,6 +869,7 @@
         return;
       }
       var k = e.key.toLowerCase();
+      if (k === 'p') { e.preventDefault(); exportPdf(); return; }
       if (k === 'b' || k === 'i' || k === 'k' || k === 's') {
         if (document.activeElement !== $('editor') && k !== 's') return;
         e.preventDefault();
