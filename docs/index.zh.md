@@ -1,9 +1,9 @@
 # UNOEditor
 
-> UNOEditor 是一款零依赖、本地优先的 Markdown 排版主题编辑器。左侧写 Markdown，右侧实时预览成稿；内置 11 套排版主题，可一键「复制到公众号」、下载 HTML / Markdown 或打印为 PDF。它是纯静态前端，双击 `dist/index.html` 即可离线使用，不发起任何网络请求。当前版本 0.1.3，采用 MIT 许可证。
+> UNOEditor 是一款零依赖、本地优先的 Markdown 排版主题编辑器。左侧写 Markdown，右侧实时预览成稿；内置 11 套排版主题，可一键「复制到公众号」、下载 HTML / Markdown 或打印为 PDF。它是纯静态前端，双击 `dist/index.html` 即可离线使用，不发起任何网络请求。当前版本 0.1.4，采用 MIT 许可证。
 >
 > 官网：https://unoeditor.zhenzhidaole.com/ · 仓库：https://github.com/samjoeyang/UNOEditor
-> 本文内容最后核对：2026-11-15 · 对应版本：v0.1.3
+> 本文内容最后核对：2026-11-16 · 对应版本：v0.1.4
 
 ## 关键事实
 
@@ -11,7 +11,7 @@
 | --- | --- |
 | 软件名称 / 仓库名 | UNOEditor（https://github.com/samjoeyang/UNOEditor） |
 | 桌面应用 identifier | `com.unoeditor.app` |
-| 当前版本 | 0.1.3 |
+| 当前版本 | 0.1.4 |
 | 许可证 | MIT（见仓库根目录 `LICENSE`） |
 | 费用 | 免费、无广告、无功能限制 |
 | 技术栈 | 原生 HTML / CSS / JavaScript，零第三方运行时依赖；图标为内联 Lucide SVG sprite；主题 CSS 以字符串内嵌并运行时注入 |
@@ -21,7 +21,7 @@
 | 界面语言 | 中文、英文，一键切换 |
 | 数据存储 | 仅浏览器 `localStorage`（桌面壳为 WebView 本地存储） |
 | 网络请求 | 应用本身 0 次；官网下载区会查询 GitHub Releases API |
-| 预编译安装包 | v0.1.3 已发布：macOS / Windows / Linux 桌面安装包（见 GitHub Releases） |
+| 预编译安装包 | v0.1.4 已发布：macOS / Windows / Linux 桌面安装包（见 GitHub Releases） |
 
 ## 它能做什么
 
@@ -87,9 +87,9 @@
 
 ## 下载状态
 
-UNOEditor **v0.1.3 已于 2026-11-15 发布**，GitHub Releases 提供预编译桌面安装包：macOS（Apple Silicon / Intel）选 `.dmg`，Windows 选 `.msi` / `.exe`，Linux 选 `.deb` / `.AppImage` / `.rpm`。官网下载区动态读取 GitHub Releases API，自动列出最新版本并按访问者系统高亮推荐。在线版与本地文件无需安装即可使用。
+UNOEditor **v0.1.4 已于 2026-11-16 发布**，GitHub Releases 提供预编译桌面安装包：macOS（Apple Silicon / Intel）选 `.dmg`，Windows 选 `.msi` / `.exe`，Linux 选 `.deb` / `.AppImage` / `.rpm`。官网下载区动态读取 GitHub Releases API，自动列出最新版本并按访问者系统高亮推荐。在线版与本地文件无需安装即可使用。
 
-**macOS 首次打开**：v0.1.3 的 `.dmg` 内 `.app` 已做 ad-hoc 签名（`bundle.macOS.signingIdentity: "-"`），不会再报「已损坏」。但因未做 Apple 公证，首次打开可能提示「无法验证开发者」，在访达中右键点击 UNOEditor →「打开」，或到「系统设置 → 隐私与安全性 → 仍要打开」放行一次即可；也可执行 `xattr -cr /Applications/UNOEditor.app` 清除隔离属性。若仍在使用 v0.1.0 旧包（无 bundle 签名、会被报「已损坏」），请直接下载 v0.1.3。另请选对架构：Apple Silicon 用 `aarch64.dmg`，Intel 用 `x64.dmg`。
+**macOS 首次打开**：v0.1.4 的 `.dmg` 内 `.app` 已做 ad-hoc 签名（`bundle.macOS.signingIdentity: "-"`），不会再报「已损坏」。但因未做 Apple 公证，首次打开可能提示「无法验证开发者」，在访达中右键点击 UNOEditor →「打开」，或到「系统设置 → 隐私与安全性 → 仍要打开」放行一次即可；也可执行 `xattr -cr /Applications/UNOEditor.app` 清除隔离属性。若仍在使用 v0.1.0 旧包（无 bundle 签名、会被报「已损坏」），请直接下载 v0.1.4。另请选对架构：Apple Silicon 用 `aarch64.dmg`，Intel 用 `x64.dmg`。
 
 ## 隐私与数据
 

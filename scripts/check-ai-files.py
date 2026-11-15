@@ -57,7 +57,7 @@ for token in [
     'rel="describedby"', 'rel="alternate" type="text/markdown"',
     'hreflang="en"', 'rel="canonical" href="' + DOMAIN + '/"',
     'og:image:alt', 'lang="zh-CN" data-lang="zh"', 'lang="en" data-lang="en"',
-    '<time datetime="2026-11-15">', '<noscript>',
+    '<time datetime="2026-11-16">', '<noscript>',
 ]:
     check(token in home, f"首页含 {token[:52]}")
 
