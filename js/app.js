@@ -599,6 +599,16 @@
     return !!(window.__TAURI_INTERNALS__ || window.__TAURI__ ||
       (navigator.userAgent || '').toLowerCase().indexOf('tauri') >= 0);
   }
+  // Safari and WKWebView open the print sheet without blocking JS, and neither
+  // fires a reliable afterprint. In those engines the print view must stay alive
+  // until the user explicitly returns, or the preview/PDF comes out blank.
+  function asyncPrintEngine() {
+    if (isTauri()) return true;
+    var ua = navigator.userAgent || '';
+    if (/CriOS|FxiOS|EdgiOS|iPad|iPhone|iPod/i.test(ua)) return true;  // iOS browsers are WebKit
+    if (/Firefox/i.test(ua)) return false;                               // blocks like Chrome
+    return !/Chrome|Chromium|Edg|Android/i.test(ua);                      // Safari / WebKit / unknown
+  }
 
   // Resolve when fonts + every <img> in the print root are ready, capped by a timeout
   // so a broken/remote image can never block the print dialog forever.
@@ -627,8 +637,9 @@
   }
 
   // Print only the article, not the whole app shell: the editor UI is a fixed-height
-  // viewport layout with scroll containers, and paginating it is what made export slow
-  // (or appear to do nothing at all).
+  // viewport layout with scroll containers, and paginating it is what made export slow.
+  // The print view is a real, visible full-screen overlay: engines that capture the
+  // live render asynchronously (WKWebView / Safari) would otherwise print a blank page.
   function exportPdf() {
     var doc = activeDoc();
     if (!(doc.content || '').trim()) { toast(I.t('printEmpty')); return; }
@@ -637,6 +648,16 @@
     var th = theme();
     var root = document.createElement('div');
     root.id = 'unoPrintRoot';
+    var bar = document.createElement('div');
+    bar.id = 'unoPrintBar';
+    var label = document.createElement('b'); label.textContent = I.t('printPreviewTitle');
+    var hint = document.createElement('span'); hint.className = 'hint'; hint.textContent = I.t('printPreviewHint');
+    var back = document.createElement('button'); back.type = 'button'; back.textContent = I.t('printDone');
+    back.addEventListener('click', endPrintMode);
+    bar.appendChild(label); bar.appendChild(hint); bar.appendChild(back);
+
+    var sheet = document.createElement('div');
+    sheet.id = 'unoPrintSheet';
     var art = document.createElement('article');
     art.className = 'md-body';
     art.setAttribute('data-theme', state.themeId);
@@ -644,30 +665,39 @@
     var tw = tweakStyleString();
     if (tw) art.setAttribute('style', tw);
     art.innerHTML = M.render(doc.content);
-    root.appendChild(art);
+    sheet.appendChild(art);
+    root.appendChild(bar); root.appendChild(sheet);
     document.body.appendChild(root);
 
     var prevTitle = document.title;
     document.title = doc.title || I.t('untitledDoc');   // becomes the PDF filename
-    var timer = setTimeout(endPrintMode, 60000);
+    var onKey = function (e) { if (e.key === 'Escape') { e.preventDefault(); endPrintMode(); } };
+    var timer = setTimeout(endPrintMode, 600000);       // 10min safety net only
     printTeardown = function () {
       clearTimeout(timer);
       document.body.classList.remove('uno-printing');
       var r = document.getElementById('unoPrintRoot'); if (r) r.remove();
       document.title = prevTitle;
-      window.removeEventListener('afterprint', endPrintMode);
+      document.removeEventListener('keydown', onKey);
     };
     document.body.classList.add('uno-printing');
-    window.addEventListener('afterprint', endPrintMode);
+    document.addEventListener('keydown', onKey);
     toast(I.t('printPreparing'));
 
-    // One frame so the print root is laid out before the (blocking) print dialog opens.
+    // Two frames so the overlay is actually painted before the print sheet opens.
     requestAnimationFrame(function () {
-      waitForAssets(root, 2500).then(function () {
-        try { window.print(); } catch (e) { endPrintMode(); toast(I.t('printFail')); return; }
-        // Native macOS print panel (Tauri) never fires afterprint; drop the print root
-        // once the job has been captured so the next export starts clean.
-        if (isTauri()) setTimeout(endPrintMode, 2500);
+      requestAnimationFrame(function () {
+        waitForAssets(root, 2500).then(function () {
+          var ret;
+          try { ret = window.print(); } catch (e) { endPrintMode(); toast(I.t('printFail')); return; }
+          if (ret && typeof ret.catch === 'function') {
+            ret.catch(function () { endPrintMode(); toast(I.t('printFail')); });
+          }
+          // Chrome / Firefox block inside window.print() until the dialog is dismissed,
+          // so it is safe to restore the editor now. Safari / Tauri return immediately:
+          // keep the print view until the user clicks "Back to editor" or presses Esc.
+          if (!asyncPrintEngine()) setTimeout(endPrintMode, 150);
+        });
       });
     });
   }
