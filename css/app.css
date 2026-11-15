@@ -54,14 +54,23 @@ button{cursor:pointer;border:0;background:none;color:inherit}
 /* 固定视口布局：grid 行与 flex 子项都必须允许收缩到 0，
    否则长文档会把容器撑到内容高度，overflow:auto 失效且被 body 裁掉。 */
 .workspace{display:grid;grid-template-columns:264px minmax(300px,1fr) minmax(400px,1.02fr);
-  grid-template-rows:minmax(0,1fr);min-height:0;
+  grid-template-rows:minmax(0,1fr);min-height:0;position:relative;
   height:calc(100vh - 56px);height:calc(100dvh - 56px);transition:grid-template-columns .2s ease}
-.workspace.sidebar-collapsed{grid-template-columns:0 minmax(300px,1fr) minmax(400px,1.1fr)}
+.workspace.sidebar-collapsed{grid-template-columns:22px minmax(300px,1fr) minmax(400px,1.1fr)}
 .workspace.sidebar-collapsed .sidebar{opacity:0;pointer-events:none}
-.workspace.preview-collapsed{grid-template-columns:264px minmax(300px,1fr) 0}
+.workspace.preview-collapsed{grid-template-columns:264px minmax(300px,1fr) 22px}
 .workspace.preview-collapsed .preview-pane{opacity:0;pointer-events:none;overflow:hidden}
 .workspace.preview-collapsed .editor-pane{border-right:0}
-.workspace.sidebar-collapsed.preview-collapsed{grid-template-columns:0 minmax(300px,1fr) 0}
+
+/* collapsed-pane rails: only visible when the pane is hidden */
+.pane-rail{position:absolute;top:0;bottom:0;width:22px;display:none;place-items:start center;padding:10px 0 0;z-index:30;
+  background:var(--ui-surface);border:0;color:var(--ui-muted);cursor:pointer}
+.pane-rail:hover{background:var(--ui-hover);color:var(--ui-text)}
+.rail-left{left:0;border-right:1px solid var(--ui-border)}
+.rail-right{right:0;border-left:1px solid var(--ui-border)}
+.workspace.sidebar-collapsed .rail-left{display:grid}
+.workspace.preview-collapsed .rail-right{display:grid}
+.workspace.sidebar-collapsed.preview-collapsed{grid-template-columns:22px minmax(300px,1fr) 22px}
 
 /* ---------- sidebar ---------- */
 .sidebar{background:var(--ui-surface);border-right:1px solid var(--ui-border);min-height:0;overflow:hidden;transition:opacity .15s}
@@ -272,9 +281,9 @@ body.modal-open{overflow:hidden}
 
 @media (max-width:1180px){
   .workspace{grid-template-columns:236px minmax(280px,1fr) minmax(360px,1fr)}
-  .workspace.sidebar-collapsed{grid-template-columns:0 minmax(280px,1fr) minmax(380px,1.1fr)}
-  .workspace.preview-collapsed{grid-template-columns:236px minmax(280px,1fr) 0}
-  .workspace.sidebar-collapsed.preview-collapsed{grid-template-columns:0 minmax(280px,1fr) 0}
+  .workspace.sidebar-collapsed{grid-template-columns:22px minmax(280px,1fr) minmax(380px,1.1fr)}
+  .workspace.preview-collapsed{grid-template-columns:236px minmax(280px,1fr) 22px}
+  .workspace.sidebar-collapsed.preview-collapsed{grid-template-columns:22px minmax(280px,1fr) 22px}
   .meta{display:none}
 }
 @media (max-width:900px){
@@ -330,7 +339,7 @@ body.modal-open{overflow:hidden}
   .mobile-tabbar button.active .icon{color:var(--ui-red)}
 
   /* 隐藏桌面专属侧栏开关（移动端用大纲 Tab 代替） */
-  #toggleSidebar{display:none}
+  .pane-rail,#previewClose{display:none!important}
   .tweak-panel{padding:10px 12px;gap:12px}
 
   /* 顶栏按钮在小屏只留图标 */
@@ -342,7 +351,7 @@ body.modal-open{overflow:hidden}
 
 @media print{
   body{overflow:visible;background:#fff}
-  .topbar,.sidebar,.editor-pane,.preview-bar,.tweak-panel,.phone-bar,.article-foot,.article-head,.toast,.theme-drawer,.doc-panel,.mobile-tabbar,.drawer-mask{display:none!important}
+  .topbar,.sidebar,.editor-pane,.preview-bar,.tweak-panel,.phone-bar,.article-foot,.article-head,.toast,.theme-drawer,.doc-panel,.mobile-tabbar,.drawer-mask,.pane-rail{display:none!important}
   .workspace,.workspace.sidebar-collapsed{display:block;height:auto;min-height:0;overflow:visible}
   .preview-pane{display:block;background:#fff}
   .preview-stage{display:block;overflow:visible;padding:0;background:#fff!important}

@@ -32,6 +32,8 @@
   <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
   <symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6M10 11v5M14 11v5"/></symbol>
   <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+  <symbol id="i-chev-left" viewBox="0 0 24 24"><path d="m15 6-6 6 6 6"/></symbol>
+  <symbol id="i-chev-right" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></symbol>
   <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18 15 15 0 0 1 0-18"/></symbol>
   <symbol id="i-copy" viewBox="0 0 24 24"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></symbol>
   <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 17v3h16v-3"/></symbol>
@@ -66,8 +68,6 @@
 
 <header class="topbar">
   <div class="brand">
-    <button class="icon-btn" id="toggleSidebar" data-i18n-title="toggleSidebar" title="切换侧栏"><svg class="icon"><use href="#i-panel"/></svg></button>
-    <button class="icon-btn" id="togglePreview" data-i18n-title="togglePreview" title="切换预览"><svg class="icon"><use href="#i-panel-right"/></svg></button>
     <div class="brand-mark" aria-hidden="true">
       <svg viewBox="0 0 1024 1024" width="28" height="28">
         <rect width="1024" height="1024" rx="230" fill="#16181d"/>
@@ -113,6 +113,8 @@
 </header>
 
 <main class="workspace" id="workspace">
+  <button class="pane-rail rail-left" id="expandSidebar" data-i18n-title="expandSidebar" title="展开大纲"><svg class="icon sm"><use href="#i-chev-right"/></svg></button>
+  <button class="pane-rail rail-right" id="expandPreview" data-i18n-title="expandPreview" title="展开预览"><svg class="icon sm"><use href="#i-chev-left"/></svg></button>
   <aside class="sidebar" id="sidebar">
     <div class="drawer-head">
       <span data-i18n="outline">大纲</span>
@@ -170,6 +172,7 @@
       </div>
       <div class="preview-theme-name" id="previewThemeName"></div>
       <button class="ghost-btn small" id="tweakBtn"><svg class="icon sm"><use href="#i-sliders"/></svg><span data-i18n="tweak">微调</span></button>
+      <button class="icon-btn" id="previewClose" data-i18n-title="collapsePreview" title="收起预览"><svg class="icon sm"><use href="#i-chev-right"/></svg></button>
     </div>
 
     <div class="tweak-panel" id="tweakPanel" hidden>

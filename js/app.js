@@ -801,25 +801,26 @@
       }
     });
 
-    $('toggleSidebar').addEventListener('click', function () {
-      state.sidebar = !state.sidebar;
-      $('workspace').classList.toggle('sidebar-collapsed', !state.sidebar);
+    /* pane toggles: collapse buttons live inside each pane's own header,
+       and a thin rail on the workspace edge brings a collapsed pane back. */
+    function setSidebar(on) {
+      state.sidebar = on;
+      $('workspace').classList.toggle('sidebar-collapsed', !on);
       scheduleSave();
-    });
-
-    $('togglePreview').addEventListener('click', function () {
-      state.preview = !state.preview;
-      $('workspace').classList.toggle('preview-collapsed', !state.preview);
+    }
+    function setPreview(on) {
+      state.preview = on;
+      $('workspace').classList.toggle('preview-collapsed', !on);
       scheduleSave();
-    });
+    }
 
-    /* close button inside the outline panel header (next to the count) */
     $('sideClose').addEventListener('click', function () {
-      ws.classList.remove('drawer-open');
-      state.sidebar = false;
-      $('workspace').classList.add('sidebar-collapsed');
-      scheduleSave();
+      $('workspace').classList.remove('drawer-open');
+      setSidebar(false);
     });
+    $('expandSidebar').addEventListener('click', function () { setSidebar(true); });
+    $('previewClose').addEventListener('click', function () { setPreview(false); });
+    $('expandPreview').addEventListener('click', function () { setPreview(true); });
 
     /* outline: click a heading to jump the caret there */
     $('outlineList').addEventListener('click', function (e) {
