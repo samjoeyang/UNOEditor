@@ -366,8 +366,12 @@ body.uno-printing>#unoPrintRoot{display:block;position:fixed;inset:0;z-index:100
 #unoPrintSheet{max-width:794px;margin:0 auto;padding:14mm 13mm;background:#fff;
   box-shadow:0 12px 34px rgba(18,22,28,.12)}
 
+/* Two layers of margin: WKWebView / Safari may ignore @page in the native
+   print sheet, while element padding only applies to the first/last page when
+   the article spans pages. Keeping both guarantees visible margins per engine. */
+@page{size:A4;margin:10mm 9mm}
+
 @media print{
-  @page{size:A4;margin:14mm 13mm}
   html,body{height:auto!important;overflow:visible!important;background:#fff}
 
   /* ---------- 打印视图：去掉屏幕预览的框，只留正文 ---------- */
@@ -375,7 +379,8 @@ body.uno-printing>#unoPrintRoot{display:block;position:fixed;inset:0;z-index:100
   body.uno-printing>#unoPrintRoot{display:block!important;position:static!important;inset:auto!important;
     overflow:visible!important;background:#fff!important;padding:0!important;z-index:auto!important}
   #unoPrintBar{display:none!important}
-  #unoPrintSheet{display:block!important;max-width:none!important;margin:0!important;padding:0!important;
+  #unoPrintSheet{display:block!important;max-width:none!important;margin:0!important;
+    padding:8mm 7mm!important;
     background:transparent!important;box-shadow:none!important;border:0!important}
   #unoPrintRoot .md-body{padding:0!important;margin:0!important;max-width:none!important;min-height:0!important;
     border:0!important;border-radius:0!important;box-shadow:none!important;overflow:visible!important}
