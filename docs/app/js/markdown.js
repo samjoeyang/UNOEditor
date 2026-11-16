@@ -60,9 +60,22 @@
     return s;
   }
 
+  // Regex lookbehind /(?<!\\)\|/ is a SyntaxError on older WebKit (WKWebView,
+  // Safari < 16.4): the whole script fails to parse, leaving UnoMD undefined and
+  // the preview/export blank. Scan characters instead — no lookbehind, same result.
   function splitCells(line) {
     var t = line.trim().replace(/^\|/, '').replace(/\|$/, '');
-    return t.split(/(?<!\\)\|/).map(function (c) { return c.trim().replace(/\\\|/g, '|'); });
+    var cells = [], buf = '', esc = false;
+    for (var i = 0; i < t.length; i++) {
+      var ch = t.charAt(i);
+      if (esc) { buf += (ch === '|' ? '|' : '\\' + ch); esc = false; }
+      else if (ch === '\\') { esc = true; }
+      else if (ch === '|') { cells.push(buf.trim()); buf = ''; }
+      else { buf += ch; }
+    }
+    if (esc) buf += '\\';
+    cells.push(buf.trim());
+    return cells;
   }
 
   function isTableSep(line) {
