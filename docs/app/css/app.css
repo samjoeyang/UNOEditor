@@ -363,13 +363,13 @@ body.uno-printing>#unoPrintRoot{display:block;position:fixed;inset:0;z-index:100
 #unoPrintBar .hint{flex:1;color:var(--ui-muted)}
 #unoPrintBar button{flex:none;height:28px;padding:0 12px;border-radius:7px;background:#16181d;
   color:#fff;font-size:12px;font-weight:600}
-#unoPrintSheet{max-width:794px;margin:0 auto;padding:14mm 13mm;background:#fff;
+#unoPrintSheet{max-width:794px;margin:0 auto;padding:20mm 18mm;background:#fff;
   box-shadow:0 12px 34px rgba(18,22,28,.12)}
 
 /* Two layers of margin: WKWebView / Safari may ignore @page in the native
    print sheet, while element padding only applies to the first/last page when
    the article spans pages. Keeping both guarantees visible margins per engine. */
-@page{size:A4;margin:10mm 9mm}
+@page{size:A4;margin:6mm}
 
 @media print{
   html,body{height:auto!important;overflow:visible!important;background:#fff}
@@ -380,7 +380,7 @@ body.uno-printing>#unoPrintRoot{display:block;position:fixed;inset:0;z-index:100
     overflow:visible!important;background:#fff!important;padding:0!important;z-index:auto!important}
   #unoPrintBar{display:none!important}
   #unoPrintSheet{display:block!important;max-width:none!important;margin:0!important;
-    padding:8mm 7mm!important;
+    padding:20mm 18mm!important;
     background:transparent!important;box-shadow:none!important;border:0!important}
   #unoPrintRoot .md-body{padding:0!important;margin:0!important;max-width:none!important;min-height:0!important;
     border:0!important;border-radius:0!important;box-shadow:none!important;overflow:visible!important}
