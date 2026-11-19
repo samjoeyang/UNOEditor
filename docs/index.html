@@ -57,8 +57,8 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
       "license": "https://opensource.org/license/mit",
       "isAccessibleForFree": true,
       "datePublished": "2026-11-16",
-      "dateModified": "2026-11-16",
-      "description": "UNOEditor is a local-first, zero-dependency Markdown typesetting editor. It has 11 built-in themes, a live side-by-side preview, one-click rich-text copy for WeChat, and HTML / Markdown / PDF export. It runs entirely in the browser with no network requests.",
+      "dateModified": "2026-11-19",
+      "description": "UNOEditor is a local-first, zero-dependency Markdown typesetting editor. It has 11 built-in themes, a live side-by-side preview, one-click rich-text copy for WeChat, and HTML / Markdown / PDF export. It works fully offline; account sign-in is coming soon and multi-device sync is on the roadmap.",
       "featureList": [
         "实时双栏预览 / Live side-by-side preview",
         "11 套内置主题 / 11 built-in typesetting themes",
@@ -67,7 +67,8 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         "一键复制到公众号 / One-click WeChat rich-text copy",
         "HTML、Markdown、PDF 与剪贴板四种交付 / Four delivery formats",
         "H1-H6 大纲与多文档 / Heading outline and multiple documents",
-        "纯本地存储、零上传 / Local-only storage, zero uploads",
+        "本地优先、断网可用 / Local-first, works offline",
+        "账号登录（即将上线）与多设备同步（规划中）/ Account sign-in (coming soon) and multi-device sync (planned)",
         "桌面与移动端自适应 / Responsive desktop and mobile layout"
       ],
       "screenshot": [
@@ -117,12 +118,12 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         {
           "@type": "Question",
           "name": "需要联网、注册账号或装运行环境吗？",
-          "acceptedAnswer": { "@type": "Answer", "text": "都不需要。UNOEditor 是原生 HTML / CSS / JavaScript，零第三方运行时依赖，图标和主题样式全部内嵌。双击 dist/index.html 就能在 file:// 下运行，断网照常写稿。" }
+          "acceptedAnswer": { "@type": "Answer", "text": "目前都不需要。UNOEditor 是原生 HTML / CSS / JavaScript，零第三方运行时依赖，图标和主题样式全部内嵌。双击 dist/index.html 就能在 file:// 下运行，断网照常写稿。账号登录即将上线（auth.zhenzhidaole.com），上线后也是可选的，不登录、断网依然可以完整写稿。" }
         },
         {
           "@type": "Question",
           "name": "我的文章会被上传吗？存在哪里？",
-          "acceptedAnswer": { "@type": "Answer", "text": "不会上传。应用不发起任何网络请求，文档与自定义主题保存在浏览器 localStorage（桌面壳中是 WebView 本地存储）。清除浏览器数据会一并清除文档，重要稿件建议用「下载 Markdown」另存一份。" }
+          "acceptedAnswer": { "@type": "Answer", "text": "当前不会。文档与自定义主题保存在浏览器 localStorage（桌面壳中是 WebView 本地存储），除可选的「检查更新」外应用不发起网络请求。清除浏览器数据会一并清除文档，重要稿件建议用「下载 Markdown」另存一份。多设备同步在规划中，该功能上线之前，文档不会离开你的设备。" }
         },
         {
           "@type": "Question",
@@ -250,7 +251,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <!-- 无 JS / 纯 HTML 抓取器可读的静态事实摘要 -->
   <noscript>
     <div class="wrap noscript-note">
-      <p><strong>UNOEditor</strong>是一款零依赖、本地优先的 Markdown 排版主题编辑器，当前版本 0.1.5，采用 MIT 许可证。左侧写 Markdown，右侧实时预览；内置 11 套主题，支持一键复制到公众号、下载 HTML / Markdown、打印为 PDF。纯静态前端，文档只保存在浏览器 localStorage，不发起任何网络请求。</p>
+      <p><strong>UNOEditor</strong>是一款零依赖、本地优先的 Markdown 排版主题编辑器，当前版本 0.1.5，采用 MIT 许可证。左侧写 Markdown，右侧实时预览；内置 11 套主题，支持一键复制到公众号、下载 HTML / Markdown、打印为 PDF。纯静态前端，文档保存在浏览器 localStorage，断网照常写稿。账号登录即将上线（auth.zhenzhidaole.com），多设备同步规划中。</p>
       <p>11 套内置主题：默认公众号风格 / WeChat Classic、红黑社论 / Editorial Red、墨白长文 / Ink &amp; Paper、瑞士国际主义 / Swiss International、莫兰迪编辑 / Morandi、留白 / Whitespace、净灰 / Clean Grey、深夜电台 / Nocturne、系统灰 / System Grey、暗色笔记 / Dark Notes、纯净书写 / Pure Writing。</p>
       <p>三种用法：在线试用 <a href="app/index.html">app/</a>；克隆仓库后双击 dist/index.html（file:// 可用）；或安装 GitHub Releases 提供的 v0.1.5 桌面安装包（macOS / Windows / Linux），也可用 Tauri 2 自行构建。</p>
       <p>机器可读版本：<a href="index.zh.md">index.zh.md</a> · <a href="index.en.md">index.en.md</a> · <a href="llms.txt">llms.txt</a></p>
@@ -263,13 +264,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div class="wrap">
       <div class="badge"><span class="dot"></span><span lang="zh-CN" data-lang="zh">v0.1.5 · 本地优先 · 零依赖 · 离线可用</span><span lang="en" data-lang="en">v0.1.5 · Local-first · Zero dependencies · Works offline</span></div>
       <h1><span lang="zh-CN" data-lang="zh">写完，就</span><span lang="en" data-lang="en">Write once.</span><br /><span class="grad-text" lang="zh-CN" data-lang="zh">已经排好版</span><span class="grad-text" lang="en" data-lang="en">Publish beautifully.</span></h1>
-      <p class="lead"><span lang="zh-CN" data-lang="zh">UNOEditor 是一款把「写作」和「成稿」放在一起的 Markdown 排版主题编辑器。左边写稿，右边实时预览；11 套排版主题随手切换，一键复制到公众号，或直接导出 HTML、Markdown、PDF。全部在本机完成，不联网、不上传。</span><span lang="en" data-lang="en">UNOEditor puts writing and finished layout side by side. Draft Markdown on the left, see the finished article on the right, switch between 11 typesetting themes, copy straight into WeChat, or export HTML / Markdown / PDF. Everything runs locally — no network, no uploads.</span></p>
+      <p class="lead"><span lang="zh-CN" data-lang="zh">UNOEditor 是一款把「写作」和「成稿」放在一起的 Markdown 排版主题编辑器。左边写稿，右边实时预览；11 套排版主题随手切换，一键复制到公众号，或直接导出 HTML、Markdown、PDF。全部在本机完成，断网照常写稿；账号登录与同步在路上。</span><span lang="en" data-lang="en">UNOEditor puts writing and finished layout side by side. Draft Markdown on the left, see the finished article on the right, switch between 11 typesetting themes, copy straight into WeChat, or export HTML / Markdown / PDF. Everything runs locally, fully offline — accounts and sync are on the way.</span></p>
       <div class="hero-btns">
         <a class="btn btn-primary try-link" href="app/index.html?lang=zh"><svg class="ic"><use href="#i-zap"/></svg><span lang="zh-CN" data-lang="zh">在线试用（免安装）</span><span lang="en" data-lang="en">Try it in your browser</span></a>
         <a class="btn btn-ghost" href="#download"><svg class="ic"><use href="#i-download"/></svg><span lang="zh-CN" data-lang="zh">下载桌面版</span><span lang="en" data-lang="en">Download desktop app</span></a>
       </div>
       <div class="hero-meta">
-        <span><svg class="ic"><use href="#i-lock"/></svg><span lang="zh-CN" data-lang="zh">文档不离开本机</span><span lang="en" data-lang="en">Files never leave your device</span></span>
+        <span><svg class="ic"><use href="#i-lock"/></svg><span lang="zh-CN" data-lang="zh">本地优先 · 断网可用</span><span lang="en" data-lang="en">Local-first · Works offline</span></span>
         <span><svg class="ic"><use href="#i-palette"/></svg><span lang="zh-CN" data-lang="zh">11 套内置主题</span><span lang="en" data-lang="en">11 built-in themes</span></span>
         <span><svg class="ic"><use href="#i-smartphone"/></svg><span lang="zh-CN" data-lang="zh">手机 / 网页双预览</span><span lang="en" data-lang="en">Mobile &amp; web preview</span></span>
         <span><svg class="ic"><use href="#i-globe"/></svg><span lang="zh-CN" data-lang="zh">中 / 英界面</span><span lang="en" data-lang="en">Chinese &amp; English UI</span></span>
@@ -289,7 +290,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <div class="stat"><b>11</b><span lang="zh-CN" data-lang="zh">套内置排版主题</span><span lang="en" data-lang="en">built-in themes</span></div>
         <div class="stat"><b>4</b><span lang="zh-CN" data-lang="zh">种导出方式</span><span lang="en" data-lang="en">export formats</span></div>
         <div class="stat"><b>2</b><span lang="zh-CN" data-lang="zh">种界面语言</span><span lang="en" data-lang="en">UI languages</span></div>
-        <div class="stat"><b>0</b><span lang="zh-CN" data-lang="zh">次网络请求</span><span lang="en" data-lang="en">network requests</span></div>
+        <div class="stat"><b>0</b><span lang="zh-CN" data-lang="zh">门槛 · 开箱即用</span><span lang="en" data-lang="en">setup, ready out of the box</span></div>
       </div>
     </div>
   </header>
@@ -340,7 +341,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </article>
         <article class="card">
           <div class="ic-box"><svg class="ic"><use href="#i-shield"/></svg></div>
-          <h3><span lang="zh-CN" data-lang="zh">纯本地，零上传</span><span lang="en" data-lang="en">Local-only, zero uploads</span></h3>
+          <h3><span lang="zh-CN" data-lang="zh">本地优先，离线可用</span><span lang="en" data-lang="en">Local-first, offline-ready</span></h3>
           <p><span lang="zh-CN" data-lang="zh">零第三方运行时依赖，图标与主题全部内嵌。双击 index.html 就能用，断网、飞行模式照样写稿；文档只存在浏览器本地。</span><span lang="en" data-lang="en">No runtime dependencies — icons and theme CSS are inlined. Double-click index.html and it works offline; documents stay in browser storage.</span></p>
         </article>
         <article class="card">
@@ -474,7 +475,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <div class="panel">
           <div class="panel-no">02</div>
           <h3><span lang="zh-CN" data-lang="zh">本地文件（最省心）</span><span lang="en" data-lang="en">Local file (simplest)</span></h3>
-          <p><span lang="zh-CN" data-lang="zh">克隆仓库后双击 dist/index.html，或用任意静态服务器打开。零构建、零安装、零网络请求，file:// 直接可用。</span><span lang="en" data-lang="en">Clone the repo and double-click dist/index.html, or serve it statically. No build, no install, no requests — file:// works.</span></p>
+          <p><span lang="zh-CN" data-lang="zh">克隆仓库后双击 dist/index.html，或用任意静态服务器打开。零构建、零安装，file:// 直接可用、断网照常写稿。</span><span lang="en" data-lang="en">Clone the repo and double-click dist/index.html, or serve it statically. No build, no install — file:// works and it keeps working offline.</span></p>
           <div class="copy"><button type="button" class="copy-btn" id="copyLocal"><svg class="ic"><use href="#i-copy"/></svg><span lang="zh-CN" data-lang="zh">复制</span><span lang="en" data-lang="en">Copy</span></button><pre>git clone https://github.com/samjoeyang/UNOEditor.git
 open UNOEditor/dist/index.html</pre></div>
         </div>
@@ -564,11 +565,11 @@ cd src-tauri &amp;&amp; cargo tauri build</pre></div>
       <div class="faq-list">
         <details class="faq-item">
           <summary><svg class="ic"><use href="#i-help"/></svg><span><span lang="zh-CN" data-lang="zh">需要联网、注册账号或装运行环境吗？</span><span lang="en" data-lang="en">Do I need internet, an account, or a runtime?</span></span><svg class="ic chev"><use href="#i-chevron"/></svg></summary>
-          <div class="faq-body"><span lang="zh-CN" data-lang="zh">都不需要。UNOEditor 是原生 HTML / CSS / JavaScript，零第三方运行时依赖，图标和主题样式全部内嵌。双击 dist/index.html 就能在 file:// 下运行，断网照常写稿。</span><span lang="en" data-lang="en">No to all three. UNOEditor is plain HTML / CSS / JS with zero runtime dependencies; icons and theme CSS are inlined. Double-click dist/index.html and it runs over file://, fully offline.</span></div>
+          <div class="faq-body"><span lang="zh-CN" data-lang="zh">目前都不需要。UNOEditor 是原生 HTML / CSS / JavaScript，零第三方运行时依赖，图标和主题样式全部内嵌。双击 dist/index.html 就能在 file:// 下运行，断网照常写稿。账号登录即将上线（auth.zhenzhidaole.com），上线后也是可选的，不登录、断网依然可以完整写稿。</span><span lang="en" data-lang="en">Not today. UNOEditor is plain HTML / CSS / JS with zero runtime dependencies; icons and theme CSS are inlined. Double-click dist/index.html and it runs over file://, fully offline. Account sign-in is coming soon (auth.zhenzhidaole.com) and will stay optional — writing offline without an account keeps working.</span></div>
         </details>
         <details class="faq-item">
           <summary><svg class="ic"><use href="#i-lock"/></svg><span><span lang="zh-CN" data-lang="zh">我的文章会被上传吗？存在哪里？</span><span lang="en" data-lang="en">Are my documents uploaded? Where are they stored?</span></span><svg class="ic chev"><use href="#i-chevron"/></svg></summary>
-          <div class="faq-body"><span lang="zh-CN" data-lang="zh">不会上传。应用不发起任何网络请求，文档与自定义主题保存在浏览器 localStorage（桌面壳中是 WebView 本地存储）。清除浏览器数据会一并清除文档，重要稿件建议用「下载 Markdown」另存一份。</span><span lang="en" data-lang="en">Never. The app makes no network requests; documents and imported themes live in browser localStorage (WebView storage in the desktop shell). Clearing browser data removes them, so export important drafts as Markdown.</span></div>
+          <div class="faq-body"><span lang="zh-CN" data-lang="zh">当前不会。文档与自定义主题保存在浏览器 localStorage（桌面壳中是 WebView 本地存储），除可选的「检查更新」外应用不发起网络请求。清除浏览器数据会一并清除文档，重要稿件建议用「下载 Markdown」另存一份。多设备同步在规划中，该功能上线之前，文档不会离开你的设备。</span><span lang="en" data-lang="en">Not currently. Documents and imported themes live in browser localStorage (WebView storage in the desktop shell), and the app's only network call is the optional update check. Clearing browser data removes them, so export important drafts as Markdown. Multi-device sync is on the roadmap; until it ships, your documents never leave your device.</span></div>
         </details>
         <details class="faq-item">
           <summary><svg class="ic"><use href="#i-copy"/></svg><span><span lang="zh-CN" data-lang="zh">「复制到公众号」真的是所见即所得吗？</span><span lang="en" data-lang="en">Is WeChat paste really WYSIWYG?</span></span><svg class="ic chev"><use href="#i-chevron"/></svg></summary>
@@ -687,7 +688,7 @@ cd src-tauri &amp;&amp; cargo tauri build</pre></div>
       <a href="https://github.com/samjoeyang/UNOEditor" target="_blank" rel="noopener">GitHub</a>
       <a href="#top"><span lang="zh-CN" data-lang="zh">回到顶部</span><span lang="en" data-lang="en">Back to top</span></a>
     </div>
-    <div class="footer-copy">© <span id="year">2026</span> UNOEditor · <span lang="zh-CN" data-lang="zh">MIT 许可证</span><span lang="en" data-lang="en">MIT licensed</span> · <span lang="zh-CN" data-lang="zh">原生 HTML / CSS / JS + Tauri 2</span><span lang="en" data-lang="en">Plain HTML / CSS / JS + Tauri 2</span> · <span lang="zh-CN" data-lang="zh">文稿不上传 · 官网统计访问量</span><span lang="en" data-lang="en">Documents stay local · website analytics</span> · <span lang="zh-CN" data-lang="zh">内容最后更新 <time datetime="2026-11-16">2026-11-16</time></span><span lang="en" data-lang="en">Last updated <time datetime="2026-11-16">2026-11-16</time></span></div>
+    <div class="footer-copy">© <span id="year">2026</span> UNOEditor · <span lang="zh-CN" data-lang="zh">MIT 许可证</span><span lang="en" data-lang="en">MIT licensed</span> · <span lang="zh-CN" data-lang="zh">原生 HTML / CSS / JS + Tauri 2</span><span lang="en" data-lang="en">Plain HTML / CSS / JS + Tauri 2</span> · <span lang="zh-CN" data-lang="zh">本地优先 · 官网统计访问量</span><span lang="en" data-lang="en">Local-first · website analytics</span> · <span lang="zh-CN" data-lang="zh">内容最后更新 <time datetime="2026-11-19">2026-11-19</time></span><span lang="en" data-lang="en">Last updated <time datetime="2026-11-19">2026-11-19</time></span></div>
   </div>
 </footer>
 

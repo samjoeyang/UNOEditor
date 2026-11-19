@@ -57,7 +57,7 @@ for token in [
     'rel="describedby"', 'rel="alternate" type="text/markdown"',
     'hreflang="en"', 'rel="canonical" href="' + DOMAIN + '/"',
     'og:image:alt', 'lang="zh-CN" data-lang="zh"', 'lang="en" data-lang="en"',
-    '<time datetime="2026-11-16">', '<noscript>',
+    '<time datetime="2026-11-19">', '<noscript>',
 ]:
     check(token in home, f"首页含 {token[:52]}")
 
@@ -73,7 +73,7 @@ if m:
         check(app.get("license", "").endswith("/mit"), "JSON-LD license = MIT")
         check(app.get("isAccessibleForFree") is True, "JSON-LD isAccessibleForFree")
         check(len(app.get("screenshot", [])) == 8, "JSON-LD 8 张截图")
-        check(len(app.get("featureList", [])) == 9, "JSON-LD 9 项功能")
+        check(len(app.get("featureList", [])) == 10, "JSON-LD 10 项功能")
         faq = next(n for n in graph if n["@type"] == "FAQPage")
         check(len(faq["mainEntity"]) == 8, "JSON-LD 8 条 FAQ")
         check(all(q["acceptedAnswer"]["text"] for q in faq["mainEntity"]), "FAQ 答案非空")
@@ -202,6 +202,15 @@ for rel in ["index.html", "index.zh.md", "index.en.md", "llms.txt", "assets/app.
     txt = read(rel)
     check(not any(s in txt for s in STALE_RELEASE), f"{rel} 无过时的「未发布」表述")
     check(bool(VER) and f"v{VER}" in txt, f"{rel} 标注 v{VER}")
+
+# --- 13. 产品定位 v2（2026-11-19）：停用「零上传 / 不发起任何网络请求」等旧定位话术 ---
+STALE_POSITIONING = ["零上传", "不发起任何网络请求", "Local-only, zero uploads",
+                     "zero uploads", "makes no network requests", "no network requests"]
+for rel in ["index.html", "index.zh.md", "index.en.md", "llms.txt"]:
+    txt = read(rel)
+    check(not any(s in txt for s in STALE_POSITIONING), f"{rel} 无旧定位话术（零上传/零网络请求）")
+check("auth.zhenzhidaole.com" in read("index.zh.md"), "index.zh.md 含账号登录路线图")
+check("auth.zhenzhidaole.com" in read("index.en.md"), "index.en.md 含账号登录路线图")
 
 # --- 输出 ---
 for line in ok:

@@ -1,9 +1,9 @@
 # UNOEditor
 
-> UNOEditor is a zero-dependency, local-first Markdown typesetting editor. Draft Markdown on the left, see the finished article on the right; 11 built-in themes, one-click rich-text copy for WeChat, and HTML / Markdown / PDF export. It is a plain static frontend: double-click `dist/index.html` and it works offline without making a single network request. Current version 0.1.5, MIT licensed.
+> UNOEditor is a zero-dependency, local-first Markdown typesetting editor. Draft Markdown on the left, see the finished article on the right; 11 built-in themes, one-click rich-text copy for WeChat, and HTML / Markdown / PDF export. It is a plain static frontend: double-click `dist/index.html` and it works fully offline. Account sign-in is coming soon (auth.zhenzhidaole.com) and multi-device sync is on the roadmap. Current version 0.1.5, MIT licensed.
 >
 > Website: https://unoeditor.zhenzhidaole.com/ · Repository: https://github.com/samjoeyang/UNOEditor
-> Last fact-checked: 2026-11-16 · Applies to version: v0.1.5
+> Last fact-checked: 2026-11-19 · Applies to version: v0.1.5
 
 ## Key facts
 
@@ -20,7 +20,8 @@
 | Export methods | 4 (WeChat rich-text copy, HTML, Markdown, print / save as PDF) |
 | UI languages | Chinese and English, one-click switch |
 | Storage | Browser `localStorage` only (WebView local storage in the desktop shell) |
-| Network requests | 0 from the app itself; the website's download section queries the GitHub Releases API |
+| Network requests | The app's only network call is the optional update check (GitHub Releases API); the website's download section queries the same API |
+| Roadmap | Account sign-in coming soon (auth.zhenzhidaole.com); multi-device sync planned |
 | Prebuilt installers | Shipped with v0.1.5: macOS / Windows / Linux desktop installers (see GitHub Releases) |
 
 ## Features
@@ -32,7 +33,7 @@
 5. **One-click WeChat copy** — the exporter walks the preview DOM, inlines computed styles recursively with `getComputedStyle`, and swaps the root element to `section` because the WeChat editor strips `article` tags and classes. Paste and the layout is final.
 6. **Four ways to ship** — WeChat rich-text copy, a standalone HTML file with embedded theme CSS, the Markdown source, and print / save as PDF.
 7. **Outline and multiple documents** — an H1–H6 outline is generated automatically with click-to-jump; the document list sits in the top-bar dropdown.
-8. **Local-only, zero uploads** — no account, no login, no sync, works offline.
+8. **Local-first, offline-ready** — writing and typesetting happen entirely on your own machine; it works offline. Documents and imported themes are stored in local browser storage. Account sign-in is coming soon and multi-device sync is on the roadmap (see the key-facts table).
 9. **Desktop and mobile ready** — narrow screens switch to edit / preview / outline bottom tabs plus a theme drawer; a Tauri 2 shell can be built for native windows.
 
 The workspace has three panes: outline on the left, Markdown editor in the middle, typeset preview on the right. Themes live in a top-right drawer.
@@ -68,10 +69,10 @@ All images are real captures of the running app, not mockups or composites. They
 | `english.png` | One-click English UI; theme names and descriptions are bilingual too |
 | `mobile.png` | Narrow screens: edit / preview / outline tabs and a theme drawer |
 
-## Three ways to use it (no account needed)
+## Three ways to use it (no account needed today)
 
 1. **Try online (fastest)** — open https://unoeditor.zhenzhidaole.com/app/ . Same features as the local build; data still stays in your own browser.
-2. **Local file (simplest)** — clone the repo and double-click `dist/index.html`, or serve it statically. No build, no install, no requests; `file://` works.
+2. **Local file (simplest)** — clone the repo and double-click `dist/index.html`, or serve it statically. No build, no install; `file://` works and it keeps working offline.
    ```sh
    git clone https://github.com/samjoeyang/UNOEditor.git
    open UNOEditor/dist/index.html
@@ -93,15 +94,15 @@ All images are real captures of the running app, not mockups or composites. They
 
 ## Privacy and data
 
-The app makes no network requests. Documents and imported themes live only in browser `localStorage` (WebView storage in the desktop shell); nothing is uploaded and it works offline. Clearing browser data removes them, so export important drafts as Markdown. The website uses Google Tag Manager for visit analytics; it does not read anything typed into the editor. No third-party fonts or CDNs are loaded.
+Writing and typesetting happen entirely on your machine, with full offline support. Documents and imported themes currently live only in browser `localStorage` (WebView storage in the desktop shell); they are not uploaded. The app's only external request is the optional update check, which queries the GitHub Releases API at most once every 24 hours. Clearing browser data removes them, so export important drafts as Markdown. Account sign-in is coming soon and multi-device sync is on the roadmap; this section will be updated when those features land. The website uses Google Tag Manager for visit analytics; it does not read anything typed into the editor. No third-party fonts or CDNs are loaded.
 
 ## FAQ
 
 **Do I need internet, an account, or a runtime?**
-No to all three. UNOEditor is plain HTML / CSS / JS with zero runtime dependencies; icons and theme CSS are inlined. Double-click `dist/index.html` and it runs over `file://`, fully offline.
+Not today. UNOEditor is plain HTML / CSS / JS with zero runtime dependencies; icons and theme CSS are inlined. Double-click `dist/index.html` and it runs over `file://`, fully offline. Account sign-in is coming soon (auth.zhenzhidaole.com) and will stay optional — writing offline without an account keeps working.
 
 **Are my documents uploaded? Where are they stored?**
-Never. The app makes no network requests; documents and imported themes live in browser `localStorage`. Clearing browser data removes them, so export important drafts as Markdown.
+Not currently. Documents and imported themes live in browser `localStorage` (WebView storage in the desktop shell), and the app's only network call is the optional update check. Clearing browser data removes them, so export important drafts as Markdown. Multi-device sync is on the roadmap; until it ships, your documents never leave your device.
 
 **Is WeChat paste really WYSIWYG?**
 Yes. The exporter walks the preview DOM, inlines computed styles recursively, and swaps the root to `section` because WeChat strips `article` tags and classes. Paste and the layout is final.
