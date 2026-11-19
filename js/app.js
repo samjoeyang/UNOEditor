@@ -104,6 +104,15 @@
   };
   state.activeId = state.docs[0].id;
 
+  // Tombstones stay in state.docs on desktop so deletions can propagate through
+  // sync; the UI always works on the visible subset.
+  function visibleDocs() {
+    var out = [];
+    for (var i = 0; i < state.docs.length; i++) if (!state.docs[i].deleted) out.push(state.docs[i]);
+    return out;
+  }
+  function newRev() { return 'r' + Date.now().toString(16) + '-' + Math.random().toString(36).slice(2, 6); }
+
   function load() {
     try {
       var raw = localStorage.getItem(STORE);
@@ -125,6 +134,7 @@
   }
   function save() {
     try { localStorage.setItem(STORE, JSON.stringify(state)); } catch (e) { }
+    if (window.UnoSync && UnoSync.available()) UnoSync.schedulePersist();
   }
   var saveTimer;
   function scheduleSave() {
@@ -133,8 +143,11 @@
     saveTimer = setTimeout(function () { save(); $('saveState').textContent = I.t('saved'); }, 420);
   }
   function activeDoc() {
-    for (var i = 0; i < state.docs.length; i++) if (state.docs[i].id === state.activeId) return state.docs[i];
-    return state.docs[0];
+    var v = visibleDocs();
+    if (!v.length) return state.docs[0];
+    for (var i = 0; i < v.length; i++) if (v[i].id === state.activeId) return v[i];
+    state.activeId = v[0].id;
+    return v[0];
   }
   function getThemes() { return T.list.concat(state.imported); }
   function resolveThemeId(id) {
@@ -253,12 +266,132 @@
     reader.readAsText(file);
   }
 
+  /* ---------------- open local Markdown files ---------------- */
+  function parseMdFrontMatter(text) {
+    var meta = { title: '', id: '', content: text };
+    if (text.indexOf('---\n') !== 0) return meta;
+    var end = text.indexOf('\n---\n', 4);
+    if (end < 0) return meta;
+    var head = text.slice(4, end);
+    var lines = head.split('\n');
+    for (var i = 0; i < lines.length; i++) {
+      if (lines[i].indexOf('uno-title:') === 0) meta.title = lines[i].slice(10).trim().replace(/\\n/g, '\n').replace(/\\\\/g, '\\');
+      if (lines[i].indexOf('uno-id:') === 0) meta.id = lines[i].slice(7).trim();
+    }
+    meta.content = text.slice(end + 5);
+    return meta;
+  }
+  function importMarkdownFile(file) {
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function () {
+      try {
+        var text = String(reader.result || '');
+        var meta = parseMdFrontMatter(text);
+        var name = file.name.replace(/\.(md|markdown|txt)$/i, '') || I.t('untitledDoc');
+        var title = meta.title || name;
+        var existing = null;
+        for (var i = 0; i < state.docs.length; i++) {
+          if (meta.id && state.docs[i].id === meta.id) existing = state.docs[i];
+          else if (!meta.id && state.docs[i].title === title) existing = state.docs[i];
+        }
+        if (existing) {
+          existing.content = meta.content; existing.title = title;
+          existing.updated = Date.now(); existing.rev = newRev();
+          existing.deleted = false; state.activeId = existing.id;
+        } else {
+          var id = uid();
+          state.docs.unshift({ id: id, title: title, content: meta.content,
+            file: file.name, updated: Date.now(), rev: newRev(), base: '', deleted: false });
+          state.activeId = id;
+        }
+        renderAll(); scheduleSave(); toast(I.t('mdOpened') + ' ' + name);
+      } catch (err) { toast(I.t('mdOpenFail')); }
+    };
+    reader.readAsText(file);
+  }
+
   /* ---------------- feedback ---------------- */
   var toastTimer;
   function toast(msg) {
     var el = $('toast'); el.textContent = msg; el.classList.add('show');
     clearTimeout(toastTimer);
     toastTimer = setTimeout(function () { el.classList.remove('show'); }, 2300);
+  }
+
+  /* ---------------- mermaid diagrams (vendored, lazy-loaded, offline) ---------------- */
+  var mermaidPromise = null, mermaidSeq = 0, mermaidTimer = null;
+  function ensureMermaid() {
+    if (window.mermaid) return Promise.resolve();
+    if (!mermaidPromise) {
+      mermaidPromise = new Promise(function (resolve, reject) {
+        var s = document.createElement('script');
+        s.src = 'js/vendor/mermaid.min.js';
+        s.onload = resolve;
+        s.onerror = function () { mermaidPromise = null; reject(new Error('mermaid load failed')); };
+        document.head.appendChild(s);
+      });
+    }
+    return mermaidPromise;
+  }
+  function configureMermaid() {
+    window.mermaid.initialize({
+      startOnLoad: false,
+      securityLevel: 'strict',
+      theme: theme().dark ? 'dark' : 'neutral',
+      flowchart: { htmlLabels: false },
+      sequence: { useMaxWidth: true }
+    });
+  }
+  // Render every unrendered .mermaid-wrap inside root. Always resolves (never
+  // rejects): if the engine cannot load, blocks keep showing the mermaid source.
+  function renderMermaidIn(root) {
+    var wraps = root.querySelectorAll('.mermaid-wrap');
+    if (!wraps.length) return Promise.resolve();
+    return ensureMermaid().then(function () {
+      configureMermaid();
+      var jobs = [];
+      for (var i = 0; i < wraps.length; i++) (function (wrap) {
+        if (wrap.dataset.done) return;
+        var code = wrap.querySelector('pre code');
+        var src = code ? code.textContent : '';
+        if (!src.trim()) return;
+        // mermaid v9's render() may return the SVG string synchronously OR a
+        // promise depending on call context — normalize both through Promise.resolve
+        jobs.push(Promise.resolve().then(function () {
+          return window.mermaid.render('uno-mmd-' + (++mermaidSeq), src);
+        }).then(function (svg) {
+          wrap.dataset.done = '1';
+          wrap.innerHTML = '<div class="mermaid-svg">' + svg + '</div>';
+          // mermaid emits width:100% + max-width:<natural px>. In a narrow
+          // preview that squashes wide diagrams (gantt, sequence) until the
+          // labels are unreadable. Pin the SVG to its viewBox size instead and
+          // let the wrapper scroll horizontally when it overflows.
+          var s = wrap.querySelector('svg');
+          var vb = s && (s.getAttribute('viewBox') || '').split(/[\s,]+/);
+          if (vb && vb.length === 4) {
+            s.style.maxWidth = 'none';
+            s.setAttribute('width', parseFloat(vb[2]) || '100%');
+            s.setAttribute('height', parseFloat(vb[3]) || 'auto');
+          }
+        }).catch(function () {
+          wrap.classList.add('mermaid-error');
+          if (!wrap.querySelector('.mermaid-note')) {
+            var note = document.createElement('div');
+            note.className = 'mermaid-note';
+            note.textContent = I.t('mermaidFail');
+            wrap.appendChild(note);
+          }
+        }));
+      })(wraps[i]);
+      return Promise.all(jobs);
+    }).catch(function () { /* engine unavailable: keep source blocks */ });
+  }
+  // Typing re-renders the preview on every keystroke; diagrams follow a short
+  // debounce so mermaid's heavier rendering never blocks live editing.
+  function scheduleMermaid(root) {
+    clearTimeout(mermaidTimer);
+    mermaidTimer = setTimeout(function () { renderMermaidIn(root); }, 350);
   }
 
   /* ---------------- rendering ---------------- */
@@ -298,7 +431,7 @@
   }
 
   function renderDocs() {
-    $('docList').innerHTML = state.docs.map(function (d) {
+    $('docList').innerHTML = visibleDocs().map(function (d) {
       return '<div class="doc-item' + (d.id === state.activeId ? ' active' : '') + '" data-id="' + d.id + '">' +
         '<svg class="icon sm"><use href="#i-file"/></svg>' +
         '<span class="doc-item-name">' + M.escape(d.title || I.t('untitledDoc')) + '</span>' +
@@ -374,6 +507,7 @@
     el.dataset.import = theme().imported ? theme().id : '';
     el.innerHTML = M.render(doc.content);
     applyTweak();
+    scheduleMermaid(el);
 
     var surface = getComputedStyle(el).getPropertyValue('--c-surface').trim() || '#ffffff';
     $('paper').style.setProperty('--paper', surface);
@@ -545,15 +679,34 @@
     var th = theme();
     var extraCss = th.imported ? (th.css || '') : '';
     var importAttr = th.imported ? ' data-import="' + th.id + '"' : '';
+    var holder = document.createElement('div');
+    holder.innerHTML = M.render(activeDoc().content);
+    // swap mermaid source blocks for the SVGs already rendered in the live preview
+    var srcWraps = $('preview').querySelectorAll('.mermaid-wrap');
+    var dstWraps = holder.querySelectorAll('.mermaid-wrap');
+    for (var i = 0; i < dstWraps.length && i < srcWraps.length; i++) {
+      var rendered = srcWraps[i].querySelector('.mermaid-svg');
+      if (!rendered) continue;
+      dstWraps[i].innerHTML = rendered.innerHTML;
+      // the preview pins SVGs to their natural width; in a standalone page the
+      // CSS max-width:100% should scale them to the sheet instead
+      var svg = dstWraps[i].querySelector('svg');
+      if (svg) {
+        svg.style.maxWidth = '';
+        svg.removeAttribute('width');
+        svg.removeAttribute('height');
+      }
+    }
     var body = '<article class="md-body" data-theme="' + state.themeId + '"' + importAttr +
       (tweakStyleString() ? ' style="' + tweakStyleString() + '"' : '') + '>' +
-      M.render(activeDoc().content) + '</article>';
+      holder.innerHTML + '</article>';
     return '<!DOCTYPE html>\n<html lang="' + (state.lang === 'zh' ? 'zh-CN' : 'en') + '">\n<head>\n' +
       '<meta charset="UTF-8">\n<meta name="viewport" content="width=device-width,initial-scale=1">\n' +
       '<title>' + M.escape(activeDoc().title) + '</title>\n<style>\n' +
       'body{margin:0;padding:40px 16px;background:#eef0f2;font-family:-apple-system,sans-serif}\n' +
       '.sheet{max-width:760px;margin:0 auto;box-shadow:0 12px 40px rgba(0,0,0,.08);border-radius:8px;overflow:hidden}\n' +
       '.sheet .md-body{padding:48px 56px;min-height:600px}\n' +
+      '.md-body svg{max-width:100%;height:auto}\n' +
       window.UnoThemeCSS + (extraCss ? '\n' + extraCss : '') + '\n</style>\n</head>\n<body>\n<div class="sheet">' + body + '</div>\n</body>\n</html>';
   }
 
@@ -568,9 +721,49 @@
     return (activeDoc().title || I.t('untitledDoc')).replace(/[\\/:*?"<>|]/g, '_') + '.' + ext;
   }
 
+  // Rasterize a rendered mermaid SVG to a PNG data URL. WeChat's editor strips
+  // <svg>, so the "copy for WeChat" path swaps diagrams for <img> copies.
+  // flowchart htmlLabels are disabled in the mermaid config, so the SVG contains
+  // no foreignObject and drawing it on a canvas cannot taint the bitmap.
+  function svgToPng(svg) {
+    var box = svg.getBoundingClientRect();
+    var w = box.width || 600, h = box.height || 400, scale = 2;
+    var clone = svg.cloneNode(true);
+    clone.setAttribute('width', w);
+    clone.setAttribute('height', h);
+    var xml = new XMLSerializer().serializeToString(clone);
+    return new Promise(function (resolve) {
+      var img = new Image();
+      img.onload = function () {
+        try {
+          var c = document.createElement('canvas');
+          c.width = Math.round(w * scale); c.height = Math.round(h * scale);
+          c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+          resolve(c.toDataURL('image/png'));
+        } catch (e) { resolve(null); }
+      };
+      img.onerror = function () { resolve(null); };
+      img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(xml);
+    });
+  }
+
   function copyWechat() {
-    var html = richHtml(), text = $('preview').innerText;
-    function fallback() {
+    renderMermaidIn($('preview')).then(function () {
+      var svgs = $('preview').querySelectorAll('.mermaid-wrap .mermaid-svg > svg');
+      var jobs = [];
+      for (var i = 0; i < svgs.length; i++) (function (svg) {
+        jobs.push(svgToPng(svg).then(function (png) {
+          if (!png) return;
+          var img = document.createElement('img');
+          img.src = png; img.alt = 'diagram';
+          svg.parentNode.parentNode.replaceChild(img, svg.parentNode);
+        }));
+      })(svgs[i]);
+      return Promise.all(jobs);
+    }).then(function () {
+      var html = richHtml(), text = $('preview').innerText;
+      setTimeout(renderPreview, 0);   // restore live SVG diagrams; strings already captured
+      function fallback() {
       var holder = document.createElement('div');
       holder.contentEditable = 'true';
       holder.style.cssText = 'position:fixed;left:-99999px;top:0;';
@@ -592,6 +785,7 @@
     } else {
       try { fallback(); toast(I.t('copied')); } catch (e) { toast(I.t('copyFail')); }
     }
+    });
   }
 
   /* ---------------- print / export PDF ---------------- */
@@ -684,10 +878,11 @@
     document.addEventListener('keydown', onKey);
     toast(I.t('printPreparing'));
 
-    // Two frames so the overlay is actually painted before the print sheet opens.
-    requestAnimationFrame(function () {
+    renderMermaidIn(art).then(function () {
+      // Two frames so the overlay is actually painted before the print sheet opens.
       requestAnimationFrame(function () {
-        waitForAssets(root, 2500).then(function () {
+        requestAnimationFrame(function () {
+          waitForAssets(root, 2500).then(function () {
           var ret;
           try { ret = window.print(); } catch (e) { endPrintMode(); toast(I.t('printFail')); return; }
           if (ret && typeof ret.catch === 'function') {
@@ -697,6 +892,7 @@
           // so it is safe to restore the editor now. Safari / Tauri return immediately:
           // keep the print view until the user clicks "Back to editor" or presses Esc.
           if (!asyncPrintEngine()) setTimeout(endPrintMode, 150);
+          });
         });
       });
     });
@@ -705,7 +901,12 @@
   function runExport(act) {
     switch (act) {
       case 'wechat': copyWechat(); break;
-      case 'html': download(fileName('html'), standaloneHtml(), 'text/html;charset=utf-8'); toast(I.t('htmlSaved')); break;
+      case 'html':
+        renderMermaidIn($('preview')).then(function () {
+          download(fileName('html'), standaloneHtml(), 'text/html;charset=utf-8');
+          toast(I.t('htmlSaved'));
+        });
+        break;
       case 'md': download(fileName('md'), activeDoc().content, 'text/markdown;charset=utf-8'); toast(I.t('mdSaved')); break;
       case 'print': exportPdf(); break;
     }
@@ -728,6 +929,9 @@
   }
   function openExternal(url) {
     try {
+      if (window.__TAURI__ && window.__TAURI__.opener && window.__TAURI__.opener.openUrl) {
+        window.__TAURI__.opener.openUrl(url); return;
+      }
       if (window.__TAURI__ && window.__TAURI__.shell && window.__TAURI__.shell.open) {
         window.__TAURI__.shell.open(url); return;
       }
@@ -822,6 +1026,51 @@
     } catch (e) { /* ignore */ }
   }
 
+  /* ---------------- account / sign-in ---------------- */
+  function currentSession() { return window.UnoAuth ? window.UnoAuth.getSession() : null; }
+  function accountLabel(s) {
+    var c = s && s.claims || {};
+    return c.name || c.email || c.username || '';
+  }
+  function renderAccount() {
+    var s = currentSession();
+    var btn = $('accountBtn');
+    if (!btn) return;
+    var icon = $('accountIcon'), avatar = $('accountAvatar');
+    if (s) {
+      var name = accountLabel(s);
+      if (icon) icon.style.display = 'none';
+      if (avatar) {
+        avatar.hidden = false;
+        avatar.textContent = name ? name.charAt(0).toUpperCase() : '?';
+        avatar.title = name;
+      }
+      btn.setAttribute('data-i18n-title', 'account');
+      btn.title = name || I.t('account');
+    } else {
+      if (icon) icon.style.display = '';
+      if (avatar) avatar.hidden = true;
+      btn.title = I.t('account');
+    }
+  }
+  function openAccount() {
+    var s = currentSession();
+    $('accountSignedOut').hidden = !!s;
+    $('accountSignedIn').hidden = !s;
+    if (s) {
+      var c = s.claims || {};
+      var name = c.name || c.username || '';
+      var email = c.email || '';
+      $('accountName').textContent = name || email || '—';
+      $('accountEmail').textContent = name && email ? email : '';
+      var av = $('accountAvatarBig');
+      av.textContent = (name || email || '?').charAt(0).toUpperCase();
+    }
+    $('loginPending').hidden = !(window.UnoAuth && window.UnoAuth.isTauri() && !s);
+    $('accountModal').hidden = false;
+  }
+  function closeAccount() { $('accountModal').hidden = true; }
+
   /* ---------------- events ---------------- */
   function bind() {
     $('themeList').addEventListener('click', function (e) {
@@ -842,8 +1091,21 @@
       if (del) {
         e.stopPropagation();
         if (!confirm(I.t('confirmDelete'))) return;
-        if (state.docs.length === 1) {
-          state.docs[0].content = ''; state.docs[0].title = I.t('untitledDoc');
+        var desktopSync = !!(window.UnoSync && UnoSync.available());
+        if (visibleDocs().length === 1) {
+          var only = activeDoc();
+          only.content = ''; only.title = I.t('untitledDoc');
+          only.updated = Date.now(); only.rev = newRev();
+        } else if (desktopSync) {
+          for (var i = 0; i < state.docs.length; i++) {
+            if (state.docs[i].id === del.dataset.del) {
+              state.docs[i].deleted = true;
+              state.docs[i].updated = Date.now();
+              state.docs[i].rev = 'del-' + Date.now().toString(16);
+              break;
+            }
+          }
+          if (state.activeId === del.dataset.del) state.activeId = visibleDocs()[0].id;
         } else {
           state.docs = state.docs.filter(function (d) { return d.id !== del.dataset.del; });
           if (state.activeId === del.dataset.del) state.activeId = state.docs[0].id;
@@ -856,7 +1118,9 @@
     });
 
     $('newDocBtn').addEventListener('click', function () {
-      var d = { id: uid(), title: I.t('untitledDoc'), content: '# ' + I.t('untitledDoc') + '\n\n' };
+      var nid = uid();
+      var d = { id: nid, title: I.t('untitledDoc'), content: '# ' + I.t('untitledDoc') + '\n\n',
+        file: 'doc-' + nid + '.md', updated: Date.now(), rev: newRev(), base: '', deleted: false };
       state.docs.unshift(d); state.activeId = d.id;
       renderAll(); scheduleSave(); toast(I.t('docCreated'));
       $('docTitle').focus(); $('docTitle').select();
@@ -955,6 +1219,16 @@
       e.target.value = '';
     });
 
+    /* open Markdown files into the document list (all runtimes) */
+    var openMd = $('openMdBtn');
+    if (openMd) openMd.addEventListener('click', function () { $('mdFileInput').click(); });
+    $('mdFileInput').addEventListener('change', function (e) {
+      var files = e.target.files || [];
+      for (var i = 0; i < files.length; i++) importMarkdownFile(files[i]);
+      e.target.value = '';
+      $('docPanel').hidden = true;
+    });
+
     /* documents dropdown (top-bar 文档 button) */
     $('docBtn').addEventListener('click', function (e) {
       e.stopPropagation();
@@ -1018,6 +1292,24 @@
       if (e.key === 'Escape' && !$('aboutModal').hidden) closeAbout();
     });
 
+    /* account / sign-in */
+    $('accountBtn').addEventListener('click', function (e) { e.stopPropagation(); openAccount(); });
+    $('accountClose').addEventListener('click', closeAccount);
+    $('accountModal').addEventListener('click', function (e) { if (e.target === this) closeAccount(); });
+    $('loginBtn').addEventListener('click', function () { window.UnoAuth.signIn(false); });
+    $('signupBtn').addEventListener('click', function () { window.UnoAuth.signIn(true); });
+    $('logoutBtn').addEventListener('click', function () {
+      window.UnoAuth.signOut(); closeAccount(); toast(I.t('signedOut'));
+    });
+    $('loginPasteBtn').addEventListener('click', function () {
+      var v = $('loginPaste').value.trim();
+      if (!v) return;
+      window.UnoAuth.manualComplete(v).then(function (s) { if (s) closeAccount(); });
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && !$('accountModal').hidden) closeAccount();
+    });
+
     /* ---- 移动端：底部 Tab + 抽屉 ---- */
     var ws = $('workspace');
     function isMobile() { return window.matchMedia('(max-width:900px)').matches; }
@@ -1050,7 +1342,27 @@
     if (q.has('view')) state.view = q.get('view') === 'web' ? 'web' : 'mobile';
   } catch (e) { }
   I.set(state.lang); bind(); renderAll();
+  if (window.UnoSync && UnoSync.available()) {
+    UnoSync.init({
+      getState: function () { return state; },
+      onLoad: function () { injectImportedCss(); renderAll(); },
+      onSaved: function () { $('saveState').textContent = I.t('saved'); },
+      onStatus: function (kind, report) { UnoSync.onStatus(kind, report); },
+      toast: toast
+    });
+    UnoSync.bindUI();
+    UnoSync.boot();
+  } else {
+    var syncBtn = $('syncBtn'); if (syncBtn) syncBtn.hidden = true;
+  }
   if (window.UNO_AUTO_CHECK) autoCheck();
+
+  /* account sign-in: session restore + deep-link / redirect handling */
+  if (window.UnoAuth) {
+    window.UnoAuth.init({ onChange: renderAccount, toast: toast, openExternal: openExternal, ctx: { t: I.t } });
+    window.UnoAuth.boot();
+    renderAccount();
+  }
 
   // deep links for sharing a mobile view / opening a drawer
   try {
@@ -1073,6 +1385,7 @@
     state: state, themes: T.list,
     renderAll: renderAll, richHtml: richHtml, standaloneHtml: standaloneHtml,
     importThemeFile: importThemeFile, getThemes: getThemes,
-    checkForUpdates: checkForUpdates, openAbout: openAbout, currentVersion: currentVersion
+    checkForUpdates: checkForUpdates, openAbout: openAbout, currentVersion: currentVersion,
+    openAccount: openAccount, syncNow: function () { return window.UnoSync ? UnoSync.syncNow(false) : null; }
   };
 })();

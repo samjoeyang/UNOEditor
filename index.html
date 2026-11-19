@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>UNOEditor · 排版主题编辑器</title>
-<meta name="description" content="UNOEditor 在线版：零依赖、本地优先的 Markdown 排版主题编辑器。左侧写稿、右侧实时预览，内置 11 套主题，一键复制到公众号、导出 HTML / Markdown / PDF。文档保存在你自己的浏览器里，断网可用。">
+<meta name="description" content="UNOEditor 在线版：本地优先的 Markdown 排版主题编辑器。左侧写稿、右侧实时预览，内置 11 套主题，支持 Mermaid 流程图，一键复制到公众号、导出 HTML / Markdown / PDF。文档保存在你自己的浏览器里，断网可用。">
 <meta name="robots" content="index, follow">
 <!-- 官网部署在 /app/；llms.txt 在上一级，Markdown 镜像与本页同目录 -->
 <link rel="canonical" href="https://unoeditor.zhenzhidaole.com/app/">
@@ -19,8 +19,8 @@
 <noscript>
   <div style="max-width:760px;margin:24px auto;padding:20px 24px;border:1px solid #d0d7de;border-radius:12px;font:14px/1.8 system-ui,-apple-system,sans-serif;color:#24292f;background:#fff">
     <h1 style="font-size:20px;margin:0 0 8px">UNOEditor · 在线版</h1>
-    <p style="margin:0 0 8px">这是 UNOEditor v0.1.5（MIT 许可证）的在线编辑器页面：零依赖、本地优先的 Markdown 排版主题编辑器，内置 11 套主题，支持实时预览、一键复制到公众号、导出 HTML / Markdown / PDF。文档保存在当前浏览器的 localStorage，断网可用。本页需要 JavaScript 才能编辑；本段是无脚本时给人与抓取器看的静态说明。</p>
-    <p style="margin:0">UNOEditor is a zero-dependency, local-first Markdown theme editor (v0.1.5, MIT). This interactive page needs JavaScript; documents stay in your browser's localStorage and work offline. Full documentation: <a href="../index.zh.md">中文</a> · <a href="../index.en.md">English</a> · <a href="../llms.txt">llms.txt</a> · <a href="index.md">this page in Markdown</a>.</p>
+    <p style="margin:0 0 8px">这是 UNOEditor v0.1.6（MIT 许可证）的在线编辑器页面：本地优先的 Markdown 排版主题编辑器，内置 11 套主题，支持实时预览、Mermaid 流程图、一键复制到公众号、导出 HTML / Markdown / PDF。文档保存在当前浏览器的 localStorage，断网可用。本页需要 JavaScript 才能编辑；本段是无脚本时给人与抓取器看的静态说明。</p>
+    <p style="margin:0">UNOEditor is a lightweight, local-first Markdown theme editor (v0.1.6, MIT). This interactive page needs JavaScript; documents stay in your browser's localStorage and work offline. Full documentation: <a href="../index.zh.md">中文</a> · <a href="../index.en.md">English</a> · <a href="../llms.txt">llms.txt</a> · <a href="index.md">this page in Markdown</a>.</p>
   </div>
 </noscript>
 
@@ -64,6 +64,8 @@
   <symbol id="i-github" viewBox="0 0 24 24"><path d="M9 19c-4 1.5-4-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6 0 0 0-1.3-3.2 4.3 4.3 0 0 0-.1-3.2s-1-.3-3.4 1.3a11.5 11.5 0 0 0-6 0C6.2 2.9 5.2 3.2 5.2 3.2a4.3 4.3 0 0 0-.1 3.2A4.6 4.6 0 0 0 3.8 9.6c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></symbol>
   <symbol id="i-external" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M19 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h5"/></symbol>
   <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6 8-6s8 2 8 6"/></symbol>
+  <symbol id="i-log-out" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></symbol>
 </svg>
 
 <header class="topbar">
@@ -93,6 +95,7 @@
       <div class="doc-panel" id="docPanel" hidden>
         <div class="doc-list" id="docList"></div>
         <div class="panel-div"></div>
+        <button class="text-btn" id="openMdBtn"><svg class="icon sm"><use href="#i-file"/></svg><span data-i18n="openMd">打开 .md 文件</span></button>
         <button class="text-btn" id="newDocBtn"><svg class="icon sm"><use href="#i-plus"/></svg><span data-i18n="newDoc">新建文档</span></button>
         <button class="text-btn" id="loadSampleBtn"><svg class="icon sm"><use href="#i-sparkles"/></svg><span data-i18n="loadSample">载入示例文档</span></button>
       </div>
@@ -108,6 +111,8 @@
         <button data-act="print"><svg class="icon"><use href="#i-printer"/></svg><span><b data-i18n="printPdf">打印 / 存为 PDF</b><small data-i18n="printPdfHint">按当前主题输出</small></span></button>
       </div>
     </div>
+    <button class="ghost-btn" id="syncBtn" data-i18n-title="sync" title="同步设置"><svg class="icon"><use href="#i-refresh"/></svg><span class="sync-dot idle" id="syncDot"></span></button>
+    <button class="ghost-btn" id="accountBtn" data-i18n-title="account" title="账号"><svg class="icon" id="accountIcon"><use href="#i-user"/></svg><span class="avatar" id="accountAvatar" hidden></span></button>
     <button class="ghost-btn" id="aboutBtn" data-i18n-title="about" title="关于 / 帮助"><svg class="icon"><use href="#i-info"/></svg></button>
   </div>
 </header>
@@ -217,6 +222,7 @@
   <button data-mtab="outline"><svg class="icon"><use href="#i-list"/></svg><span data-i18n="tabOutline">大纲</span></button>
 </nav>
 <input type="file" id="themeFileInput" accept=".json,application/json,.css,text/css" hidden>
+<input type="file" id="mdFileInput" accept=".md,.markdown,.txt,text/markdown,text/plain" multiple hidden>
 <div class="drawer-mask" id="drawerMask"></div>
 
 <div class="toast" id="toast"></div>
@@ -230,7 +236,7 @@
     </div>
     <div class="modal-body">
       <div class="about-version-row">
-        <div class="av-block"><span class="av-label" data-i18n="versionLabel">当前版本</span><b id="aboutVersion">v0.1.5</b></div>
+        <div class="av-block"><span class="av-label" data-i18n="versionLabel">当前版本</span><b id="aboutVersion">v0.1.6</b></div>
         <div class="av-block"><span class="av-label" data-i18n="envLabel">运行环境</span><b id="aboutEnv">网页版</b></div>
       </div>
       <div class="update-state" id="updateState"></div>
@@ -245,9 +251,96 @@
   </div>
 </div>
 
+<!-- Account / sign-in -->
+<div class="modal-mask" id="accountModal" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-label="Account">
+    <div class="modal-head">
+      <div class="modal-title"><svg class="icon"><use href="#i-user"/></svg><span data-i18n="account">账号</span></div>
+      <button class="icon-btn" id="accountClose" data-i18n-title="close" title="关闭"><svg class="icon"><use href="#i-x"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <div id="accountSignedOut">
+        <p class="account-desc" data-i18n="accountDesc">登录是可选的。文稿始终保存在本机；账号用于接下来的登录与同步能力。</p>
+        <button class="primary-btn account-btn" id="loginBtn"><svg class="icon"><use href="#i-user"/></svg><span data-i18n="accountLogin">登录 / 注册</span></button>
+        <button class="text-btn account-signup" id="signupBtn" data-i18n="accountSignUp">没有账号？去注册</button>
+        <div class="account-pending" id="loginPending" hidden>
+          <p data-i18n="loginOpening">已打开浏览器，完成登录后会自动回到编辑器…</p>
+          <details>
+            <summary data-i18n="loginManualTitle">没有自动返回？粘贴回调链接</summary>
+            <input id="loginPaste" type="text" spellcheck="false" placeholder="unoeditor://callback/?code=…">
+            <button class="ghost-btn small" id="loginPasteBtn" data-i18n="loginManualBtn">完成登录</button>
+          </details>
+        </div>
+      </div>
+      <div id="accountSignedIn" hidden>
+        <div class="account-user">
+          <span class="avatar big" id="accountAvatarBig"></span>
+          <div><b id="accountName"></b><span id="accountEmail"></span></div>
+        </div>
+        <p class="account-desc" data-i18n="accountSyncHint">多设备同步在规划中，上线后可用同一账号跨设备同步文稿。</p>
+        <button class="ghost-btn account-btn" id="logoutBtn"><svg class="icon"><use href="#i-log-out"/></svg><span data-i18n="accountLogout">退出登录</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Optional workspace sync: local folder / WebDAV / Nextcloud / S3 -->
+<div class="modal-mask" id="syncModal" hidden>
+  <div class="modal sync-modal" role="dialog" aria-modal="true" aria-label="Workspace sync">
+    <div class="modal-head">
+      <div class="modal-title"><svg class="icon"><use href="#i-refresh"/></svg><span data-i18n="syncTitle">文稿同步</span></div>
+      <button class="icon-btn" id="syncClose" data-i18n-title="close" title="关闭"><svg class="icon"><use href="#i-x"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <p class="sync-intro" data-i18n="syncIntro">文稿先保存到本机目录，再按你选择的目标同步。不注册、不经过我们的服务器。</p>
+      <label class="sync-field"><span data-i18n="syncTarget">存储目标</span>
+        <select id="syncKind">
+          <option value="local" data-i18n="targetLocal">本地目录</option>
+          <option value="webdav" data-i18n="targetWebdav">WebDAV</option>
+          <option value="nextcloud" data-i18n="targetNextcloud">Nextcloud</option>
+          <option value="s3" data-i18n="targetS3">S3 兼容对象存储</option>
+        </select>
+      </label>
+      <section class="sync-section" id="syncSecLocal">
+        <div class="sync-path-row"><code id="syncLocalDir" data-i18n="notSet">未设置</code><button class="ghost-btn small" id="syncPickDir"><span data-i18n="pickDir">选择目录</span></button></div>
+        <p class="sync-hint" data-i18n="localDirHint">该目录可直接放进 iCloud Drive / OneDrive，由系统负责跨设备同步。</p>
+      </section>
+      <section class="sync-section" id="syncSecDav" hidden>
+        <label class="sync-field"><span>URL</span><input id="syncUrl" type="text" spellcheck="false" placeholder="https://dav.example.com/notes/"></label>
+        <div class="sync-grid"><label class="sync-field"><span data-i18n="username">用户名</span><input id="syncUser" type="text" autocomplete="username"></label>
+        <label class="sync-field"><span data-i18n="password">密码</span><input id="syncPass" type="password" autocomplete="current-password"></label></div>
+      </section>
+      <section class="sync-section" id="syncSecNextcloud" hidden>
+        <p class="sync-hint" data-i18n="nextcloudHint">URL 填 https://域名/remote.php/dav/files/用户名/目录/ ，密码建议使用应用专用密码。</p>
+      </section>
+      <section class="sync-section" id="syncSecS3" hidden>
+        <div class="sync-grid"><label class="sync-field"><span>Endpoint</span><input id="syncEndpoint" type="text" spellcheck="false" placeholder="https://s3.example.com"></label>
+        <label class="sync-field"><span>Region</span><input id="syncRegion" type="text" spellcheck="false" placeholder="us-east-1"></label></div>
+        <div class="sync-grid"><label class="sync-field"><span>Bucket</span><input id="syncBucket" type="text" spellcheck="false"></label>
+        <label class="sync-field"><span data-i18n="prefix">路径前缀</span><input id="syncPrefix" type="text" spellcheck="false" placeholder="unoeditor"></label></div>
+        <div class="sync-grid"><label class="sync-field"><span>Access Key</span><input id="syncAk" type="text" spellcheck="false" autocomplete="off"></label>
+        <label class="sync-field"><span>Secret Key</span><input id="syncSk" type="password" autocomplete="off"></label></div>
+        <label class="sync-field"><span>Session Token</span><input id="syncToken" type="password" autocomplete="off"></label>
+        <label class="sync-check"><input type="checkbox" id="syncPathStyle"><span data-i18n="pathStyle">使用 path-style 地址</span></label>
+      </section>
+      <label class="sync-check"><input type="checkbox" id="syncAuto"><span data-i18n="autoSync">自动同步（保存后与启动时）</span></label>
+      <p class="sync-hint" data-i18n="secretsHint">凭证只保存在本机应用配置中，不随文稿上传。同桌多人共用设备请谨慎。</p>
+      <div class="sync-status" id="syncStatus"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="ghost-btn" id="syncTest"><span data-i18n="testConn">测试连接</span></button>
+      <span class="foot-spacer"></span>
+      <button class="ghost-btn" id="syncSave"><span data-i18n="saveSettings">保存设置</span></button>
+      <button class="primary-btn" id="syncNow"><svg class="icon"><use href="#i-refresh"/></svg><span data-i18n="syncNow">立即同步</span></button>
+    </div>
+  </div>
+</div>
+
 <script src="js/version.js"></script>
 <script src="js/markdown.js"></script>
 <script src="js/i18n.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/sync.js"></script>
 <script src="js/themes.js"></script>
 <script src="js/theme-styles.js"></script>
 <script src="js/app.js"></script>

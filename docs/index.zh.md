@@ -1,9 +1,9 @@
 # UNOEditor
 
-> UNOEditor 是一款零依赖、本地优先的 Markdown 排版主题编辑器。左侧写 Markdown，右侧实时预览成稿；内置 11 套排版主题，可一键「复制到公众号」、下载 HTML / Markdown 或打印为 PDF。它是纯静态前端，双击 `dist/index.html` 即可离线使用，断网照常写稿。账号登录即将上线（auth.zhenzhidaole.com），多设备同步规划中。当前版本 0.1.5，采用 MIT 许可证。
+> UNOEditor 是一款本地优先的 Markdown 排版主题编辑器。左侧写 Markdown，右侧实时预览成稿；内置 11 套排版主题，可一键「复制到公众号」、下载 HTML / Markdown 或打印为 PDF。它是纯静态前端，双击 `dist/index.html` 即可离线使用，断网照常写稿。账号登录已上线（v0.1.6，auth.zhenzhidaole.com），多设备同步规划中。当前版本 0.1.6，采用 MIT 许可证。
 >
 > 官网：https://unoeditor.zhenzhidaole.com/ · 仓库：https://github.com/samjoeyang/UNOEditor
-> 本文内容最后核对：2026-11-19 · 对应版本：v0.1.5
+> 本文内容最后核对：2026-11-19 · 对应版本：v0.1.6
 
 ## 关键事实
 
@@ -11,18 +11,18 @@
 | --- | --- |
 | 软件名称 / 仓库名 | UNOEditor（https://github.com/samjoeyang/UNOEditor） |
 | 桌面应用 identifier | `com.unoeditor.app` |
-| 当前版本 | 0.1.5 |
+| 当前版本 | 0.1.6 |
 | 许可证 | MIT（见仓库根目录 `LICENSE`） |
 | 费用 | 免费、无广告、无功能限制 |
-| 技术栈 | 原生 HTML / CSS / JavaScript，零第三方运行时依赖；图标为内联 Lucide SVG sprite；主题 CSS 以字符串内嵌并运行时注入 |
+| 技术栈 | 原生 HTML / CSS / JavaScript；图标为内联 Lucide SVG sprite；主题 CSS 以字符串内嵌并运行时注入 |
 | 桌面壳 | Tauri 2（Rust），最低 macOS 10.15，bundle targets 为 all |
 | 内置主题数 | 11 套 |
 | 导出方式 | 4 种（复制到公众号、HTML、Markdown、打印/存为 PDF） |
 | 界面语言 | 中文、英文，一键切换 |
 | 数据存储 | 仅浏览器 `localStorage`（桌面壳为 WebView 本地存储） |
-| 网络请求 | 应用除可选的「检查更新」（查询 GitHub Releases API）外不发起网络请求；官网下载区同样查询该 API |
-| 路线图 | 账号登录即将上线（auth.zhenzhidaole.com）；多设备同步规划中 |
-| 预编译安装包 | v0.1.5 已发布：macOS / Windows / Linux 桌面安装包（见 GitHub Releases） |
+| 网络请求 | 应用自身的联网功能均为可选项：「检查更新」（GitHub Releases API）与账号登录（auth.zhenzhidaole.com）；官网下载区同样查询该 API |
+| 账号与同步 | 账号登录已上线（auth.zhenzhidaole.com，可选）；多设备同步规划中 |
+| 预编译安装包 | v0.1.6 已发布：macOS / Windows / Linux 桌面安装包（见 GitHub Releases） |
 
 ## 它能做什么
 
@@ -33,7 +33,7 @@
 5. **一键复制到公众号**：导出时递归遍历预览 DOM，用 `getComputedStyle` 把样式写成内联属性，并把根节点改为 `section`（微信编辑器会过滤 `article` 与 `class`），粘贴后即为预览版式。
 6. **四种交付方式**：复制到公众号（富文本）、下载内嵌主题样式的独立 HTML、下载 Markdown 源文件、打印或存为 PDF。
 7. **大纲与多文档**：H1–H6 自动生成文章大纲，点击跳转；文档列表在顶栏下拉。
-8. **本地优先，离线可用**：写作与排版全部在本机完成，断网照常写稿；文档与自定义主题保存在浏览器本地存储。账号登录即将上线，多设备同步规划中（见「关键事实」表）。
+8. **本地优先，离线可用**：写作与排版全部在本机完成，断网照常写稿；文档与自定义主题保存在浏览器本地存储。账号登录已上线（可选），多设备同步规划中（见「关键事实」表）。
 9. **桌面 + 移动端**：窄屏自动切换为「编辑 / 预览 / 大纲」底部标签与抽屉式主题面板；另有 Tauri 2 桌面壳可自行构建。
 
 工作区为三栏：左侧文章大纲、中间 Markdown 编辑器、右侧排版预览；主题走顶栏右侧抽屉。
@@ -88,21 +88,21 @@
 
 ## 下载状态
 
-UNOEditor **v0.1.5 已于 2026-11-16 发布**，GitHub Releases 提供预编译桌面安装包：macOS（Apple Silicon / Intel）选 `.dmg`，Windows 选 `.msi` / `.exe`，Linux 选 `.deb` / `.AppImage` / `.rpm`。官网下载区动态读取 GitHub Releases API，自动列出最新版本并按访问者系统高亮推荐。在线版与本地文件无需安装即可使用。
+UNOEditor **v0.1.6 已于 2026-11-16 发布**，GitHub Releases 提供预编译桌面安装包：macOS（Apple Silicon / Intel）选 `.dmg`，Windows 选 `.msi` / `.exe`，Linux 选 `.deb` / `.AppImage` / `.rpm`。官网下载区动态读取 GitHub Releases API，自动列出最新版本并按访问者系统高亮推荐。在线版与本地文件无需安装即可使用。
 
-**macOS 首次打开**：v0.1.5 的 `.dmg` 内 `.app` 已做 ad-hoc 签名（`bundle.macOS.signingIdentity: "-"`），不会再报「已损坏」。但因未做 Apple 公证，首次打开可能提示「无法验证开发者」，在访达中右键点击 UNOEditor →「打开」，或到「系统设置 → 隐私与安全性 → 仍要打开」放行一次即可；也可执行 `xattr -cr /Applications/UNOEditor.app` 清除隔离属性。若仍在使用 v0.1.0 旧包（无 bundle 签名、会被报「已损坏」），请直接下载 v0.1.5。另请选对架构：Apple Silicon 用 `aarch64.dmg`，Intel 用 `x64.dmg`。
+**macOS 首次打开**：v0.1.6 的 `.dmg` 内 `.app` 已做 ad-hoc 签名（`bundle.macOS.signingIdentity: "-"`），不会再报「已损坏」。但因未做 Apple 公证，首次打开可能提示「无法验证开发者」，在访达中右键点击 UNOEditor →「打开」，或到「系统设置 → 隐私与安全性 → 仍要打开」放行一次即可；也可执行 `xattr -cr /Applications/UNOEditor.app` 清除隔离属性。若仍在使用 v0.1.0 旧包（无 bundle 签名、会被报「已损坏」），请直接下载 v0.1.6。另请选对架构：Apple Silicon 用 `aarch64.dmg`，Intel 用 `x64.dmg`。
 
 ## 隐私与数据
 
-写作与排版全部在本机完成，断网可完整使用。当前文档与自定义主题只保存在浏览器 `localStorage`（桌面壳中是 WebView 本地存储），不上传服务器；应用唯一的外部请求是可选的「检查更新」，每 24 小时至多查询一次 GitHub Releases API。清除浏览器数据会一并清除文档，重要稿件建议用「下载 Markdown」另存一份。账号登录即将上线、多设备同步规划中：功能落地后本节会同步更新说明。官网页面使用 Google Tag Manager 统计访问量，不读取编辑器内的文稿；官网不加载第三方字体或 CDN。
+写作与排版全部在本机完成，断网可完整使用。当前文档与自定义主题只保存在浏览器 `localStorage`（桌面壳中是 WebView 本地存储），不上传服务器；应用自身的联网功能均为可选项：检查更新（每 24 小时至多查询一次 GitHub Releases API）与账号登录（auth.zhenzhidaole.com）。清除浏览器数据会一并清除文档，重要稿件建议用「下载 Markdown」另存一份。账号登录已上线（v0.1.6，可选），多设备同步规划中：功能落地后本节会同步更新说明。官网页面使用 Google Tag Manager 统计访问量，不读取编辑器内的文稿；官网不加载第三方字体或 CDN。
 
 ## 常见问题
 
 **问：需要联网、注册账号或装运行环境吗？**
-答：目前都不需要。UNOEditor 是原生 HTML / CSS / JavaScript，零第三方运行时依赖，图标和主题样式全部内嵌。双击 `dist/index.html` 就能在 `file://` 下运行，断网照常写稿。账号登录即将上线（auth.zhenzhidaole.com），上线后也是可选的，不登录、断网依然可以完整写稿。
+答：目前都不需要。UNOEditor 是原生 HTML / CSS / JavaScript，图标和主题样式全部内嵌。双击 `dist/index.html` 就能在 `file://` 下运行，断网照常写稿。账号登录已上线（v0.1.6，auth.zhenzhidaole.com），登录是可选的，不登录、断网依然可以完整写稿。
 
 **问：我的文章会被上传吗？存在哪里？**
-答：当前不会。文档与自定义主题保存在浏览器 `localStorage`（桌面壳中是 WebView 本地存储），除可选的「检查更新」外应用不发起网络请求。清除浏览器数据会一并清除文档，重要稿件建议导出 Markdown 另存。多设备同步在规划中，该功能上线之前，文档不会离开你的设备。
+答：当前不会。文档与自定义主题保存在浏览器 `localStorage`（桌面壳中是 WebView 本地存储），不上传服务器；应用自身的联网功能只有可选的「检查更新」与可选的账号登录。清除浏览器数据会一并清除文档，重要稿件建议导出 Markdown 另存。多设备同步在规划中，该功能上线之前，文档不会离开你的设备。
 
 **问：「复制到公众号」真的是所见即所得吗？**
 答：是。导出时遍历预览 DOM，用 `getComputedStyle` 把样式递归写成内联属性，并把根节点改为 `section`（微信编辑器会过滤 `article` 与 `class`）。粘贴后即为预览版式。

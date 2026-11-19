@@ -155,6 +155,13 @@
         i++;
         while (i < lines.length && !/^\s*```\s*$/.test(lines[i])) { buf.push(lines[i]); i++; }
         i++;
+        // mermaid diagrams: keep the same pre/code structure as normal code
+        // blocks (renders as source until app.js swaps in the SVG)
+        if (/^mermaid$/i.test(lang)) {
+          out.push('<div class="mermaid-wrap"><pre class="mermaid-src"><span class="code-lang">mermaid</span><code>' +
+            esc(buf.join('\n')) + '</code></pre></div>');
+          continue;
+        }
         out.push('<pre><span class="code-lang">' + esc(lang || 'text') + '</span><code>' +
           esc(buf.join('\n')) + '</code></pre>');
         continue;

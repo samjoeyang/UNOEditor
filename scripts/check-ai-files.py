@@ -203,12 +203,15 @@ for rel in ["index.html", "index.zh.md", "index.en.md", "llms.txt", "assets/app.
     check(not any(s in txt for s in STALE_RELEASE), f"{rel} 无过时的「未发布」表述")
     check(bool(VER) and f"v{VER}" in txt, f"{rel} 标注 v{VER}")
 
-# --- 13. 产品定位 v2（2026-11-19）：停用「零上传 / 不发起任何网络请求」等旧定位话术 ---
-STALE_POSITIONING = ["零上传", "不发起任何网络请求", "Local-only, zero uploads",
-                     "zero uploads", "makes no network requests", "no network requests"]
+# --- 13. 产品定位 v2（2026-11-19）：停用「零上传 / 不发起任何网络请求 / 零依赖」等旧定位话术 ---
+STALE_POSITIONING = ["零上传", "不发起任何网络请求", "不发起网络请求", "零依赖",
+                     "零第三方运行时依赖", "Local-only, zero uploads",
+                     "zero uploads", "makes no network requests", "no network requests",
+                     "zero-dependency", "zero dependencies", "zero runtime dependencies",
+                     "No runtime dependencies", "only network call", "only external request"]
 for rel in ["index.html", "index.zh.md", "index.en.md", "llms.txt"]:
     txt = read(rel)
-    check(not any(s in txt for s in STALE_POSITIONING), f"{rel} 无旧定位话术（零上传/零网络请求）")
+    check(not any(s in txt for s in STALE_POSITIONING), f"{rel} 无旧定位话术（零上传/零网络请求/零依赖）")
 check("auth.zhenzhidaole.com" in read("index.zh.md"), "index.zh.md 含账号登录路线图")
 check("auth.zhenzhidaole.com" in read("index.en.md"), "index.en.md 含账号登录路线图")
 

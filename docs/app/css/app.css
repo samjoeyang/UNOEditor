@@ -188,6 +188,17 @@ button{cursor:pointer;border:0;background:none;color:inherit}
 .paper.dark .phone-notch{background:#0a0b0d}
 .md-body pre{overflow-x:auto;max-width:100%}
 
+/* ---------- mermaid diagrams ---------- */
+/* Until the engine renders a diagram, the block keeps the normal code-block
+   look (.mermaid-src pre); on success the source is swapped for the SVG. */
+.md-body .mermaid-wrap{margin:1.2em 0;text-align:center}
+.md-body .mermaid-svg{overflow-x:auto;overflow-y:hidden}
+.md-body .mermaid-wrap svg{max-width:none;height:auto;display:block;margin:0 auto}
+.md-body .mermaid-wrap.mermaid-error{text-align:left}
+.md-body .mermaid-note{font-size:12px;opacity:.7;margin-top:6px;text-align:left}
+#unoPrintRoot .md-body .mermaid-wrap{page-break-inside:avoid;break-inside:avoid}
+#unoPrintRoot .md-body .mermaid-note{display:none}
+
 /* ---------- misc ---------- */
 .toast{position:fixed;left:50%;bottom:28px;transform:translate(-50%,14px);background:#1c1f23;color:#fff;
   padding:10px 18px;border-radius:9px;font-size:12px;box-shadow:var(--ui-shadow);opacity:0;
@@ -239,6 +250,29 @@ button{cursor:pointer;border:0;background:none;color:inherit}
 .ghost-link{width:auto;color:#5b616b;text-decoration:none}
 .ghost-link:hover{background:var(--ui-hover);color:var(--ui-text)}
 body.modal-open{overflow:hidden}
+/* ---------- workspace sync ---------- */
+.sync-modal{width:520px;max-height:min(88vh,760px);overflow:auto}
+.sync-intro{font-size:11.5px;line-height:1.6;color:var(--ui-muted);margin:0 0 14px}
+.sync-field{display:flex;flex-direction:column;gap:5px;margin-bottom:10px;font-size:11.5px;color:#525860}
+.sync-field input,.sync-field select{height:32px;border:1px solid var(--ui-border);border-radius:7px;
+  padding:0 9px;font-size:12px;background:#fff;color:var(--ui-text);outline:none;width:100%}
+.sync-field input:focus,.sync-field select:focus{border-color:#9aa0aa;box-shadow:0 0 0 3px rgba(20,24,30,.05)}
+.sync-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.sync-section{border:1px solid var(--ui-border-soft);border-radius:10px;padding:12px;margin-bottom:12px;background:#fafbfc}
+.sync-section[hidden]{display:none}
+.sync-path-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.sync-path-row code{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  font-size:11px;background:#fff;border:1px solid var(--ui-border);border-radius:6px;padding:7px 8px}
+.sync-hint{font-size:10.5px;line-height:1.6;color:var(--ui-muted);margin:6px 0 0}
+.sync-check{display:flex;align-items:center;gap:8px;font-size:12px;margin:8px 0 12px;color:#4a5059}
+.sync-status{border-top:1px solid var(--ui-border-soft);padding-top:10px;font-size:11px;line-height:1.7;color:#5c626b}
+.sync-path{font-family:ui-monospace,monospace;word-break:break-all}
+.sync-summary{color:#2f6b4f}.sync-warn{color:#9a6400}.sync-error{color:#b42318;word-break:break-all}
+.sync-dot{width:6px;height:6px;border-radius:50%;background:#c3c7ce;margin-left:-4px}
+.sync-dot.running{background:#d99a00;animation:unoPulse 1s infinite}
+.sync-dot.done{background:#1d9e75}.sync-dot.fail{background:#d92d20}
+@keyframes unoPulse{50%{opacity:.35}}
+@media(max-width:900px){.sync-grid{grid-template-columns:1fr}}
 
 /* ---------- outline (left panel) ---------- */
 .outline-list{display:flex;flex-direction:column;gap:1px}
@@ -404,3 +438,19 @@ body.uno-printing>#unoPrintRoot{display:block;position:fixed;inset:0;z-index:100
   .view-mobile .md-body,.view-web .md-body{padding:0!important;min-height:0!important;
     background:var(--c-surface)!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
 }
+
+/* ---------- account / sign-in modal ---------- */
+.account-desc{font-size:12.5px;line-height:1.7;color:var(--ui-muted);margin:0 0 14px}
+.account-btn{width:100%;justify-content:center;margin-top:10px}
+.account-signup{margin-top:10px}
+.account-pending{margin-top:14px;border-top:1px solid var(--ui-border-soft);padding-top:12px}
+.account-pending p{font-size:12.5px;color:#4a5059;margin:0 0 8px;line-height:1.6}
+.account-pending details summary{font-size:12px;color:var(--ui-muted);cursor:pointer;margin-bottom:8px}
+.account-pending input{width:100%;font:12px/1.4 var(--ui-mono,SFMono-Regular,Menlo,monospace);padding:8px 10px;
+  border:1px solid var(--ui-border);border-radius:8px;margin-bottom:8px;color:var(--ui-text);background:var(--ui-surface)}
+.account-user{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.account-user b{display:block;font-size:14.5px;color:var(--ui-text)}
+.account-user span:not(.avatar){display:block;font-size:12px;color:var(--ui-muted);margin-top:2px;word-break:break-all}
+.avatar{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;
+  background:linear-gradient(135deg,#6b4f8a,#1d9e75);color:#fff;font-size:15px;font-weight:700;flex:none;user-select:none}
+.avatar.big{width:46px;height:46px;font-size:20px}
