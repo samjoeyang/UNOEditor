@@ -321,13 +321,18 @@
 
   /* ---------------- mermaid diagrams (vendored, lazy-loaded, offline) ---------------- */
   var mermaidPromise = null, mermaidSeq = 0, mermaidTimer = null;
+  var mermaidReady = false; // 仅在真实库加载成功后置位；<h1 id="mermaid"> 等命名元素会污染 window.mermaid，不能作为判据
   function ensureMermaid() {
-    if (window.mermaid) return Promise.resolve();
+    if (mermaidReady && window.mermaid && window.mermaid.render) return Promise.resolve();
     if (!mermaidPromise) {
       mermaidPromise = new Promise(function (resolve, reject) {
         var s = document.createElement('script');
         s.src = 'js/vendor/mermaid.min.js';
-        s.onload = resolve;
+        s.onload = function () {
+          // UMD 会覆盖掉同名命名元素全局；再校验一次 render 可用
+          if (window.mermaid && window.mermaid.render) { mermaidReady = true; resolve(); }
+          else { mermaidPromise = null; reject(new Error('mermaid load failed')); }
+        };
         s.onerror = function () { mermaidPromise = null; reject(new Error('mermaid load failed')); };
         document.head.appendChild(s);
       });
@@ -339,6 +344,9 @@
       startOnLoad: false,
       securityLevel: 'strict',
       theme: theme().dark ? 'dark' : 'neutral',
+      // mermaid v12 起顶层 htmlLabels 才生效（flowchart.htmlLabels 被忽略）；
+      // 关掉是为了公众号复制走 canvas 转 PNG 时不受 foreignObject 影响
+      htmlLabels: false,
       flowchart: { htmlLabels: false },
       sequence: { useMaxWidth: true }
     });
@@ -356,11 +364,13 @@
         var code = wrap.querySelector('pre code');
         var src = code ? code.textContent : '';
         if (!src.trim()) return;
-        // mermaid v9's render() may return the SVG string synchronously OR a
-        // promise depending on call context — normalize both through Promise.resolve
+        // render() 形态归一化：v9 可能同步返回 SVG 字符串或 Promise；
+        // v10+ 返回 Promise<{svg}>。统一归一成 SVG 字符串。
         jobs.push(Promise.resolve().then(function () {
           return window.mermaid.render('uno-mmd-' + (++mermaidSeq), src);
-        }).then(function (svg) {
+        }).then(function (out) {
+          var svg = typeof out === 'string' ? out : (out && out.svg) || '';
+          if (!svg) throw new Error('empty svg');
           wrap.dataset.done = '1';
           wrap.innerHTML = '<div class="mermaid-svg">' + svg + '</div>';
           // mermaid emits width:100% + max-width:<natural px>. In a narrow
