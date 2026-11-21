@@ -1,9 +1,9 @@
 # UNOEditor
 
-> UNOEditor 是一款本地优先的 Markdown 排版主题编辑器。左侧写 Markdown，右侧实时预览成稿；内置 11 套排版主题，可一键「复制到公众号」、下载 HTML / Markdown 或打印为 PDF。它是纯静态前端，双击 `dist/index.html` 即可离线使用，断网照常写稿。账号登录已上线（v0.1.6，auth.zhenzhidaole.com），多设备同步规划中。当前版本 0.1.6，采用 MIT 许可证。
+> UNOEditor 是一款本地优先的 Markdown 排版主题编辑器：左侧写稿、右侧实时预览，写完即可一键复制到公众号或导出 HTML / Markdown / PDF。内置 11 套主题与 Mermaid 流程图，可导入 GitHub / Typora / Obsidian 主题 CSS；文档默认保存在本机，断网照常写稿。账号登录可选，桌面版另提供由用户自选目标并显式开启的同步（本地目录 / WebDAV / Nextcloud / S3，默认关闭，凭证只存本机）。当前版本 0.1.6，采用 MIT 许可证。
 >
 > 官网：https://unoeditor.zhenzhidaole.com/ · 仓库：https://github.com/samjoeyang/UNOEditor
-> 本文内容最后核对：2026-11-19 · 对应版本：v0.1.6
+> 本文内容最后核对：2026-11-21 · 对应版本：v0.1.6
 
 ## 关键事实
 
@@ -14,27 +14,29 @@
 | 当前版本 | 0.1.6 |
 | 许可证 | MIT（见仓库根目录 `LICENSE`） |
 | 费用 | 免费、无广告、无功能限制 |
-| 技术栈 | 原生 HTML / CSS / JavaScript；图标为内联 Lucide SVG sprite；主题 CSS 以字符串内嵌并运行时注入 |
+| 技术栈 | 原生 HTML / CSS / JavaScript；图标为内联 Lucide SVG sprite；Mermaid 引擎随应用本地打包；主题 CSS 以字符串内嵌并运行时注入 |
 | 桌面壳 | Tauri 2（Rust），最低 macOS 10.15，bundle targets 为 all |
 | 内置主题数 | 11 套 |
+| Markdown 扩展 | Mermaid 流程图：离线渲染为矢量图；复制到公众号时转为 PNG |
 | 导出方式 | 4 种（复制到公众号、HTML、Markdown、打印/存为 PDF） |
 | 界面语言 | 中文、英文，一键切换 |
-| 数据存储 | 仅浏览器 `localStorage`（桌面壳为 WebView 本地存储） |
+| 数据存储 | 浏览器 `localStorage`（桌面壳为 WebView 本地存储）；桌面版可显式开启同步到本地目录 / WebDAV / Nextcloud / S3（默认关闭，凭证仅存本机） |
 | 网络请求 | 应用自身的联网功能均为可选项：「检查更新」（GitHub Releases API）与账号登录（auth.zhenzhidaole.com）；官网下载区同样查询该 API |
-| 账号与同步 | 账号登录已上线（auth.zhenzhidaole.com，可选）；多设备同步规划中 |
+| 账号与同步 | 账号登录已上线（auth.zhenzhidaole.com，可选）；桌面版可选同步：本地目录 / WebDAV / Nextcloud / S3（默认关闭，凭证仅存本机） |
 | 预编译安装包 | v0.1.6 已发布：macOS / Windows / Linux 桌面安装包（见 GitHub Releases） |
 
 ## 它能做什么
 
 1. **实时双栏预览**：左边写稿，右边即时看到成稿排版，支持手机 / 网页两种预览模式。
-2. **11 套内置主题**：点选即换，主题元数据在 `js/themes.js`，样式在 `js/theme-styles.js`。
-3. **导入任意主题文件**：支持 `.json` 与 `.css`。导入器把 `.markdown-body`（GitHub）、`#write`（Typora）、`.markdown-preview-view` / `.cm-editor`（Obsidian）等根选择器自动适配到 `.md-body`，并做安全清洗与作用域隔离，随 `localStorage` 持久化。基础标签样式通用可生效；市场特有的 class（例如 Obsidian 的 `.callout`）不会生效。
-4. **微调不必改 CSS**：可调字号、行高、强调色，并可一键重置。
-5. **一键复制到公众号**：导出时递归遍历预览 DOM，用 `getComputedStyle` 把样式写成内联属性，并把根节点改为 `section`（微信编辑器会过滤 `article` 与 `class`），粘贴后即为预览版式。
-6. **四种交付方式**：复制到公众号（富文本）、下载内嵌主题样式的独立 HTML、下载 Markdown 源文件、打印或存为 PDF。
-7. **大纲与多文档**：H1–H6 自动生成文章大纲，点击跳转；文档列表在顶栏下拉。
-8. **本地优先，离线可用**：写作与排版全部在本机完成，断网照常写稿；文档与自定义主题保存在浏览器本地存储。账号登录已上线（可选），多设备同步规划中（见「关键事实」表）。
-9. **桌面 + 移动端**：窄屏自动切换为「编辑 / 预览 / 大纲」底部标签与抽屉式主题面板；另有 Tauri 2 桌面壳可自行构建。
+2. **Mermaid 流程图**：`mermaid` 代码块由随应用打包的引擎离线渲染为矢量图；复制到公众号时转为 PNG，避免微信编辑器过滤 SVG。
+3. **11 套内置主题**：点选即换，主题元数据在 `js/themes.js`，样式在 `js/theme-styles.js`。
+4. **导入任意主题文件**：支持 `.json` 与 `.css`。导入器把 `.markdown-body`（GitHub）、`#write`（Typora）、`.markdown-preview-view` / `.cm-editor`（Obsidian）等根选择器自动适配到 `.md-body`，并做安全清洗与作用域隔离，随 `localStorage` 持久化。基础标签样式通用可生效；市场特有的 class（例如 Obsidian 的 `.callout`）不会生效。
+5. **微调不必改 CSS**：可调字号、行高、强调色，并可一键重置。
+6. **一键复制到公众号**：导出时递归遍历预览 DOM，用 `getComputedStyle` 把样式写成内联属性，并把根节点改为 `section`（微信编辑器会过滤 `article` 与 `class`），粘贴后即为预览版式。
+7. **四种交付方式**：复制到公众号（富文本）、下载内嵌主题样式的独立 HTML、下载 Markdown 源文件、打印或存为 PDF。
+8. **大纲与多文档**：H1–H6 自动生成文章大纲，点击跳转；文档列表在顶栏下拉。
+9. **本地优先，离线可用**：写作与排版全部在本机完成，断网照常写稿。文档默认保存在浏览器本地存储；桌面版可选「文稿同步」，把每篇文稿存成 Markdown 文件并同步到你指定的本地目录 / WebDAV / Nextcloud / S3，默认关闭（见「关键事实」与「隐私与数据」）。
+10. **桌面 + 移动端**：窄屏自动切换为「编辑 / 预览 / 大纲」底部标签与抽屉式主题面板；另有 Tauri 2 桌面壳可自行构建。
 
 工作区为三栏：左侧文章大纲、中间 Markdown 编辑器、右侧排版预览；主题走顶栏右侧抽屉。
 
@@ -69,7 +71,7 @@
 | `english.png` | 一键切换英文界面，主题名称与说明同样双语 |
 | `mobile.png` | 窄屏变为编辑 / 预览 / 大纲三个底部标签，主题走抽屉 |
 
-## 三种用法（当前无需账号）
+## 三种用法（账号与同步按需开启）
 
 1. **在线试用（最快）**：打开 https://unoeditor.zhenzhidaole.com/app/ ，功能与本地版一致，数据仍只存在自己的浏览器里。
 2. **本地文件（最省心）**：克隆仓库后双击 `dist/index.html`，或用任意静态服务器打开。零构建、零安装，`file://` 直接可用、断网照常写稿。
@@ -88,21 +90,21 @@
 
 ## 下载状态
 
-UNOEditor **v0.1.6 已于 2026-11-16 发布**，GitHub Releases 提供预编译桌面安装包：macOS（Apple Silicon / Intel）选 `.dmg`，Windows 选 `.msi` / `.exe`，Linux 选 `.deb` / `.AppImage` / `.rpm`。官网下载区动态读取 GitHub Releases API，自动列出最新版本并按访问者系统高亮推荐。在线版与本地文件无需安装即可使用。
+UNOEditor **v0.1.6 已于 2026-11-21 发布**：新增可选账号登录（OAuth 2.0 + PKCE）、桌面版自选目标同步（本地目录 / WebDAV / Nextcloud / S3，默认关闭）、离线 Mermaid 升级到 12.3.0，并改进分栏拖动与大纲实时跟随。GitHub Releases 提供预编译桌面安装包：macOS（Apple Silicon / Intel）选 `.dmg`，Windows 选 `.msi` / `.exe`，Linux 选 `.deb` / `.AppImage` / `.rpm`。官网下载区动态读取 GitHub Releases API，自动列出最新版本并按访问者系统高亮推荐。在线版与本地文件无需安装即可使用。
 
 **macOS 首次打开**：v0.1.6 的 `.dmg` 内 `.app` 已做 ad-hoc 签名（`bundle.macOS.signingIdentity: "-"`），不会再报「已损坏」。但因未做 Apple 公证，首次打开可能提示「无法验证开发者」，在访达中右键点击 UNOEditor →「打开」，或到「系统设置 → 隐私与安全性 → 仍要打开」放行一次即可；也可执行 `xattr -cr /Applications/UNOEditor.app` 清除隔离属性。若仍在使用 v0.1.0 旧包（无 bundle 签名、会被报「已损坏」），请直接下载 v0.1.6。另请选对架构：Apple Silicon 用 `aarch64.dmg`，Intel 用 `x64.dmg`。
 
 ## 隐私与数据
 
-写作与排版全部在本机完成，断网可完整使用。当前文档与自定义主题只保存在浏览器 `localStorage`（桌面壳中是 WebView 本地存储），不上传服务器；应用自身的联网功能均为可选项：检查更新（每 24 小时至多查询一次 GitHub Releases API）与账号登录（auth.zhenzhidaole.com）。清除浏览器数据会一并清除文档，重要稿件建议用「下载 Markdown」另存一份。账号登录已上线（v0.1.6，可选），多设备同步规划中：功能落地后本节会同步更新说明。官网页面使用 Google Tag Manager 统计访问量，不读取编辑器内的文稿；官网不加载第三方字体或 CDN。
+写作与排版全部在本机完成，断网可完整使用。当前文档与自定义主题只保存在浏览器 `localStorage`（桌面壳中是 WebView 本地存储），不上传服务器；应用自身的联网功能均为可选项：检查更新（每 24 小时至多查询一次 GitHub Releases API）与账号登录（auth.zhenzhidaole.com）。清除浏览器数据会一并清除文档，重要稿件建议用「下载 Markdown」另存一份。账号登录已上线（v0.1.6，可选）。桌面版 v0.1.6 起提供可选同步：在「同步」设置中选择本机目录并（可选）填写 WebDAV / Nextcloud / S3 目标后才会启用；文稿以 Markdown 原文 + front matter 存放，冲突会生成独立副本而非静默覆盖；凭证只保存在本机应用配置，不随文稿上传。默认不同步，网页版不支持文稿同步。官网页面使用 Google Tag Manager 统计访问量，不读取编辑器内的文稿；官网不加载第三方字体或 CDN。
 
 ## 常见问题
 
 **问：需要联网、注册账号或装运行环境吗？**
-答：目前都不需要。UNOEditor 是原生 HTML / CSS / JavaScript，图标和主题样式全部内嵌。双击 `dist/index.html` 就能在 `file://` 下运行，断网照常写稿。账号登录已上线（v0.1.6，auth.zhenzhidaole.com），登录是可选的，不登录、断网依然可以完整写稿。
+答：写稿不需要联网、账号或额外运行环境。UNOEditor 是原生 HTML / CSS / JavaScript，图标、主题样式与 Mermaid 引擎全部随应用打包。双击 `dist/index.html` 就能在 `file://` 下运行，断网照常写稿。账号登录已上线（v0.1.6，auth.zhenzhidaole.com），但完全可选；不登录、断网依然可以完整写稿与导出。
 
 **问：我的文章会被上传吗？存在哪里？**
-答：当前不会。文档与自定义主题保存在浏览器 `localStorage`（桌面壳中是 WebView 本地存储），不上传服务器；应用自身的联网功能只有可选的「检查更新」与可选的账号登录。清除浏览器数据会一并清除文档，重要稿件建议导出 Markdown 另存。多设备同步在规划中，该功能上线之前，文档不会离开你的设备。
+答：默认情况下不会。文稿与自定义主题保存在浏览器本地存储（桌面壳中为 WebView 本地存储）。应用自身的联网功能只有可选的「检查更新」与可选的账号登录。桌面版可主动开启同步：文稿先写入你选择的本机目录，再按需推送到你自己填写的 WebDAV / Nextcloud / S3 目标；不开启就不会上传。清除浏览器数据会清除本地存储中的文稿，建议先开启同步或导出 Markdown。
 
 **问：「复制到公众号」真的是所见即所得吗？**
 答：是。导出时遍历预览 DOM，用 `getComputedStyle` 把样式递归写成内联属性，并把根节点改为 `section`（微信编辑器会过滤 `article` 与 `class`）。粘贴后即为预览版式。

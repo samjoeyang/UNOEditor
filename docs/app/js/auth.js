@@ -1,8 +1,8 @@
 /* UNOEditor — 账号登录（OAuth 2.0 Authorization Code + PKCE）
- * 授权服务器：auth.zhenzhidaole.com（Logto）
+ * 授权服务器：auth.zhenzhidaole.com（Better Auth OAuth 2.1 Provider）
  * 桌面版：系统浏览器完成登录，unoeditor://callback/ 深链返回，token 交换走 Rust 命令（无 CORS 限制）。
  * 网页版：整页跳转授权，回调 https://unoeditor.zhenzhidaole.com/app/?code=…，token 交换走 fetch
- *         （要求 Logto 侧登记该 redirect URI 并放行 CORS 源）。
+ *         （要求授权服务端登记该 redirect URI 并放行 CORS 源）。
  * 会话只存本机 localStorage；登录是可选能力，不登录不影响任何编辑功能。 */
 (function (global) {
   'use strict';
@@ -290,13 +290,21 @@
   }
 
   function signOut() {
-    var s = getSession();
     clearSession();
     clearFlow();
     emitChange();
     var end = EP().endSession;
-    if (s && s.idToken) end += '?id_token_hint=' + encodeURIComponent(s.idToken);
-    if (redirectUri()) end += '&post_logout_redirect_uri=' + encodeURIComponent(redirectUri());
+    var params = [];
+    /* Better Auth end-session：无 id_token_hint 时走浏览器确认页。
+       回跳统一用网页 URL —— 自定义 scheme（unoeditor://）不是合法浏览器导航目标，
+       确认后会停在 IdP 页面，再点则 state 已消费报 invalid or expired。
+       post_logout_redirect_uri 须精确匹配服务端注册项。 */
+    var uri = CFG.webRedirect;
+    if (uri) {
+      params.push('client_id=' + encodeURIComponent(CFG.clientId));
+      params.push('post_logout_redirect_uri=' + encodeURIComponent(uri));
+    }
+    if (params.length) end += '?' + params.join('&');
     if (isTauri()) openBrowser(end);
     else if (global.location) global.location.assign(end);
   }
@@ -321,6 +329,13 @@
       if (!T || !T.deepLink || !T.event || !T.event.listen) return;
       T.deepLink.onOpenUrl(function (urls) {
         if (urls && urls.length) handleUrl(urls[0]);
+      });
+      // 应用已在运行时，macOS 会启动第二实例并把深链放进 argv；
+      // single-instance 插件把它作为 uno-deep-link 事件转发到本实例。
+      T.event.listen('uno-deep-link', function (e) {
+        var urls = e && e.payload;
+        if (Array.isArray(urls) && urls.length) handleUrl(urls[0]);
+        else if (typeof urls === 'string' && urls.indexOf('unoeditor://') === 0) handleUrl(urls);
       });
       T.deepLink.getCurrent().then(function (url) {
         if (url && String(url).indexOf('unoeditor://') === 0) handleUrl(url);

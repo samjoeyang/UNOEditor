@@ -1,5 +1,11 @@
 # WorkBuddy 项目数据（本地记忆/配置，不入库）
 .workbuddy/
+.ai-memory/
+
+# 本地交付/测试产物
+/outputs/
+/screenshots/
+/package-lock.json
 
 # OS / 编辑器文件
 .DS_Store

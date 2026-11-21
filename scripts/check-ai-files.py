@@ -57,7 +57,7 @@ for token in [
     'rel="describedby"', 'rel="alternate" type="text/markdown"',
     'hreflang="en"', 'rel="canonical" href="' + DOMAIN + '/"',
     'og:image:alt', 'lang="zh-CN" data-lang="zh"', 'lang="en" data-lang="en"',
-    '<time datetime="2026-11-19">', '<noscript>',
+    '<time datetime="2026-11-21">', '<noscript>',
 ]:
     check(token in home, f"首页含 {token[:52]}")
 
@@ -73,7 +73,7 @@ if m:
         check(app.get("license", "").endswith("/mit"), "JSON-LD license = MIT")
         check(app.get("isAccessibleForFree") is True, "JSON-LD isAccessibleForFree")
         check(len(app.get("screenshot", [])) == 8, "JSON-LD 8 张截图")
-        check(len(app.get("featureList", [])) == 10, "JSON-LD 10 项功能")
+        check(len(app.get("featureList", [])) == 12, "JSON-LD 12 项功能")
         faq = next(n for n in graph if n["@type"] == "FAQPage")
         check(len(faq["mainEntity"]) == 8, "JSON-LD 8 条 FAQ")
         check(all(q["acceptedAnswer"]["text"] for q in faq["mainEntity"]), "FAQ 答案非空")
@@ -208,8 +208,9 @@ STALE_POSITIONING = ["零上传", "不发起任何网络请求", "不发起网�
                      "零第三方运行时依赖", "Local-only, zero uploads",
                      "zero uploads", "makes no network requests", "no network requests",
                      "zero-dependency", "zero dependencies", "zero runtime dependencies",
-                     "No runtime dependencies", "only network call", "only external request"]
-for rel in ["index.html", "index.zh.md", "index.en.md", "llms.txt"]:
+                     "No runtime dependencies", "only network call", "only external request",
+                     "多设备同步在规划中", "multi-device sync is on the roadmap"]
+for rel in ["index.html", "index.zh.md", "index.en.md", "llms.txt", "app/index.md"]:
     txt = read(rel)
     check(not any(s in txt for s in STALE_POSITIONING), f"{rel} 无旧定位话术（零上传/零网络请求/零依赖）")
 check("auth.zhenzhidaole.com" in read("index.zh.md"), "index.zh.md 含账号登录路线图")

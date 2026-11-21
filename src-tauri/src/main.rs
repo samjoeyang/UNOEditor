@@ -3,12 +3,26 @@
 mod auth;
 mod sync;
 
+use tauri::Emitter;
+
 fn main() {
     tauri::Builder::default()
         // single-instance must be registered first: it forwards a second
         // launch (e.g. a unoeditor:// deep link while the app is running)
         // to the existing process, where the deep-link plugin emits it.
-        .plugin(tauri_plugin_single_instance::init(|_app, _args, _cwd| {}))
+        .plugin(tauri_plugin_single_instance::init(|app, args, _cwd| {
+            // macOS: a unoeditor:// deep link while running launches a second
+            // instance whose argv carries the URL. Forward it to the primary
+            // process so the frontend can complete PKCE sign-in.
+            let urls: Vec<String> = args
+                .iter()
+                .filter(|a| a.starts_with("unoeditor://"))
+                .cloned()
+                .collect();
+            if !urls.is_empty() {
+                let _ = app.emit("uno-deep-link", urls);
+            }
+        }))
         .plugin(tauri_plugin_deep_link::init())
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_dialog::init())

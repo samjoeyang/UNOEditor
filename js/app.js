@@ -53,6 +53,16 @@
         '- [x] 左对齐',
         '- [x] 统一刻度',
         '- [ ] 再加一种颜色', '',
+        '## ❹ 流程图，也能内嵌', '',
+        'Mermaid 代码块会直接渲染成矢量图，清晰又轻巧。', '',
+        '```mermaid',
+        'flowchart TD',
+        '    A[开始] --> B{判断条件}',
+        '    B -->|是| C[执行操作1]',
+        '    B -->|否| D[执行操作2]',
+        '    C --> E[结束]',
+        '    D --> E',
+        '```', '',
         '点击顶部「主题」菜单，同一份内容会换一整套气质。', ''
       ].join('\n')
     },
@@ -90,6 +100,16 @@
         '- [x] Left aligned',
         '- [x] Even scale',
         '- [ ] Add another color', '',
+        '## 04 Diagrams, inline', '',
+        'Mermaid code blocks render straight into crisp vector diagrams.', '',
+        '```mermaid',
+        'flowchart TD',
+        '    A[Start] --> B{Condition}',
+        '    B -->|Yes| C[Do task 1]',
+        '    B -->|No| D[Do task 2]',
+        '    C --> E[End]',
+        '    D --> E',
+        '```', '',
         'Open the Themes menu — same content, entirely different character.', ''
       ].join('\n')
     }
@@ -98,7 +118,7 @@
   /* ---------------- state ---------------- */
   function uid() { return 'd' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
   var state = {
-    lang: 'zh', themeId: 'wechat', view: 'mobile', sidebar: true, preview: true, tweak: {},
+    lang: 'zh', themeId: 'wechat', view: 'mobile', sidebar: true, preview: true, splitX: 0.495, tweak: {},
     docs: [{ id: uid(), title: SAMPLE.zh.title, content: SAMPLE.zh.body }],
     activeId: null, imported: []
   };
@@ -125,6 +145,8 @@
         state.view = d.view === 'web' ? 'web' : 'mobile';
         state.sidebar = d.sidebar !== false;
         state.preview = d.preview !== false;
+        state.splitX = (typeof d.splitX === 'number' && isFinite(d.splitX) && d.splitX >= 0.15 && d.splitX <= 0.85)
+          ? d.splitX : 0.495;
         state.tweak = d.tweak || {};
         state.docs = d.docs;
         state.activeId = d.activeId && d.docs.some(function (x) { return x.id === d.activeId; })
@@ -458,8 +480,9 @@
       .replace(/\[([^\]]+)\]\([^)]*\)/g, '$1')
       .replace(/^\s*#+\s*/, '').trim();
   }
-  function renderOutline() {
-    var lines = activeDoc().content.split('\n');
+  var outlineCache = null;
+  function collectOutline(content) {
+    var lines = content.split('\n');
     var items = [], inFence = false;
     for (var i = 0; i < lines.length; i++) {
       var ln = lines[i].trim();
@@ -468,6 +491,28 @@
       var m = lines[i].match(/^(#{1,6})\s+(.*)$/);
       if (m) items.push({ level: m[1].length, text: stripMd(m[2]), line: i });
     }
+    return items;
+  }
+  function outlineTextSame(a, b) {
+    if (!a || a.length !== b.length) return false;
+    for (var i = 0; i < a.length; i++) {
+      if (a[i].level !== b[i].level || a[i].text !== b[i].text) return false;
+    }
+    return true;
+  }
+  function renderOutline() {
+    var items = collectOutline(activeDoc().content);
+    /* hot path (typing): headings unchanged -> only patch line numbers, keep DOM */
+    if (outlineTextSame(outlineCache, items)) {
+      var els = $('outlineList').querySelectorAll('.outline-item');
+      for (var j = 0; j < items.length; j++) {
+        if (els[j] && els[j].dataset.line !== String(items[j].line)) els[j].dataset.line = String(items[j].line);
+      }
+      outlineCache = items;
+      updateOutlineActive();
+      return;
+    }
+    outlineCache = items;
     $('outlineCount').textContent = items.length;
     if (!items.length) {
       $('outlineList').innerHTML = '';
@@ -557,9 +602,11 @@
     I.apply();
     $('docTitle').value = activeDoc().title;
     $('editor').value = activeDoc().content;
-    $('langLabel').textContent = state.lang === 'zh' ? 'EN' : '中';
+    var langLabel = $('langLabel');
+    if (langLabel) langLabel.textContent = state.lang === 'zh' ? 'EN' : '中';
     $('workspace').classList.toggle('sidebar-collapsed', !state.sidebar);
     $('workspace').classList.toggle('preview-collapsed', !state.preview);
+    $('workspace').style.setProperty('--split-x', state.splitX);
     $('previewPane').classList.toggle('view-mobile', state.view === 'mobile');
     $('previewPane').classList.toggle('view-web', state.view === 'web');
     document.querySelectorAll('#viewSeg button').forEach(function (b) {
@@ -574,11 +621,12 @@
     var before = ta.value.slice(0, p).split('\n');
     $('caretInfo').textContent = I.t('line') + ' ' + before.length + ', ' + I.t('col') + ' ' +
       (before[before.length - 1].length + 1);
+    updateOutlineActive();
   }
 
   function onEdit() {
     activeDoc().content = $('editor').value;
-    renderPreview(); renderMeta(); scheduleSave();
+    renderPreview(); renderMeta(); renderOutline(); scheduleSave();
   }
 
   /* ---------------- editor commands ---------------- */
@@ -1042,6 +1090,46 @@
     var c = s && s.claims || {};
     return c.name || c.email || c.username || '';
   }
+  function accountPicture(s) {
+    if (!s) return '';
+    return s.claims && (s.claims.picture || s.claims.avatar) || '';
+  }
+  // 头像：优先显示 userinfo 的图片，加载失败则保留首字母兜底
+  function paintAvatar(el, name, picture) {
+    if (!el) return;
+    var initial = name ? String(name).charAt(0).toUpperCase() : '?';
+    // 清掉旧图片（兼容没有 NodeList.forEach 的旧 WebKit）
+    var old = el.getElementsByTagName('img');
+    while (old.length) { old[0].parentNode.removeChild(old[0]); }
+    el.textContent = initial;
+    el.setAttribute('data-initial', initial);
+    if (!picture || !/^(https?:\/\/|data:image\/)/i.test(picture)) return;
+    var img = document.createElement('img');
+    img.alt = '';
+    img.onload = function () { el.style.background = 'transparent'; };
+    img.onerror = function () { if (img.parentNode) img.parentNode.removeChild(img); };
+    img.src = picture;
+    el.appendChild(img);
+  }
+  // 弹窗内容单独渲染：登录回调完成后也要刷新，否则一直停在“等待返回软件”
+  function renderAccountBody() {
+    var s = currentSession();
+    var signedOut = $('accountSignedOut'), signedIn = $('accountSignedIn');
+    if (!signedOut || !signedIn) return;
+    signedOut.hidden = !!s;
+    signedIn.hidden = !s;
+    if (s) {
+      var c = s.claims || {};
+      var name = c.name || c.username || '';
+      var email = c.email || '';
+      $('accountName').textContent = name || email || '—';
+      $('accountEmail').textContent = name && email ? email : '';
+      paintAvatar($('accountAvatarBig'), name || email, accountPicture(s));
+    }
+    var pending = $('loginPending');
+    if (pending) pending.hidden = !(window.UnoAuth && window.UnoAuth.isTauri() && !s);
+  }
+  var lastSignedIn = null;
   function renderAccount() {
     var s = currentSession();
     var btn = $('accountBtn');
@@ -1052,7 +1140,7 @@
       if (icon) icon.style.display = 'none';
       if (avatar) {
         avatar.hidden = false;
-        avatar.textContent = name ? name.charAt(0).toUpperCase() : '?';
+        paintAvatar(avatar, name, accountPicture(s));
         avatar.title = name;
       }
       btn.setAttribute('data-i18n-title', 'account');
@@ -1062,27 +1150,26 @@
       if (avatar) avatar.hidden = true;
       btn.title = I.t('account');
     }
+    var modal = $('accountModal');
+    if (modal && !modal.hidden) {
+      renderAccountBody();
+      // 从未登录变为已登录：登录链路已完成，自动收起弹窗
+      if (lastSignedIn === false && s) closeAccount();
+    }
+    lastSignedIn = !!s;
   }
   function openAccount() {
-    var s = currentSession();
-    $('accountSignedOut').hidden = !!s;
-    $('accountSignedIn').hidden = !s;
-    if (s) {
-      var c = s.claims || {};
-      var name = c.name || c.username || '';
-      var email = c.email || '';
-      $('accountName').textContent = name || email || '—';
-      $('accountEmail').textContent = name && email ? email : '';
-      var av = $('accountAvatarBig');
-      av.textContent = (name || email || '?').charAt(0).toUpperCase();
-    }
-    $('loginPending').hidden = !(window.UnoAuth && window.UnoAuth.isTauri() && !s);
+    renderAccountBody();
     $('accountModal').hidden = false;
   }
   function closeAccount() { $('accountModal').hidden = true; }
 
   /* ---------------- events ---------------- */
   function bind() {
+    function closeUtilityPanel() {
+      var p = $('utilityPanel'); if (p) p.hidden = true;
+      var b = $('utilityBtn'); if (b) b.setAttribute('aria-expanded', 'false');
+    }
     $('themeList').addEventListener('click', function (e) {
       var del = e.target.closest('[data-deltheme]');
       if (del) {
@@ -1205,6 +1292,66 @@
     $('previewClose').addEventListener('click', function () { setPreview(false); });
     $('expandPreview').addEventListener('click', function () { setPreview(true); });
 
+    /* draggable divider: editor ↔ preview width. Only the --split-x custom
+       property changes, so the browser keeps both panes responsive on resize. */
+    (function initSplitter() {
+      var sp = $('paneSplitter'), ws = $('workspace');
+      if (!sp || !ws) return;
+      var dragging = false, startX = 0, startRatio = 0.495;
+      function current() {
+        var v = parseFloat(getComputedStyle(ws).getPropertyValue('--split-x'));
+        return isFinite(v) ? v : 0.495;
+      }
+      function apply(v) {
+        state.splitX = Math.max(0.15, Math.min(0.85, Math.round(v * 1000) / 1000));
+        ws.style.setProperty('--split-x', state.splitX);
+      }
+      function pointerX(e) {
+        if (typeof e.clientX === 'number') return e.clientX;
+        return e.touches && e.touches[0] ? e.touches[0].clientX : null;
+      }
+      function available() {
+        var side = ws.classList.contains('sidebar-collapsed') ? 22 : (window.innerWidth <= 1180 ? 236 : 264);
+        return ws.clientWidth - side - 8; // 8px divider
+      }
+      function down(e) {
+        if (window.innerWidth <= 900 || ws.classList.contains('preview-collapsed')) return;
+        var x = pointerX(e); if (x == null) return;
+        dragging = true; startX = x; startRatio = current();
+        sp.classList.add('dragging'); ws.classList.add('resizing');
+        e.preventDefault();
+      }
+      function move(e) {
+        if (!dragging) return;
+        var x = pointerX(e), avail = available();
+        if (x == null || avail <= 0) return;
+        apply(startRatio + (x - startX) / avail);
+        e.preventDefault();
+      }
+      function up() {
+        if (!dragging) return;
+        dragging = false;
+        sp.classList.remove('dragging'); ws.classList.remove('resizing');
+        scheduleSave();
+      }
+      sp.addEventListener('mousedown', down);
+      document.addEventListener('mousemove', move);
+      document.addEventListener('mouseup', up);
+      sp.addEventListener('touchstart', down, { passive: false });
+      document.addEventListener('touchmove', move, { passive: false });
+      document.addEventListener('touchend', up);
+      document.addEventListener('touchcancel', up);
+      sp.addEventListener('dblclick', function () { apply(0.495); scheduleSave(); });
+      sp.addEventListener('keydown', function (e) {
+        var step = e.shiftKey ? 0.1 : 0.02, v = current(), next = null;
+        if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') next = v - step;
+        else if (e.key === 'ArrowRight' || e.key === 'ArrowUp') next = v + step;
+        else if (e.key === 'Home') next = 0.495;
+        if (next == null) return;
+        e.preventDefault(); apply(next); scheduleSave();
+      });
+    })();
+
     /* outline: click a heading to jump the caret there */
     $('outlineList').addEventListener('click', function (e) {
       var b = e.target.closest('.outline-item'); if (!b) return;
@@ -1241,7 +1388,7 @@
 
     /* documents dropdown (top-bar 文档 button) */
     $('docBtn').addEventListener('click', function (e) {
-      e.stopPropagation();
+      e.stopPropagation(); closeUtilityPanel();
       var p = $('docPanel'); p.hidden = !p.hidden;
       if (!p.hidden) renderDocs();
     });
@@ -1278,26 +1425,42 @@
     });
 
     $('exportBtn').addEventListener('click', function (e) {
-      e.stopPropagation(); $('exportPanel').hidden = !$('exportPanel').hidden;
+      e.stopPropagation(); closeUtilityPanel(); $('exportPanel').hidden = !$('exportPanel').hidden;
     });
     $('exportPanel').addEventListener('click', function (e) {
       var b = e.target.closest('[data-act]'); if (!b) return;
       $('exportPanel').hidden = true; runExport(b.dataset.act);
     });
+
+    /* language / sync / account dropdown (top-bar right) */
+    $('utilityBtn').addEventListener('click', function (e) {
+      e.stopPropagation();
+      var p = $('utilityPanel'); p.hidden = !p.hidden;
+      this.setAttribute('aria-expanded', String(!p.hidden));
+      if (!p.hidden) { $('exportPanel').hidden = true; $('docPanel').hidden = true; }
+    });
+    $('utilityPanel').addEventListener('click', function (e) {
+      if (e.target.closest('button')) closeUtilityPanel();
+    }, true);
     document.addEventListener('click', function (e) {
       if (!e.target.closest('#exportDropdown')) $('exportPanel').hidden = true;
       if (!e.target.closest('#docDropdown')) $('docPanel').hidden = true;
+      if (!e.target.closest('#utilityDropdown')) closeUtilityPanel();
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') closeUtilityPanel();
     });
 
-    /* about / check-for-updates */
-    $('aboutBtn').addEventListener('click', function (e) {
-      e.stopPropagation(); openAbout();
-    });
+    /* about / check-for-updates (top-bar button removed; left sidebar entry remains) */
     $('aboutClose').addEventListener('click', closeAbout);
     $('aboutModal').addEventListener('click', function (e) {
       if (e.target === this) closeAbout();
     });
     $('checkUpdateBtn').addEventListener('click', checkForUpdates);
+    $('sideCheckUpdateBtn').addEventListener('click', function () {
+      openAbout();
+      checkForUpdates();
+    });
     document.addEventListener('keydown', function (e) {
       if (e.key === 'Escape' && !$('aboutModal').hidden) closeAbout();
     });
@@ -1396,6 +1559,7 @@
     renderAll: renderAll, richHtml: richHtml, standaloneHtml: standaloneHtml,
     importThemeFile: importThemeFile, getThemes: getThemes,
     checkForUpdates: checkForUpdates, openAbout: openAbout, currentVersion: currentVersion,
-    openAccount: openAccount, syncNow: function () { return window.UnoSync ? UnoSync.syncNow(false) : null; }
+    openAccount: openAccount, renderAccount: renderAccount,
+    syncNow: function () { return window.UnoSync ? UnoSync.syncNow(false) : null; }
   };
 })();

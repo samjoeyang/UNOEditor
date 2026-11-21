@@ -113,6 +113,7 @@ fn uid() -> String {
     format!("d{:x}{:x}", d.as_millis(), d.subsec_nanos() & 0xfffff)
 }
 
+#[allow(dead_code)]
 fn slug(title: &str) -> String {
     let s: String = title.chars()
         .map(|c| if c.is_alphanumeric() { c } else { '-' })
@@ -153,7 +154,7 @@ fn encode_path(s: &str) -> String {
     let mut out = String::new();
     for b in s.as_bytes() {
         match *b {
-            b'A'..=b'Z' | b'a'..=b'z' | b'0'..=b'9' | b'-' | b'_' | b'.' | b'~' => out.push(*b as char),
+            b'A'..=b'Z' | b'a'..=b'z' | b'0'..=b'9' | b'-' | b'_' | b'.' | b'~' | b'/' => out.push(*b as char),
             _ => out.push_str(&format!("%{:02X}", b)),
         }
     }
@@ -727,14 +728,15 @@ mod tests {
     fn dav_cfg() -> Option<SyncConfig> {
         let url = std::env::var("UNO_TEST_DAV_URL").ok()?;
         Some(SyncConfig {
-            kind: "webdav".into(), url, ..Default::default()
+            kind: "webdav".into(), url: format!("{}/{}", url.trim_end_matches('/'), now_ms()),
+            local_dir: temp_dir("dav-local").to_string_lossy().into_owned(),
+            ..Default::default()
         })
     }
 
     #[tokio::test]
     async fn webdav_sync_roundtrip() {
         let cfg = match dav_cfg() { Some(c) => c, None => return };
-        let local_dir = temp_dir("dav-local");
         let draft = doc("d11111111", "First", "r-local-1", "");
         let mut workspace = ws(vec![draft.clone()]);
         let content = "# First\n\nhello";
@@ -745,7 +747,6 @@ mod tests {
         let first = run_sync(payload).await.unwrap();
         assert!(first.ok, "first sync failed: {:?}", first.errors);
         assert_eq!(first.uploaded, 1);
-        assert!(local_dir.join(INDEX_FILE).exists() || cfg.local_dir.is_empty());
 
         // second device: empty local copy pulls the remote document down
         let fresh = ws(vec![]);
@@ -780,6 +781,7 @@ mod tests {
         let bucket = std::env::var("UNO_TEST_S3_BUCKET").ok()?;
         Some(SyncConfig {
             kind: "s3".into(), endpoint, bucket,
+            local_dir: temp_dir("s3-local").to_string_lossy().into_owned(),
             region: std::env::var("UNO_TEST_S3_REGION").unwrap_or_else(|_| "us-east-1".into()),
             access_key: std::env::var("UNO_TEST_S3_AK").unwrap_or_default(),
             secret_key: std::env::var("UNO_TEST_S3_SK").unwrap_or_default(),

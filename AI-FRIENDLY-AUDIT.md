@@ -4,6 +4,8 @@
 - **审计范围**：`docs/`（index.html、assets/、app/、robots.txt、sitemap.xml、llms.txt），按 GitHub Pages 项目站 `https://samjoeyang.github.io/UNOEditor/` 评估
 - **审计口径**：AI 代理 / LLM 爬虫能否 **发现 → 抓取 → 正确解析 → 安全引用** 站点事实；不评估视觉、性能与转化率
 
+> **当前状态校准（2026-11-21）**：本文是 2026-11-14 的历史审计快照，不是当前事实来源。现已迁移到正式域名 `unoeditor.zhenzhidaole.com`，预编译安装包已发布，官网已接入统计代码；产品定位见 `POSITIONING.md`，对外介绍以 `docs/index.zh.md`、`docs/index.en.md`、`docs/llms.txt` 为准。文中关于「无外部请求、无统计、GitHub Pages 项目站、尚无安装包」的描述仅描述当时状态。
+
 ---
 
 ## 0. 结论摘要

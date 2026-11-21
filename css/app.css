@@ -32,6 +32,10 @@ button{cursor:pointer;border:0;background:none;color:inherit}
 #docTitle:focus{background:#fff;border-color:#cfd3da;box-shadow:0 0 0 3px rgba(20,24,30,.05)}
 .save-state{font-size:11px;color:var(--ui-muted);white-space:nowrap}
 .top-actions{display:flex;align-items:center;gap:10px}
+.utility-panel{width:220px;max-width:calc(100vw - 20px)}
+.utility-panel button{align-items:center}
+.utility-panel .sync-dot{margin-left:auto;margin-top:0}
+.utility-panel .avatar{width:18px;height:18px;font-size:10px;line-height:18px}
 .meta{font-size:11.5px;color:var(--ui-muted);white-space:nowrap;font-variant-numeric:tabular-nums}
 .ghost-btn{height:32px;display:flex;align-items:center;gap:6px;padding:0 10px;border:1px solid var(--ui-border);
   border-radius:8px;font-size:12px;font-weight:500;color:#4a5059;background:#fff}
@@ -53,12 +57,19 @@ button{cursor:pointer;border:0;background:none;color:inherit}
 /* ---------- layout ---------- */
 /* 固定视口布局：grid 行与 flex 子项都必须允许收缩到 0，
    否则长文档会把容器撑到内容高度，overflow:auto 失效且被 body 裁掉。 */
-.workspace{display:grid;grid-template-columns:264px minmax(300px,1fr) minmax(400px,1.02fr);
+.workspace{display:grid;
+  --pane-side:264px; --pane-split:8px; --split-x:0.495;
+  --pane-min-edit:300px; --pane-min-preview:400px;
+  grid-template-columns:var(--pane-side)
+    minmax(var(--pane-min-edit),calc((100% - var(--pane-side) - var(--pane-split)) * var(--split-x)))
+    var(--pane-split)
+    minmax(var(--pane-min-preview),calc((100% - var(--pane-side) - var(--pane-split)) * (1 - var(--split-x))));
   grid-template-rows:minmax(0,1fr);min-height:0;position:relative;
   height:calc(100vh - 56px);height:calc(100dvh - 56px);transition:grid-template-columns .2s ease}
-.workspace.sidebar-collapsed{grid-template-columns:22px minmax(300px,1fr) minmax(400px,1.1fr)}
+.workspace.sidebar-collapsed{--pane-side:22px}
 .workspace.sidebar-collapsed .sidebar{opacity:0;pointer-events:none}
-.workspace.preview-collapsed{grid-template-columns:264px minmax(300px,1fr) 22px}
+.workspace.preview-collapsed{--pane-split:0px;grid-template-columns:var(--pane-side) minmax(var(--pane-min-edit),1fr) 22px}
+.workspace.preview-collapsed .pane-splitter{display:none}
 .workspace.preview-collapsed .preview-pane{opacity:0;pointer-events:none;overflow:hidden}
 .workspace.preview-collapsed .editor-pane{border-right:0}
 
@@ -70,11 +81,27 @@ button{cursor:pointer;border:0;background:none;color:inherit}
 .rail-right{right:0;border-left:1px solid var(--ui-border)}
 .workspace.sidebar-collapsed .rail-left{display:grid}
 .workspace.preview-collapsed .rail-right{display:grid}
-.workspace.sidebar-collapsed.preview-collapsed{grid-template-columns:22px minmax(300px,1fr) 22px}
+.workspace.sidebar-collapsed.preview-collapsed{grid-template-columns:22px minmax(var(--pane-min-edit),1fr) 22px}
+
+/* draggable divider between editor and preview */
+.pane-splitter{position:relative;z-index:24;width:var(--pane-split);background:transparent;
+  cursor:col-resize;touch-action:none;user-select:none;-webkit-user-select:none}
+.pane-splitter::before{content:"";position:absolute;top:0;bottom:0;left:3px;right:3px;
+  background:transparent;transition:background .14s ease}
+.pane-splitter::after{content:"";position:absolute;left:50%;top:50%;width:3px;height:26px;
+  transform:translate(-50%,-50%);border-radius:2px;background:var(--ui-muted);
+  opacity:.35;transition:opacity .14s ease;pointer-events:none}
+.pane-splitter:hover::before,.pane-splitter.dragging::before,
+.pane-splitter:focus-visible::before{background:var(--ui-active)}
+.pane-splitter:hover::after,.pane-splitter.dragging::after,
+.pane-splitter:focus-visible::after{opacity:.9}
+.pane-splitter:focus-visible{outline:none}
+.pane-splitter:focus-visible::after{background:var(--ui-red)}
+.workspace.resizing,.workspace.resizing *{cursor:col-resize!important;user-select:none!important;-webkit-user-select:none!important}
 
 /* ---------- sidebar ---------- */
-.sidebar{background:var(--ui-surface);border-right:1px solid var(--ui-border);min-height:0;overflow:hidden;transition:opacity .15s}
-.side-scroll{height:100%;min-height:0;overflow-y:auto;padding:16px 12px 30px}
+.sidebar{background:var(--ui-surface);border-right:1px solid var(--ui-border);min-height:0;overflow:hidden;transition:opacity .15s;display:flex;flex-direction:column}
+.side-scroll{flex:1;min-height:0;overflow-y:auto;padding:16px 12px 16px}
 .side-section + .side-section{margin-top:20px;padding-top:18px;border-top:1px solid var(--ui-border-soft)}
 .side-head{display:flex;align-items:center;justify-content:space-between;padding:0 6px 10px;
   font-size:10.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--ui-muted)}
@@ -290,6 +317,9 @@ body.modal-open{overflow:hidden}
 .outline-item.lvl-5{padding-left:56px}
 .outline-item.lvl-6{padding-left:68px}
 .outline-empty{font-size:11px;color:var(--ui-muted);line-height:1.6;padding:6px 8px;margin:0}
+.sidebar-foot{height:34px;flex:none;border-top:1px solid var(--ui-border);display:flex;align-items:center;padding:0 10px;background:var(--ui-surface)}
+.side-check-btn{width:24px;height:24px;display:grid;place-items:center;border-radius:6px;color:var(--ui-muted)}
+.side-check-btn:hover{background:var(--ui-hover);color:var(--ui-text)}
 
 /* ---------- theme drawer (right overlay) ---------- */
 .theme-drawer{position:fixed;top:56px;right:0;bottom:0;width:340px;max-width:92vw;z-index:60;
@@ -314,10 +344,7 @@ body.modal-open{overflow:hidden}
 .drawer-mask{display:none}
 
 @media (max-width:1180px){
-  .workspace{grid-template-columns:236px minmax(280px,1fr) minmax(360px,1fr)}
-  .workspace.sidebar-collapsed{grid-template-columns:22px minmax(280px,1fr) minmax(380px,1.1fr)}
-  .workspace.preview-collapsed{grid-template-columns:236px minmax(280px,1fr) 22px}
-  .workspace.sidebar-collapsed.preview-collapsed{grid-template-columns:22px minmax(280px,1fr) 22px}
+  .workspace{--pane-side:236px;--pane-min-edit:280px;--pane-min-preview:360px}
   .meta{display:none}
 }
 @media (max-width:900px){
@@ -331,6 +358,7 @@ body.modal-open{overflow:hidden}
   #docTitle{max-width:none;padding:5px 8px;font-size:13px}
   .save-state,.meta{display:none}
   .ghost-btn{padding:0 8px;height:30px}
+  .utility-panel{right:0;top:38px}
   .primary-btn{padding:0 10px}
   .primary-btn span[data-i18n="export"]{display:none}
 
@@ -342,7 +370,7 @@ body.modal-open{overflow:hidden}
   /* 侧栏变为右侧抽屉 */
   .sidebar{position:fixed;top:0;right:0;bottom:0;width:86%;max-width:340px;z-index:60;
     background:var(--ui-surface);border-left:1px solid var(--ui-border);border-right:0;
-    transform:translateX(106%);transition:transform .26s ease;overflow:hidden;display:block;opacity:1;pointer-events:auto}
+    transform:translateX(106%);transition:transform .26s ease;overflow:hidden;display:flex;flex-direction:column;opacity:1;pointer-events:auto}
   .drawer-head{display:flex;align-items:center;justify-content:space-between;
     height:50px;padding:0 12px;border-bottom:1px solid var(--ui-border);
     font-size:13.5px;font-weight:600;color:var(--ui-text);background:var(--ui-surface)}
@@ -373,7 +401,7 @@ body.modal-open{overflow:hidden}
   .mobile-tabbar button.active .icon{color:var(--ui-red)}
 
   /* 隐藏桌面专属侧栏开关（移动端用大纲 Tab 代替） */
-  .pane-rail,#previewClose{display:none!important}
+  .pane-rail,#previewClose,.pane-splitter{display:none!important}
   .tweak-panel{padding:10px 12px;gap:12px}
 
   /* 顶栏按钮在小屏只留图标 */
@@ -429,7 +457,7 @@ body.uno-printing>#unoPrintRoot{display:block;position:fixed;inset:0;z-index:100
 
   /* ---------- 兜底：浏览器自带 ⌘P（没有打印根时的整页打印） ---------- */
   body:not(.uno-printing){overflow:visible;background:#fff}
-  .topbar,.sidebar,.editor-pane,.preview-bar,.tweak-panel,.phone-bar,.article-foot,.article-head,.toast,.theme-drawer,.doc-panel,.mobile-tabbar,.drawer-mask,.pane-rail{display:none!important}
+  .topbar,.sidebar,.editor-pane,.preview-bar,.tweak-panel,.phone-bar,.article-foot,.article-head,.toast,.theme-drawer,.doc-panel,.mobile-tabbar,.drawer-mask,.pane-rail,.pane-splitter{display:none!important}
   .workspace,.workspace.sidebar-collapsed{display:block;height:auto;min-height:0;overflow:visible}
   .preview-pane{display:block;background:#fff}
   .preview-stage{display:block;overflow:visible;padding:0;background:#fff!important}
@@ -452,5 +480,8 @@ body.uno-printing>#unoPrintRoot{display:block;position:fixed;inset:0;z-index:100
 .account-user b{display:block;font-size:14.5px;color:var(--ui-text)}
 .account-user span:not(.avatar){display:block;font-size:12px;color:var(--ui-muted);margin-top:2px;word-break:break-all}
 .avatar{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;
-  background:linear-gradient(135deg,#6b4f8a,#1d9e75);color:#fff;font-size:15px;font-weight:700;flex:none;user-select:none}
+  background:linear-gradient(135deg,#6b4f8a,#1d9e75);color:#fff;font-size:15px;font-weight:700;flex:none;user-select:none;
+  overflow:hidden;position:relative}
+.avatar[hidden]{display:none!important}
+.avatar img{display:block;width:100%;height:100%;object-fit:cover;border-radius:50%}
 .avatar.big{width:46px;height:46px;font-size:20px}

@@ -3,8 +3,8 @@
   'use strict';
   var DICT = {
     zh: {
-      tagline: '排版主题编辑器', toggleSidebar: '展开 / 收起大纲', togglePreview: '展开 / 收起预览', expandSidebar: '展开大纲', expandPreview: '展开预览', collapsePreview: '收起预览', untitled: '未命名文档',
-      saved: '已保存', saving: '保存中…', switchLang: 'Switch to English', export: '导出',
+      tagline: '排版主题编辑器', toggleSidebar: '展开 / 收起大纲', togglePreview: '展开 / 收起预览', expandSidebar: '展开大纲', expandPreview: '展开预览', collapsePreview: '收起预览', resizePanes: '拖动调整编辑区与预览区宽度（双击复原）', untitled: '未命名文档',
+      saved: '已保存', saving: '保存中…', switchLang: 'Switch to English', utilityActions: '语言、同步与账号', utilityMenu: '更多', export: '导出',
       copyWechat: '复制到公众号', copyWechatHint: '内联样式，粘贴即所见',
       downloadHtml: '下载 HTML', downloadHtmlHint: '独立文件，样式内嵌',
       downloadMd: '下载 Markdown', downloadMdHint: '纯文本源文件',
@@ -45,7 +45,7 @@
       checkHint: '点击下方按钮，检查是否有新版本可用', updateToast: '发现新版本', github: 'GitHub 仓库',
       sync: '同步', syncTitle: '文稿同步', syncIntro: '文稿先保存到本机目录，再按你选择的目标同步。不注册、不经过我们的服务器。',
       syncTarget: '存储目标', targetLocal: '本地目录', targetWebdav: 'WebDAV', targetNextcloud: 'Nextcloud', targetS3: 'S3 兼容对象存储',
-      notSet: '未设置', pickDir: '选择目录', localDirHint: '该目录可直接放进 iCloud Drive / OneDrive，由系统负责跨设备同步。',
+      localDir: '本机目录', notSet: '未设置', pickDir: '选择目录', localDirHint: '该目录可直接放进 iCloud Drive / OneDrive，由系统负责跨设备同步。',
       nextcloudHint: 'URL 填 https://域名/remote.php/dav/files/用户名/目录/ ，密码建议使用应用专用密码。',
       username: '用户名', password: '密码', prefix: '路径前缀', pathStyle: '使用 path-style 地址',
       autoSync: '自动同步（保存后与启动时）', secretsHint: '凭证只保存在本机应用配置中，不随文稿上传。同桌多人共用设备请谨慎。',
@@ -55,8 +55,8 @@
       syncWebOnly: '文稿同步仅桌面版可用。网页版请下载文稿后自行备份。', syncIdle: '尚未同步', syncPersistFail: '本机保存失败：',
       uploaded: '上传', downloaded: '下载', conflicts: '冲突', openMd: '打开 .md 文件', mdOpened: '已打开：', mdOpenFail: 'Markdown 文件无法读取',
       account: '账号', accountLogin: '登录 / 注册', accountSignUp: '没有账号？去注册',
-      accountDesc: '登录是可选的。文稿始终保存在本机；账号用于接下来的登录与同步能力。',
-      accountSyncHint: '多设备同步在规划中，上线后可用同一账号跨设备同步文稿。',
+      accountDesc: '登录是可选的。文稿默认保存在本机；桌面版的同步由你自选目标并显式开启，与账号无关。',
+      accountSyncHint: '桌面版可在「同步」中选择本机目录或 WebDAV / Nextcloud / S3；默认关闭，与账号无关。',
       accountLogout: '退出登录', signedOut: '已退出登录', loginSuccess: '登录成功，欢迎',
       loginFail: '登录失败：', loginCancelled: '登录已取消', loginStateMismatch: '登录状态校验失败，请重试',
       loginOpening: '已打开浏览器，完成登录后会自动回到编辑器…',
@@ -64,8 +64,8 @@
       loginWebUnavailable: '当前环境暂不支持网页登录，请使用桌面版或从官网「在线试用」进入'
     },
     en: {
-      tagline: 'Themed Markdown Editor', toggleSidebar: 'Show / hide outline', togglePreview: 'Show / hide preview', expandSidebar: 'Show outline', expandPreview: 'Show preview', collapsePreview: 'Hide preview', untitled: 'Untitled',
-      saved: 'Saved', saving: 'Saving…', switchLang: '切换为中文', export: 'Export',
+      tagline: 'Themed Markdown Editor', toggleSidebar: 'Show / hide outline', togglePreview: 'Show / hide preview', expandSidebar: 'Show outline', expandPreview: 'Show preview', collapsePreview: 'Hide preview', resizePanes: 'Drag to resize editor / preview (double-click to reset)', untitled: 'Untitled',
+      saved: 'Saved', saving: 'Saving…', switchLang: '切换为中文', utilityActions: 'Language, sync and account', utilityMenu: 'More', export: 'Export',
       copyWechat: 'Copy for WeChat', copyWechatHint: 'Inline styles, paste as-is',
       downloadHtml: 'Download HTML', downloadHtmlHint: 'Standalone file, embedded CSS',
       downloadMd: 'Download Markdown', downloadMdHint: 'Plain text source',
@@ -106,7 +106,7 @@
       checkHint: 'Click below to check for a newer version', updateToast: 'New version available', github: 'GitHub repository',
       sync: 'Sync', syncTitle: 'Document sync', syncIntro: 'Documents are saved to a local folder first, then synced to the target you choose. No account, no server of ours.',
       syncTarget: 'Storage target', targetLocal: 'Local folder', targetWebdav: 'WebDAV', targetNextcloud: 'Nextcloud', targetS3: 'S3-compatible storage',
-      notSet: 'Not set', pickDir: 'Choose folder', localDirHint: 'Put this folder in iCloud Drive / OneDrive and let the OS handle cross-device sync.',
+      localDir: 'Local folder', notSet: 'Not set', pickDir: 'Choose folder', localDirHint: 'Put this folder in iCloud Drive / OneDrive and let the OS handle cross-device sync.',
       nextcloudHint: 'Use https://host/remote.php/dav/files/user/folder/ and an app password instead of your login password.',
       username: 'Username', password: 'Password', prefix: 'Path prefix', pathStyle: 'Use path-style URLs',
       autoSync: 'Auto sync (on save and at startup)', secretsHint: 'Credentials are stored only in the local app config, never uploaded with documents. Be careful on shared computers.',
@@ -116,8 +116,8 @@
       syncWebOnly: 'Document sync is desktop-only. On the web, download your documents to back them up.', syncIdle: 'Not synced yet', syncPersistFail: 'Local save failed: ',
       uploaded: 'Uploaded', downloaded: 'Downloaded', conflicts: 'Conflicts', openMd: 'Open .md files', mdOpened: 'Opened: ', mdOpenFail: 'Could not read the Markdown file',
       account: 'Account', accountLogin: 'Sign in / Sign up', accountSignUp: 'No account? Sign up',
-      accountDesc: 'Signing in is optional. Documents always stay on your device; the account powers upcoming sign-in and sync features.',
-      accountSyncHint: 'Multi-device sync is on the roadmap — once it ships, the same account syncs your documents across devices.',
+      accountDesc: 'Signing in is optional. Documents stay on your device by default; desktop sync is opt-in and uses a target you choose, independent of your account.',
+      accountSyncHint: 'On desktop, choose a local folder or WebDAV / Nextcloud / S3 under Sync. It is off by default and does not require an account.',
       accountLogout: 'Sign out', signedOut: 'Signed out', loginSuccess: 'Signed in, welcome',
       loginFail: 'Sign-in failed: ', loginCancelled: 'Sign-in cancelled', loginStateMismatch: 'Sign-in state mismatch — please retry',
       loginOpening: 'Browser opened — after signing in you will be returned to the editor automatically.',
@@ -133,6 +133,7 @@
     document.querySelectorAll('[data-i18n]').forEach(function (el) { el.textContent = t(el.dataset.i18n); });
     document.querySelectorAll('[data-i18n-placeholder]').forEach(function (el) { el.placeholder = t(el.dataset.i18nPlaceholder); });
     document.querySelectorAll('[data-i18n-title]').forEach(function (el) { el.title = t(el.dataset.i18nTitle); });
+    document.querySelectorAll('[data-i18n-aria-label]').forEach(function (el) { el.setAttribute('aria-label', t(el.dataset.i18nAriaLabel)); });
   }
   global.UnoI18n = { t: t, set: set, get: get, apply: apply };
 })(window);
