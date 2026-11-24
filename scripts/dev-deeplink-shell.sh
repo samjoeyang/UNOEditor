@@ -21,7 +21,7 @@ cat > "$APP/Contents/Info.plist" << 'EOF'
   <key>CFBundleName</key><string>UNOEditor</string>
   <key>CFBundleExecutable</key><string>UNOEditor</string>
   <key>CFBundlePackageType</key><string>APPL</string>
-  <key>CFBundleShortVersionString</key><string>0.1.6</string>
+  <key>CFBundleShortVersionString</key><string>0.2.0</string>
   <key>LSMinimumSystemVersion</key><string>10.15</string>
   <key>NSHighResolutionCapable</key><true/>
   <key>CFBundleURLTypes</key>

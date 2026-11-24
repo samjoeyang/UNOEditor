@@ -1,9 +1,9 @@
 # UNOEditor
 
-> UNOEditor is a local-first Markdown typesetting editor: draft on the left, see the finished article on the right, then copy rich text into WeChat or export HTML / Markdown / PDF. It ships 11 themes and Mermaid diagrams, imports GitHub / Typora / Obsidian theme CSS, and keeps documents on your device by default. Sign-in is optional; the desktop build adds opt-in sync to a target you choose — a local folder, WebDAV, Nextcloud or S3 (off by default, credentials stored locally). Current version 0.1.6, MIT licensed.
+> UNOEditor is a local-first Markdown typesetting editor: draft on the left, see the finished article on the right, then copy rich text into WeChat or export HTML / Markdown / PDF. It ships 11 themes and Mermaid diagrams, imports GitHub / Typora / Obsidian theme CSS, and keeps documents on your device by default. Sign-in is optional; the desktop build adds opt-in sync to a target you choose — a local folder, WebDAV, Nextcloud or S3 (off by default, credentials stored locally). Current version 0.2.0, free for a limited time.
 >
 > Website: https://unoeditor.zhenzhidaole.com/ · Repository: https://github.com/samjoeyang/UNOEditor
-> Last fact-checked: 2026-11-21 · Applies to version: v0.1.6
+> Last fact-checked: 2026-11-24 · Applies to version: v0.2.0
 
 ## Key facts
 
@@ -11,9 +11,8 @@
 | --- | --- |
 | Product / repository name | UNOEditor (https://github.com/samjoeyang/UNOEditor) |
 | Desktop identifier | `com.unoeditor.app` |
-| Current version | 0.1.6 |
-| Licence | MIT (see `LICENSE` at the repository root) |
-| Price | Free, ad-free, no feature limits |
+| Current version | 0.2.0 |
+| Price | Free for a limited time, ad-free, no feature limits |
 | Stack | Plain HTML / CSS / JavaScript; icons are an inline Lucide SVG sprite; the Mermaid engine is bundled locally; theme CSS is stored as strings and injected at runtime |
 | Desktop shell | Tauri 2 (Rust), minimum macOS 10.15, bundle targets: all |
 | Built-in themes | 11 |
@@ -23,7 +22,7 @@
 | Storage | Browser `localStorage` (WebView local storage in the desktop shell); desktop builds support opt-in sync to a local folder / WebDAV / Nextcloud / S3 (off by default, credentials stay local) |
 | Network requests | The app's own network features are both optional: the update check (GitHub Releases API) and account sign-in (auth.zhenzhidaole.com); the website's download section queries the same API |
 | Account & sync | Account sign-in is live (auth.zhenzhidaole.com, optional); desktop-only opt-in sync to a local folder, WebDAV, Nextcloud or S3 (off by default, credentials stay local) |
-| Prebuilt installers | Shipped with v0.1.6: macOS / Windows / Linux desktop installers (see GitHub Releases) |
+| Prebuilt installers | Shipped with v0.2.0: macOS / Windows / Linux desktop installers (see GitHub Releases) |
 
 ## Features
 
@@ -90,9 +89,9 @@ All images are real captures of the running app, not mockups or composites. They
 
 ## Download status
 
-**UNOEditor v0.1.6 was released on 2026-11-21**, adding optional account sign-in (OAuth 2.0 + PKCE), opt-in desktop sync to a target you choose (local folder / WebDAV / Nextcloud / S3, off by default), offline Mermaid 12.3.0, draggable panes and a live-updating outline. GitHub Releases ships prebuilt desktop installers: `.dmg` for macOS (Apple Silicon / Intel), `.msi` / `.exe` for Windows, and `.deb` / `.AppImage` / `.rpm` for Linux. The website's download section reads the GitHub Releases API dynamically, lists the latest version and highlights the visitor's platform. The online app and the local file need no installation.
+**UNOEditor v0.2.0 was released on 2026-11-24**, adding six AI capabilities (polish/rewrite, expand, condense, translate, full-document copilot, SEO optimization) powered by your own LLM API key and off by default; new undo/redo buttons and shortcuts; a redesigned copilot drawer; and a fix for the status bar in non-maximized windows. GitHub Releases ships prebuilt desktop installers: `.dmg` for macOS (Apple Silicon / Intel), `.msi` / `.exe` for Windows, and `.deb` / `.AppImage` / `.rpm` for Linux. The website's download section reads the GitHub Releases API dynamically, lists the latest version and highlights the visitor's platform. The online app and the local file need no installation.
 
-**First launch on macOS**: the `.app` inside the v0.1.6 `.dmg` is ad-hoc signed (`bundle.macOS.signingIdentity: "-"`), so it is no longer reported as "damaged". It is still not notarized, so the first launch may warn about an unidentified developer — right-click UNOEditor in Finder → Open, or use System Settings → Privacy & Security → Open Anyway, and it will be trusted from then on. Alternatively run `xattr -cr /Applications/UNOEditor.app` to remove the quarantine attribute. If you are still on the v0.1.0 build (no bundle signature, reported as damaged), download v0.1.6 instead. Also pick the right architecture: `aarch64.dmg` for Apple Silicon, `x64.dmg` for Intel.
+**First launch on macOS**: the `.app` inside the v0.1.6 `.dmg` is ad-hoc signed (`bundle.macOS.signingIdentity: "-"`), so it is no longer reported as "damaged". It is still not notarized, so the first launch may warn about an unidentified developer — right-click UNOEditor in Finder → Open, or use System Settings → Privacy & Security → Open Anyway, and it will be trusted from then on. Alternatively run `xattr -cr /Applications/UNOEditor.app` to remove the quarantine attribute. If you are still on the v0.1.0 build (no bundle signature, reported as damaged), download v0.2.0 instead. Also pick the right architecture: `aarch64.dmg` for Apple Silicon, `x64.dmg` for Intel.
 
 ## Privacy and data
 
@@ -121,8 +120,8 @@ Any modern browser. On narrow screens it switches to edit / preview / outline ta
 **Does exported HTML work on its own?**
 Yes. The downloaded file embeds the full theme CSS (including any imported theme), so a single file keeps its look when shared, hosted, or printed to PDF.
 
-**Is it free? What licence? How do I contribute?**
-Free, ad-free and unrestricted, and the source is **MIT licensed**. Report bugs in Issues, suggest features in Discussions, or join the Telegram group (https://t.me/+3KH9Cn8-yIQ1ZDI1 ) for real-time chat at https://github.com/samjoeyang/UNOEditor . To support development, there's an optional WeChat/Alipay donation section ("Buy the author a coffee") on the site — entirely voluntary, unlocks nothing.
+**Is it free? How do I contribute?**
+Free for a limited time, ad-free and unrestricted. Report bugs in Issues, suggest features in Discussions, or join the Telegram group (https://t.me/+3KH9Cn8-yIQ1ZDI1 ) for real-time chat at https://github.com/samjoeyang/UNOEditor . To support development, there's an optional WeChat/Alipay donation section ("Buy the author a coffee") on the site — entirely voluntary, unlocks nothing.
 
 ## Internationalisation and deep links
 

@@ -1,9 +1,9 @@
 # UNOEditor
 
-> UNOEditor 是一款本地优先的 Markdown 排版主题编辑器：左侧写稿、右侧实时预览，写完即可一键复制到公众号或导出 HTML / Markdown / PDF。内置 11 套主题与 Mermaid 流程图，可导入 GitHub / Typora / Obsidian 主题 CSS；文档默认保存在本机，断网照常写稿。账号登录可选，桌面版另提供由用户自选目标并显式开启的同步（本地目录 / WebDAV / Nextcloud / S3，默认关闭，凭证只存本机）。当前版本 0.1.6，采用 MIT 许可证。
+> UNOEditor 是一款本地优先的 Markdown 排版主题编辑器：左侧写稿、右侧实时预览，写完即可一键复制到公众号或导出 HTML / Markdown / PDF。内置 11 套主题与 Mermaid 流程图，可导入 GitHub / Typora / Obsidian 主题 CSS；文档默认保存在本机，断网照常写稿。账号登录可选，桌面版另提供由用户自选目标并显式开启的同步（本地目录 / WebDAV / Nextcloud / S3，默认关闭，凭证只存本机）。当前版本 0.2.0，限时免费。
 >
 > 官网：https://unoeditor.zhenzhidaole.com/ · 仓库：https://github.com/samjoeyang/UNOEditor
-> 本文内容最后核对：2026-11-21 · 对应版本：v0.1.6
+> 本文内容最后核对：2026-11-24 · 对应版本：v0.2.0
 
 ## 关键事实
 
@@ -11,9 +11,8 @@
 | --- | --- |
 | 软件名称 / 仓库名 | UNOEditor（https://github.com/samjoeyang/UNOEditor） |
 | 桌面应用 identifier | `com.unoeditor.app` |
-| 当前版本 | 0.1.6 |
-| 许可证 | MIT（见仓库根目录 `LICENSE`） |
-| 费用 | 免费、无广告、无功能限制 |
+| 当前版本 | 0.2.0 |
+| 费用 | 限时免费、无广告、无功能限制 |
 | 技术栈 | 原生 HTML / CSS / JavaScript；图标为内联 Lucide SVG sprite；Mermaid 引擎随应用本地打包；主题 CSS 以字符串内嵌并运行时注入 |
 | 桌面壳 | Tauri 2（Rust），最低 macOS 10.15，bundle targets 为 all |
 | 内置主题数 | 11 套 |
@@ -23,7 +22,7 @@
 | 数据存储 | 浏览器 `localStorage`（桌面壳为 WebView 本地存储）；桌面版可显式开启同步到本地目录 / WebDAV / Nextcloud / S3（默认关闭，凭证仅存本机） |
 | 网络请求 | 应用自身的联网功能均为可选项：「检查更新」（GitHub Releases API）与账号登录（auth.zhenzhidaole.com）；官网下载区同样查询该 API |
 | 账号与同步 | 账号登录已上线（auth.zhenzhidaole.com，可选）；桌面版可选同步：本地目录 / WebDAV / Nextcloud / S3（默认关闭，凭证仅存本机） |
-| 预编译安装包 | v0.1.6 已发布：macOS / Windows / Linux 桌面安装包（见 GitHub Releases） |
+| 预编译安装包 | v0.2.0 已发布：macOS / Windows / Linux 桌面安装包（见 GitHub Releases） |
 
 ## 它能做什么
 
@@ -90,9 +89,9 @@
 
 ## 下载状态
 
-UNOEditor **v0.1.6 已于 2026-11-21 发布**：新增可选账号登录（OAuth 2.0 + PKCE）、桌面版自选目标同步（本地目录 / WebDAV / Nextcloud / S3，默认关闭）、离线 Mermaid 升级到 12.3.0，并改进分栏拖动与大纲实时跟随。GitHub Releases 提供预编译桌面安装包：macOS（Apple Silicon / Intel）选 `.dmg`，Windows 选 `.msi` / `.exe`，Linux 选 `.deb` / `.AppImage` / `.rpm`。官网下载区动态读取 GitHub Releases API，自动列出最新版本并按访问者系统高亮推荐。在线版与本地文件无需安装即可使用。
+UNOEditor **v0.2.0 已于 2026-11-24 发布**：新增 AI 六大能力（润色/改写、扩写、精简、翻译、全文助手、SEO 优化），使用你自带的大模型 API Key，默认关闭；新增撤销/重做按钮与快捷键；全文助手抽屉重新设计；并修复非最大化窗口状态栏显示问题。GitHub Releases 提供预编译桌面安装包：macOS（Apple Silicon / Intel）选 `.dmg`，Windows 选 `.msi` / `.exe`，Linux 选 `.deb` / `.AppImage` / `.rpm`。官网下载区动态读取 GitHub Releases API，自动列出最新版本并按访问者系统高亮推荐。在线版与本地文件无需安装即可使用。
 
-**macOS 首次打开**：v0.1.6 的 `.dmg` 内 `.app` 已做 ad-hoc 签名（`bundle.macOS.signingIdentity: "-"`），不会再报「已损坏」。但因未做 Apple 公证，首次打开可能提示「无法验证开发者」，在访达中右键点击 UNOEditor →「打开」，或到「系统设置 → 隐私与安全性 → 仍要打开」放行一次即可；也可执行 `xattr -cr /Applications/UNOEditor.app` 清除隔离属性。若仍在使用 v0.1.0 旧包（无 bundle 签名、会被报「已损坏」），请直接下载 v0.1.6。另请选对架构：Apple Silicon 用 `aarch64.dmg`，Intel 用 `x64.dmg`。
+**macOS 首次打开**：v0.1.6 的 `.dmg` 内 `.app` 已做 ad-hoc 签名（`bundle.macOS.signingIdentity: "-"`），不会再报「已损坏」。但因未做 Apple 公证，首次打开可能提示「无法验证开发者」，在访达中右键点击 UNOEditor →「打开」，或到「系统设置 → 隐私与安全性 → 仍要打开」放行一次即可；也可执行 `xattr -cr /Applications/UNOEditor.app` 清除隔离属性。若仍在使用 v0.1.0 旧包（无 bundle 签名、会被报「已损坏」），请直接下载 v0.2.0。另请选对架构：Apple Silicon 用 `aarch64.dmg`，Intel 用 `x64.dmg`。
 
 ## 隐私与数据
 
@@ -121,8 +120,8 @@ UNOEditor **v0.1.6 已于 2026-11-21 发布**：新增可选账号登录（OAuth
 **问：导出的 HTML 能脱离应用单独打开吗？**
 答：能。下载 HTML 会把当前主题样式整段内嵌进文件，导入的自定义主题也会一并写入，单文件分享、托管或打印成 PDF 都不丢样式。
 
-**问：免费吗？采用什么许可证？怎么参与？**
-答：完全免费、无广告、无功能限制，源码采用 **MIT 许可证**。在 https://github.com/samjoeyang/UNOEditor 提 Issue 反馈问题、在 Discussions 提建议，或加入 Telegram 讨论组（https://t.me/+3KH9Cn8-yIQ1ZDI1 ）即时交流。想支持开发可扫码赞赏（微信/支付宝，见官网「请作者喝杯咖啡」区块），完全自愿、不影响任何功能。
+**问：免费吗？怎么参与？**
+答：限时免费、无广告、无功能限制。在 https://github.com/samjoeyang/UNOEditor 提 Issue 反馈问题、在 Discussions 提建议，或加入 Telegram 讨论组（https://t.me/+3KH9Cn8-yIQ1ZDI1 ）即时交流。想支持开发可扫码赞赏（微信/支付宝，见官网「请作者喝杯咖啡」区块），完全自愿、不影响任何功能。
 
 ## 国际化与深链
 

@@ -2,10 +2,9 @@
 
 > This page is the Markdown mirror of https://unoeditor.zhenzhidaole.com/app/ . The HTML page is an interactive editor with almost no static prose; this file describes what it is so AI agents and text-only crawlers can understand it.
 
-The online demo is a full copy of UNOEditor v0.1.6 running entirely in the browser. It is not a trimmed-down teaser: the theme system, outline, live preview, offline Mermaid diagrams, WeChat copy, and HTML / Markdown / PDF export all work the same way as the local build. No install and no build step are needed, and no account is required — account sign-in (via auth.zhenzhidaole.com) is live and optional. The desktop build adds opt-in sync to a local folder, WebDAV, Nextcloud or S3; it is off by default and not available in the browser demo.
+The online demo is a full copy of UNOEditor v0.2.0 running entirely in the browser. It is not a trimmed-down teaser: the theme system, outline, live preview, offline Mermaid diagrams, WeChat copy, and HTML / Markdown / PDF export all work the same way as the local build. No install and no build step are needed, and no account is required — account sign-in (via auth.zhenzhidaole.com) is live and optional. The desktop build adds opt-in sync to a local folder, WebDAV, Nextcloud or S3; it is off by default and not available in the browser demo.
 
-- **Version**: 0.1.6 (fact-checked 2026-11-21)
-- **Licence**: MIT
+- **Version**: 0.2.0 (fact-checked 2026-11-24)
 - **Stack**: plain HTML / CSS / JavaScript; icons, themes and the Mermaid engine are bundled locally; no CDN and no external fonts
 - **Data**: in the browser demo, documents, imported themes and settings are stored only in this browser's local storage. On desktop you can optionally sync each article as a Markdown file to a local folder / WebDAV / Nextcloud / S3 target you configure; sync is off by default and credentials stay in the local app config.
 - **Languages**: Chinese and English UI, switchable in the top bar. `?lang=zh|en` preselects the language.

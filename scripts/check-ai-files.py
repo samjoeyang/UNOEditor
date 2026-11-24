@@ -42,7 +42,7 @@ required = [
 ]
 for rel in required:
     check((DOCS / rel).is_file(), f"存在 {rel}")
-check((ROOT / "LICENSE").is_file(), "存在 LICENSE (MIT)")
+check((ROOT / "LICENSE").is_file(), "存在 LICENSE 文件")
 check("unoeditor.zhenzhidaole.com" in read("CNAME"), "CNAME 指向已绑定域名")
 check("MIT License" in (ROOT / "LICENSE").read_text(encoding="utf-8"), "LICENSE 为 MIT")
 
@@ -57,7 +57,7 @@ for token in [
     'rel="describedby"', 'rel="alternate" type="text/markdown"',
     'hreflang="en"', 'rel="canonical" href="' + DOMAIN + '/"',
     'og:image:alt', 'lang="zh-CN" data-lang="zh"', 'lang="en" data-lang="en"',
-    '<time datetime="2026-11-21">', '<noscript>',
+    '<time datetime="2026-11-24">', '<noscript>',
 ]:
     check(token in home, f"首页含 {token[:52]}")
 
@@ -70,7 +70,7 @@ if m:
         check({"SoftwareApplication", "Organization", "WebSite", "WebPage", "FAQPage"} <= types,
               "JSON-LD 含 5 类实体")
         app = next(n for n in graph if n["@type"] == "SoftwareApplication")
-        check(app.get("license", "").endswith("/mit"), "JSON-LD license = MIT")
+        check("license" not in app, "JSON-LD 不声明许可证")
         check(app.get("isAccessibleForFree") is True, "JSON-LD isAccessibleForFree")
         check(len(app.get("screenshot", [])) == 8, "JSON-LD 8 张截图")
         check(len(app.get("featureList", [])) == 12, "JSON-LD 12 项功能")
@@ -117,7 +117,10 @@ for rel in ["index.zh.md", "index.en.md"]:
     txt = read(rel)
     check(VER in txt, f"{rel} 含当前版本 {VER}")
     check(re.search(r"2026-\d\d-\d\d", txt) is not None, f"{rel} 含核对日期")
-    check("MIT" in txt, f"{rel} 含 MIT 许可证")
+    check("MIT" not in txt and "开源" not in txt and "licensed" not in txt.lower(),
+          f"{rel} 不提 MIT / 开源")
+    check("限时免费" in txt or "Free for a limited time" in txt,
+          f"{rel} 使用限时免费措辞")
     theme_ids = ["wechat", "economist", "nyt", "swiss", "morandi", "hara",
                  "apple", "nocturne", "gfm", "obsidian", "typora"]
     check(all(f"`{tid}`" in txt for tid in theme_ids), f"{rel} 含完整 11 套主题表")

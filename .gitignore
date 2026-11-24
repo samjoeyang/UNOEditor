@@ -14,6 +14,10 @@ Thumbs.db
 
 # 本地浏览器测试产物
 .playwright-cli/
+/wbapp_*.genie
+/.wbapp_*.genie
+/scripts/__pycache__/
+/test-results/
 
 # Tauri 构建产物
 /dist/

@@ -6,6 +6,7 @@
 *{box-sizing:border-box}
 html,body{height:100%}
 body{margin:0;background:var(--ui-bg);color:var(--ui-text);overflow:hidden;
+  display:flex;flex-direction:column;
   font-family:-apple-system,BlinkMacSystemFont,"Inter","PingFang SC","Microsoft YaHei",sans-serif;
   font-size:13px;-webkit-font-smoothing:antialiased}
 button,input,textarea{font-family:inherit}
@@ -65,7 +66,14 @@ button{cursor:pointer;border:0;background:none;color:inherit}
     var(--pane-split)
     minmax(var(--pane-min-preview),calc((100% - var(--pane-side) - var(--pane-split)) * (1 - var(--split-x))));
   grid-template-rows:minmax(0,1fr);min-height:0;position:relative;
-  height:calc(100vh - 56px);height:calc(100dvh - 56px);transition:grid-template-columns .2s ease}
+  flex:1 1 auto;height:auto;transition:grid-template-columns .2s ease}
+/* NOTE: do not restore `height:calc(100dvh - 56px)` here. WKWebView (Tauri
+   macOS) computes vh/dvh (and CSS 100% on html/body) from the screen, not the
+   window, so a non-maximized window overflows and the editor status bar gets
+   clipped. Flex sizing uses the real content box; index.html pins html/body
+   to window.innerHeight via JS (fitViewport) so the footer stays visible at
+   any window size. Keep both in sync. */
+.topbar{flex:none}
 .workspace.sidebar-collapsed{--pane-side:22px}
 .workspace.sidebar-collapsed .sidebar{opacity:0;pointer-events:none}
 .workspace.preview-collapsed{--pane-split:0px;grid-template-columns:var(--pane-side) minmax(var(--pane-min-edit),1fr) 22px}
@@ -166,6 +174,8 @@ button{cursor:pointer;border:0;background:none;color:inherit}
   color:#5c626c;font-size:11.5px;font-weight:700}
 .tool:hover{background:var(--ui-hover);color:var(--ui-text)}
 .tool:active{background:var(--ui-active)}
+.tool.is-off{opacity:.35;cursor:default}
+.tool.is-off:hover{background:transparent;color:#5c626c}
 .tool-badge{position:absolute;right:1px;bottom:0;font-size:8px;color:#8b9099}
 #editor{flex:1;min-height:0;width:100%;resize:none;border:0;outline:none;padding:24px 26px;
   font-family:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,"PingFang SC",monospace;
@@ -362,9 +372,9 @@ body.modal-open{overflow:hidden}
   .primary-btn{padding:0 10px}
   .primary-btn span[data-i18n="export"]{display:none}
 
-  /* 工作区：单面板相对容器（高度扣除顶栏 + 底栏） */
-  .workspace{display:block;position:relative;height:calc(100vh - 56px - 54px);
-    height:calc(100dvh - 56px - 54px);min-height:0;transition:none}
+  /* 工作区：单面板相对容器。顶栏 56px、底栏 54px 都由 flex 流排版，
+     不写死 vh/dvh，避免 WebView 用屏幕高度而非窗口高度计算导致溢出。 */
+  .workspace{display:block;position:relative;flex:1 1 auto;height:auto;min-height:0;margin-bottom:54px;transition:none}
   .workspace.sidebar-collapsed{grid-template-columns:initial}
 
   /* 侧栏变为右侧抽屉 */
@@ -485,3 +495,106 @@ body.uno-printing>#unoPrintRoot{display:block;position:fixed;inset:0;z-index:100
 .avatar[hidden]{display:none!important}
 .avatar img{display:block;width:100%;height:100%;object-fit:cover;border-radius:50%}
 .avatar.big{width:46px;height:46px;font-size:20px}
+
+/* ---------- optional AI assist (BYOK, off by default) ---------- */
+.ai-dot{width:6px;height:6px;border-radius:50%;background:#c3c7ce;margin-left:-4px}
+.ai-dot.on{background:#1d9e75}
+.ai-dot.busy{background:#d99a00;animation:unoPulse 1s infinite}
+.ai-dot.off{background:#c3c7ce}
+.ai-modal{width:min(620px,94vw);max-height:86vh;overflow:auto}
+.ai-draft-modal{width:min(520px,94vw)}
+.ai-draft-modal textarea{width:100%;min-height:76px;resize:vertical}
+.ai-draft-modal .modal-foot{gap:8px}
+.ai-intro{font-size:12.5px;line-height:1.7;color:var(--ui-muted);margin:0 0 14px}
+.ai-hint{font-size:11px;line-height:1.6;color:#9a6400;margin:0 0 14px}
+.ai-section-head{display:flex;align-items:center;justify-content:space-between;font-size:12.5px;font-weight:600;margin:0 0 8px}
+.ai-profiles{display:flex;flex-direction:column;gap:8px;margin-bottom:10px}
+.ai-profile{border:1px solid var(--ui-border);border-radius:10px;padding:10px 12px}
+.ai-profile.is-default{border-color:#1d9e75;background:#f5fbf8}
+.ai-profile-head{display:flex;align-items:center;gap:8px}
+.ai-profile-head b{font-size:12.5px}
+.ai-badge{font-size:10px;background:#1d9e75;color:#fff;border-radius:4px;padding:1px 5px}
+.ai-profile-meta{font-size:11px;color:var(--ui-muted);margin-top:5px;word-break:break-all}
+.ai-profile-actions{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.ai-profile-actions button{font-size:11px;padding:3px 8px;border:1px solid var(--ui-border);border-radius:6px;color:var(--ui-text)}
+.ai-profile-actions button:disabled{opacity:.45;cursor:default}
+.ai-profile-editor{border:1px solid var(--ui-border);border-radius:10px;padding:12px;margin:8px 0 14px;background:var(--ui-surface)}
+.ai-profile-editor[hidden]{display:none}
+.ai-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ai-editor-foot{display:flex;justify-content:flex-end;gap:8px;margin-top:8px}
+.ai-warning{font-size:11px;line-height:1.65;color:#8a5a00;background:#fff8e8;border-radius:8px;padding:9px 11px;margin:12px 0}
+.ai-status{font-size:11px;color:var(--ui-muted);min-height:14px}
+.ai-float{position:absolute;z-index:60;display:flex;gap:2px;padding:4px;background:var(--ui-surface);
+  border:1px solid var(--ui-border);border-radius:9px;box-shadow:var(--ui-shadow)}
+.ai-float[hidden]{display:none}
+.ai-float button{font-size:11.5px;padding:5px 9px;border-radius:6px;color:var(--ui-text)}
+.ai-float button:hover{background:var(--ui-hover)}
+@media(max-width:700px){.ai-grid{grid-template-columns:1fr}}
+
+/* ---------- full-document AI copilot drawer ---------- */
+/* 顶栏「全文助手」按钮复用 .ghost-btn 的尺寸/外观，这里仅保留图标与文字间距 */
+.ai-copilot-launch.ghost-btn{gap:7px}
+.ai-copilot{position:fixed;top:56px;right:0;bottom:0;width:400px;max-width:94vw;z-index:62;
+  background:var(--ui-surface);border-left:1px solid var(--ui-border);display:flex;flex-direction:column;
+  box-shadow:-18px 0 44px rgba(18,22,28,.14)}
+.ai-copilot[hidden]{display:none}
+.ai-tabs{flex:none;display:flex;gap:20px;padding:0 14px;border-bottom:1px solid var(--ui-border)}
+.ai-tab{position:relative;padding:10px 2px 9px;font-size:12px;color:var(--ui-muted);cursor:pointer;border:0;background:transparent}
+.ai-tab:hover{color:var(--ui-text)}
+.ai-tab.active{color:var(--ui-text);font-weight:700}
+.ai-tab.active::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:2px;background:#1d9e75}
+/* Upper half: active tool/translate pane (scrolls). Lower half: shared result dock. */
+.ai-copilot-scroll{flex:1 1 auto;min-height:0;overflow-y:auto;padding:14px 14px 26px}
+.ai-copilot-scroll[hidden]{display:none}
+.ai-result-dock{flex:0 0 42%;min-height:0;display:flex;flex-direction:column;
+  padding:14px 14px 0;border-top:1px solid var(--ui-border);background:var(--ui-surface)}
+.ai-result-head{display:flex;align-items:center;gap:8px;margin:0 0 9px;flex:none}
+.ai-result-title{font-size:12.5px;font-weight:700}
+.ai-result-head .badge{margin-left:auto}
+.ai-badge{font-size:10px;background:#e9f6f0;color:#1d9e75;border-radius:10px;padding:2px 7px;white-space:nowrap}
+.ai-trans-card{border:1px solid var(--ui-border);border-radius:11px;overflow:hidden;background:var(--ui-surface)}
+.ai-trans-card-hd{display:flex;align-items:center;gap:7px;padding:10px 12px;background:var(--ui-hover);
+  border-bottom:1px solid var(--ui-border-soft);font-size:12px;font-weight:700}
+.ai-trans-card-hd .ai-badge{margin-left:auto;font-weight:500}
+.ai-trans-card-bd{padding:13px 12px}
+.ai-trans-card-bd .primary-btn.wide{width:100%}
+.ai-copilot-foot{flex:none;display:flex;gap:8px;justify-content:flex-end;padding:10px 14px;border-top:1px solid var(--ui-border)}
+.ai-doc-actions{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:0 0 14px}
+.ai-doc-actions button{font-size:12px;padding:7px 8px;border:1px solid var(--ui-border);border-radius:7px;
+  background:var(--ui-surface);color:var(--ui-text)}
+.ai-doc-actions button:hover{background:var(--ui-hover);border-color:#1d9e75}
+.ai-translate-row{display:flex;gap:6px;margin-bottom:8px}
+.ai-translate-row select{flex:1;min-width:0}
+.ai-copilot-body{white-space:pre-wrap;word-break:break-word;font:12.5px/1.7 var(--ui-mono,SFMono-Regular,Menlo,monospace);
+  color:var(--ui-text);background:var(--ui-surface);border:1px solid var(--ui-border);border-radius:9px;
+  padding:11px 12px;flex:1 1 auto;min-height:0;overflow:auto;margin:0 0 4px}
+.ai-copilot select{width:100%;padding:7px 9px;border:1px solid var(--ui-border);border-radius:7px;
+  background:var(--ui-surface);color:var(--ui-text);font-size:12px}
+.ai-skill-tip{font-size:11px;color:var(--ui-muted);margin:4px 0 0}
+@media(max-width:700px){.ai-copilot{width:92vw;top:50px}}
+
+/* Inline rewrite card: selected-text AI results, independent of the drawer */
+.ai-rewrite-card{position:fixed;z-index:63;width:390px;max-width:92vw;
+  background:var(--ui-surface);border:1px solid var(--ui-border);border-radius:11px;
+  box-shadow:0 14px 40px rgba(18,22,28,.18);display:flex;flex-direction:column;overflow:hidden}
+.ai-rewrite-card[hidden]{display:none}
+.ai-rewrite-hd{display:flex;align-items:center;gap:8px;padding:9px 11px;border-bottom:1px solid var(--ui-border-soft);
+  font-size:12.5px;font-weight:700;background:var(--ui-hover);cursor:move;user-select:none;
+  -webkit-user-select:none;touch-action:none}
+.ai-rewrite-hd .icon-btn{margin-left:auto;cursor:pointer}
+.ai-drag-grip{flex:none;width:10px;height:14px;background-repeat:repeat-y;background-size:6px 8px;
+  background-image:radial-gradient(circle,var(--ui-muted) 1px,transparent 1.4px);opacity:.55}
+.ai-rewrite-src{border-bottom:1px solid var(--ui-border);background:var(--ui-bg)}
+.ai-rewrite-src[hidden]{display:none}
+.ai-rewrite-src-hd{display:flex;align-items:center;gap:6px;width:100%;padding:6px 11px;border:0;
+  background:transparent;color:var(--ui-muted);font-size:11px;font-weight:600;cursor:pointer;text-align:left}
+.ai-rewrite-src-hd .icon{transition:transform .15s ease}
+.ai-rewrite-src.collapsed .ai-rewrite-src-hd .icon{transform:rotate(-90deg)}
+.ai-rewrite-src.collapsed .ai-rewrite-src-body{display:none}
+.ai-rewrite-src-body{white-space:pre-wrap;word-break:break-word;font:11.5px/1.6 var(--ui-mono,SFMono-Regular,Menlo,monospace);
+  color:var(--ui-muted);padding:0 12px 8px;max-height:96px;overflow:auto;
+  border-left:2px solid var(--ui-border);margin:0 11px 8px}
+.ai-rewrite-body{white-space:pre-wrap;word-break:break-word;font:12.5px/1.7 var(--ui-mono,SFMono-Regular,Menlo,monospace);
+  color:var(--ui-text);padding:11px 12px;min-height:60px;max-height:40vh;overflow:auto;margin:0}
+.ai-rewrite-foot{flex:none;display:flex;gap:8px;justify-content:flex-end;padding:9px 11px;border-top:1px solid var(--ui-border)}
+@media(max-width:700px){.ai-rewrite-card{width:92vw}}

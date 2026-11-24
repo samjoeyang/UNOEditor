@@ -614,6 +614,7 @@
     });
     renderThemes(); renderDetail(); renderDocs(); renderOutline(); renderPreview();
     renderMeta(); renderTweakUI(); updateCaret();
+    historySync();
   }
 
   function updateCaret() {
@@ -624,9 +625,100 @@
     updateOutlineActive();
   }
 
-  function onEdit() {
+  /* ---------------- undo / redo ----------------
+     The editor is a plain textarea: the browser's native undo stack does NOT
+     record programmatic value / setRangeText changes, which is exactly how all
+     toolbar commands and AI insertions edit the text. So we keep a snapshot
+     stack of our own. Every content change funnels through onEdit(). */
+  var HISTORY_LIMIT = 200;
+  var HISTORY_MERGE_MS = 700;
+  var hist = [];            // [{text,start,end}] — history[histIndex] is current state
+  var histIndex = -1;
+  var histDocId = null;     // document this stack belongs to
+  var lastEditKind = '';    // 'type' | 'cmd'
+  var lastEditAt = 0;
+  var histRestoring = false;
+
+  function caretSnapshot() {
+    var ta = $('editor');
+    return { text: ta.value, start: ta.selectionStart, end: ta.selectionEnd };
+  }
+  function setUndoBtnState(btn, off) {
+    if (!btn) return;
+    // Drive the visual + clickability through a class, not the native
+    // `disabled` property: WKWebView does not reliably repaint a disabled
+    // button toggled from JS, so the toolbar stayed grey even when undo was
+    // available. aria-disabled keeps the accessibility semantics.
+    btn.classList.toggle('is-off', off);
+  }
+  function updateUndoRedo() {
+    setUndoBtnState($('undoBtn'), histIndex <= 0);
+    setUndoBtnState($('redoBtn'), histIndex >= hist.length - 1);
+  }
+  // Called after any full render (doc switch / load / lang change). Reset only
+  // when the document or its content actually changed, so a language toggle
+  // does not wipe the undo stack.
+  function historySync() {
+    var doc = activeDoc(), snap = caretSnapshot();
+    if (!doc || histDocId !== doc.id || histIndex < 0 || !hist.length || hist[histIndex].text !== snap.text) {
+      hist = [snap]; histIndex = 0; histDocId = doc && doc.id;
+      lastEditKind = ''; lastEditAt = 0;
+    }
+    updateUndoRedo();
+  }
+  function recordHistory(kind) {
+    if (histRestoring) return;
+    var doc = activeDoc();
+    if (!doc || histDocId !== doc.id) { historySync(); return; }
+    var snap = caretSnapshot(), prev = hist[histIndex];
+    if (prev && prev.text === snap.text) { updateUndoRedo(); return; }
+    var now = Date.now();
+    var merge = kind === 'type' && lastEditKind === 'type' &&
+      (now - lastEditAt) < HISTORY_MERGE_MS && histIndex === hist.length - 1;
+    if (!merge && histIndex < hist.length - 1) hist.length = histIndex + 1; // drop redo branch
+    if (merge) {
+      // keep the caret from before this typing burst so undo returns there
+      hist[histIndex] = { text: snap.text, start: prev.start, end: prev.end };
+    } else {
+      hist.push(snap);
+      if (hist.length > HISTORY_LIMIT) hist.shift();
+      histIndex = hist.length - 1;
+    }
+    lastEditKind = kind; lastEditAt = now;
+    updateUndoRedo();
+  }
+  function applyHistoryState(s) {
+    var ta = $('editor');
+    histRestoring = true;
+    ta.value = s.text;
+    activeDoc().content = s.text;
+    renderPreview(); renderMeta(); renderOutline(); scheduleSave();
+    // A toolbar click blurs the textarea; a selection set while unfocused is
+    // not reliably kept, so focus first, then restore the caret.
+    ta.focus();
+    try { ta.setSelectionRange(s.start, s.end); } catch (e) { }
+    updateCaret();
+    histRestoring = false;
+  }
+  function doUndo() {
+    if (histIndex <= 0) return;
+    histIndex--;
+    applyHistoryState(hist[histIndex]);
+    lastEditKind = ''; lastEditAt = 0;
+    updateUndoRedo();
+  }
+  function doRedo() {
+    if (histIndex >= hist.length - 1) return;
+    histIndex++;
+    applyHistoryState(hist[histIndex]);
+    lastEditKind = ''; lastEditAt = 0;
+    updateUndoRedo();
+  }
+
+  function onEdit(ev) {
     activeDoc().content = $('editor').value;
     renderPreview(); renderMeta(); renderOutline(); scheduleSave();
+    recordHistory(ev && ev.type === 'input' ? 'type' : 'cmd');
   }
 
   /* ---------------- editor commands ---------------- */
@@ -657,6 +749,8 @@
     ta.focus(); onEdit(); updateCaret();
   }
   var COMMANDS = {
+    undo: function () { doUndo(); },
+    redo: function () { doRedo(); },
     h1: function () { linePrefix('# ', I.t('h1')); },
     h2: function () { linePrefix('## ', I.t('h2')); },
     h3: function () { linePrefix('### ', I.t('h3')); },
@@ -1261,6 +1355,12 @@
       }
       var k = e.key.toLowerCase();
       if (k === 'p') { e.preventDefault(); exportPdf(); return; }
+      // undo / redo: only take over when editing the Markdown body, so native
+      // undo still works in the title field, AI prompts and other inputs.
+      var ae = document.activeElement;
+      var inBody = ae === $('editor');
+      if (inBody && k === 'z' && !e.shiftKey) { e.preventDefault(); doUndo(); return; }
+      if (inBody && (k === 'z' && e.shiftKey || k === 'y')) { e.preventDefault(); doRedo(); return; }
       if (k === 'b' || k === 'i' || k === 'k' || k === 's') {
         if (document.activeElement !== $('editor') && k !== 's') return;
         e.preventDefault();
@@ -1528,6 +1628,50 @@
   } else {
     var syncBtn = $('syncBtn'); if (syncBtn) syncBtn.hidden = true;
   }
+  /* optional AI assist: off by default, never blocks local writing */
+  if (window.UnoAI) {
+    UnoAI.init({
+      toast: toast,
+      onEdit: onEdit,
+      previewDiff: function (next, prev, accept) {
+        if (window.confirm(I.t('aiReplaceHint') + '\n\n' + next.slice(0, 400))) accept();
+      },
+      /* results render into the copilot drawer (UnoAI opens it itself) */
+      showResult: function () { },
+      getDocText: function () {
+        var ta = $('editor');
+        return ta ? ta.value.replace(/^---[\s\S]*?---\s*/, '') : '';
+      },
+      getThemeInfo: function () {
+        var th = theme();
+        return { name: th ? loc(th) : state.themeId, css: th && th.css ? th.css : '' };
+      },
+      setDocTitle: function (title) {
+        var d = activeDoc();
+        if (!d) return;
+        d.title = title;
+        $('docTitle').value = title;
+        renderAll(); scheduleSave();
+      },
+      createTranslatedDoc: function (lang, content) {
+        var nid = uid();
+        var base = activeDoc();
+        var baseTitle = base ? base.title : I.t('untitledDoc');
+        var suffix = ' · ' + (lang || 'translated');
+        // Guard against duplicated suffixes on repeated translations.
+        var title = baseTitle.replace(/ · [a-z]{2,}(-[A-Za-z]{2,4})? · /g, ' · ').replace(/ · [a-z]{2,}(-[A-Za-z]{2,4})?$/, '');
+        title = title + suffix;
+        var d = { id: nid, title: title, content: content,
+          file: 'doc-' + nid + '.md', updated: Date.now(), rev: newRev(), base: '', deleted: false,
+          themeId: state.themeId, tweak: JSON.parse(JSON.stringify(state.tweak)) };
+        state.docs.unshift(d); state.activeId = d.id;
+        renderAll(); scheduleSave();
+      }
+    });
+    UnoAI.bindUI();
+    UnoAI.boot();
+  }
+
   if (window.UNO_AUTO_CHECK) autoCheck();
 
   /* account sign-in: session restore + deep-link / redirect handling */

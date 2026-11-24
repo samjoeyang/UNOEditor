@@ -1,5 +1,6 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+mod ai;
 mod auth;
 mod sync;
 
@@ -37,6 +38,11 @@ fn main() {
             auth::uno_auth_exchange,
             auth::uno_auth_refresh,
             auth::uno_auth_userinfo,
+            ai::uno_ai_config_get,
+            ai::uno_ai_config_set,
+            ai::uno_ai_test,
+            ai::uno_ai_chat,
+            ai::uno_ai_chat_stream,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

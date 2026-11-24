@@ -24,7 +24,7 @@
       copied: '已复制到剪贴板',
       copyFail: '复制失败，请手动选择文本',
       dlChecking: '正在检查 GitHub Releases…',
-      dlNone: 'UNOEditor v0.1.6 · 桌面安装包见 GitHub Releases · 也可直接在线试用',
+      dlNone: 'UNOEditor v0.2.0 · 桌面安装包见 GitHub Releases · 也可直接在线试用',
       dlError: '暂时无法连接 GitHub Releases，可稍后重试或直接前往 Releases 查看',
       dlReady: '最新版本 <b>v{ver}</b> · 发布于 {date} · 已为你的系统推荐 ↓'
     },
@@ -35,7 +35,7 @@
       copied: 'Copied to clipboard',
       copyFail: 'Copy failed — select the text manually',
       dlChecking: 'Checking GitHub Releases…',
-      dlNone: 'UNOEditor v0.1.6 · Desktop installers are on GitHub Releases · Try online instead',
+      dlNone: 'UNOEditor v0.2.0 · Desktop installers are on GitHub Releases · Try online instead',
       dlError: "Couldn't reach GitHub Releases — retry later or open Releases directly",
       dlReady: 'Latest <b>v{ver}</b> · published {date} · recommended for your system ↓'
     }

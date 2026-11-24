@@ -71,8 +71,8 @@
       swatch: ['#0969da', '#1f2328', '#ffffff', '#d0d7de'],
       sample: 'Gh', sampleFont: '-apple-system, "PingFang SC", sans-serif',
       defaults: { size: 16, leading: 1.6 },
-      zh: { name: '系统灰', desc: '系统字体、中性灰、发丝级分隔线与代码芯片。GitHub 式 README 渲染观感。', tags: ['技术文档', '开源说明'], font: '系统无衬线', size: '16 / 20 / 24 / 32', rule: '发丝线 · 代码芯片' },
-      en: { name: 'System Grey', desc: 'System font, neutral greys, hairline rules and code chips. The GFM README look.', tags: ['Docs', 'Open source'], font: 'System sans', size: '16 / 20 / 24 / 32', rule: 'Hairline · code chips' }
+      zh: { name: '系统灰', desc: '系统字体、中性灰、发丝级分隔线与代码芯片。GitHub 式 README 渲染观感。', tags: ['技术文档', '代码风格'], font: '系统无衬线', size: '16 / 20 / 24 / 32', rule: '发丝线 · 代码芯片' },
+      en: { name: 'System Grey', desc: 'System font, neutral greys, hairline rules and code chips. The GFM README look.', tags: ['Docs', 'Code style'], font: 'System sans', size: '16 / 20 / 24 / 32', rule: 'Hairline · code chips' }
     },
     {
       id: 'obsidian', accent: '#8b88e3', bg: '#1b1b1f', dark: true,

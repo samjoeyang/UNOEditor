@@ -15,12 +15,34 @@
 <link rel="stylesheet" href="css/app.css">
 </head>
 <body>
+<!-- 把根元素高度钉到真实视口：WKWebView 会把 CSS 100%/vh 甚至 window.innerHeight
+     按屏幕而非窗口计算，非最大化时 body 被撑成整屏高度，底部状态栏被顶出可视区。
+     documentElement.clientHeight 始终是布局视口高度，用它写入内联像素并监听 resize；
+     同时状态栏在 CSS 里用 position:fixed 贴视口底部，双保险。 -->
+<script>
+(function(){
+  function fitViewport(){
+    try{
+      var de = document.documentElement;
+      // clientHeight 是布局视口高度；innerHeight 在部分 WKWebView 会返回屏幕高度，故后置兜底
+      var h = de.clientHeight || (window.visualViewport && window.visualViewport.height) || window.innerHeight || 0;
+      if(!h) return;
+      de.style.height = h + 'px';
+      document.body.style.height = h + 'px';
+    }catch(e){}
+  }
+  fitViewport();
+  window.addEventListener('resize', fitViewport);
+  window.addEventListener('load', fitViewport);
+  document.addEventListener('DOMContentLoaded', fitViewport);
+})();
+</script>
 <!-- 纯文本 / 无 JS 抓取器说明：本页主体是交互式编辑器，用户文稿不属于页面内容 -->
 <noscript>
   <div style="max-width:760px;margin:24px auto;padding:20px 24px;border:1px solid #d0d7de;border-radius:12px;font:14px/1.8 system-ui,-apple-system,sans-serif;color:#24292f;background:#fff">
     <h1 style="font-size:20px;margin:0 0 8px">UNOEditor · 在线版</h1>
-    <p style="margin:0 0 8px">这是 UNOEditor v0.1.6（MIT 许可证）的在线编辑器页面：本地优先的 Markdown 排版主题编辑器，内置 11 套主题，支持实时预览、Mermaid 流程图、一键复制到公众号、导出 HTML / Markdown / PDF。文档保存在当前浏览器的 localStorage，断网可用。本页需要 JavaScript 才能编辑；本段是无脚本时给人与抓取器看的静态说明。</p>
-    <p style="margin:0">UNOEditor is a lightweight, local-first Markdown theme editor (v0.1.6, MIT). This interactive page needs JavaScript; documents stay in your browser's localStorage and work offline. Full documentation: <a href="../index.zh.md">中文</a> · <a href="../index.en.md">English</a> · <a href="../llms.txt">llms.txt</a> · <a href="index.md">this page in Markdown</a>.</p>
+    <p style="margin:0 0 8px">这是 UNOEditor v0.2.0 的在线编辑器页面：本地优先的 Markdown 排版主题编辑器，内置 11 套主题，支持实时预览、Mermaid 流程图、一键复制到公众号、导出 HTML / Markdown / PDF。文档保存在当前浏览器的 localStorage，断网可用。本页需要 JavaScript 才能编辑；本段是无脚本时给人与抓取器看的静态说明。</p>
+    <p style="margin:0">UNOEditor is a lightweight, local-first Markdown theme editor (v0.2.0). This interactive page needs JavaScript; documents stay in your browser's localStorage and work offline. Full documentation: <a href="../index.zh.md">中文</a> · <a href="../index.en.md">English</a> · <a href="../llms.txt">llms.txt</a> · <a href="index.md">this page in Markdown</a>.</p>
   </div>
 </noscript>
 
@@ -40,6 +62,8 @@
   <symbol id="i-printer" viewBox="0 0 24 24"><path d="M6 9V3h12v6M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v7H6z"/></symbol>
   <symbol id="i-smartphone" viewBox="0 0 24 24"><rect x="6" y="2" width="12" height="20" rx="2"/><path d="M11 18h2"/></symbol>
   <symbol id="i-monitor" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></symbol>
+  <symbol id="i-undo" viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></symbol>
+  <symbol id="i-redo" viewBox="0 0 24 24"><path d="m15 14 5-5-5-5"/><path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H13"/></symbol>
   <symbol id="i-bold" viewBox="0 0 24 24"><path d="M6 4h7a4 4 0 0 1 0 8H6zM6 12h8a4 4 0 0 1 0 8H6z"/></symbol>
   <symbol id="i-italic" viewBox="0 0 24 24"><path d="M19 4h-9M14 20H5M15 4 9 20"/></symbol>
   <symbol id="i-strike" viewBox="0 0 24 24"><path d="M4 12h16M17 7c-.6-1.5-2.2-2.5-4.5-2.5C9.5 4.5 7 6 7 8.5c0 1.4.8 2.4 2 3M7 16c.5 2 2.5 3.5 5.5 3.5 2.8 0 4.5-1.2 5-2.8"/></symbol>
@@ -91,6 +115,7 @@
 
   <div class="top-actions">
     <span class="meta" id="metaInfo"></span>
+    <button class="ghost-btn ai-copilot-launch" id="aiCopilotBtn" data-i18n-title="aiDocCopilot" title="全文助手"><svg class="icon"><use href="#i-sparkles"/></svg><span class="th-label" data-i18n="aiDocCopilot">全文助手</span></button>
     <div class="dropdown" id="docDropdown">
       <button class="ghost-btn" id="docBtn" data-i18n-title="openDocs" title="文档列表"><svg class="icon"><use href="#i-file"/></svg><span class="th-label" data-i18n="docs">文档</span><svg class="icon sm"><use href="#i-chevron"/></svg></button>
       <div class="doc-panel" id="docPanel" hidden>
@@ -114,6 +139,8 @@
       <button class="ghost-btn" id="utilityBtn" data-i18n-title="utilityActions" title="语言 / 同步 / 账号" aria-haspopup="true" aria-expanded="false"><svg class="icon"><use href="#i-more"/></svg><span data-i18n="utilityMenu">更多</span><svg class="icon sm"><use href="#i-chevron"/></svg></button>
       <div class="dropdown-panel utility-panel" id="utilityPanel" hidden>
         <button id="langBtn" data-i18n-title="switchLang" title="切换语言"><svg class="icon"><use href="#i-globe"/></svg><span><b data-i18n="switchLang">Switch to English</b></span></button>
+        <button id="aiCopilotMenuBtn" data-i18n-title="aiCopilotMenu" title="全文助手"><svg class="icon"><use href="#i-sparkles"/></svg><span><b data-i18n="aiCopilotMenu">全文助手</b></span></button>
+        <button id="aiBtn" data-i18n-title="ai" title="AI 设置"><svg class="icon"><use href="#i-sparkles"/></svg><span><b data-i18n="ai">AI</b></span><span class="ai-dot off" id="aiDot"></span></button>
         <button id="syncBtn" data-i18n-title="sync" title="同步设置"><svg class="icon"><use href="#i-refresh"/></svg><span><b data-i18n="sync">同步</b></span><span class="sync-dot idle" id="syncDot"></span></button>
         <button id="accountBtn" data-i18n-title="account" title="账号"><svg class="icon" id="accountIcon"><use href="#i-user"/></svg><span class="avatar" id="accountAvatar" hidden></span><span><b data-i18n="account">账号</b></span></button>
       </div>
@@ -141,6 +168,11 @@
 
   <section class="editor-pane">
     <div class="toolbar" id="toolbar">
+      <div class="tool-group">
+        <button class="tool is-off" data-cmd="undo" id="undoBtn" data-i18n-title="undo" title="撤销 ⌘Z"><svg class="icon"><use href="#i-undo"/></svg></button>
+        <button class="tool is-off" data-cmd="redo" id="redoBtn" data-i18n-title="redo" title="重做 ⇧⌘Z"><svg class="icon"><use href="#i-redo"/></svg></button>
+      </div>
+      <div class="tool-sep"></div>
       <div class="tool-group">
         <button class="tool" data-cmd="h1" data-i18n-title="h1" title="一级标题">H1</button>
         <button class="tool" data-cmd="h2" data-i18n-title="h2" title="二级标题">H2</button>
@@ -225,6 +257,92 @@
       <section class="side-section theme-detail" id="themeDetail"></section>
     </div>
   </aside>
+
+  <!-- Full-document AI copilot drawer (optional, off by default) -->
+  <aside class="ai-copilot" id="aiCopilot" hidden>
+    <div class="panel-head">
+      <span id="aiCopilotTitle" data-i18n="aiDocCopilot">全文助手</span>
+      <button class="icon-btn" id="aiCopilotClose" data-i18n-title="close" title="关闭"><svg class="icon"><use href="#i-x"/></svg></button>
+    </div>
+    <!-- two views: tools / translate. The result box is a shared dock that stays
+         visible under both tabs (translation is a conversion, kept separate). -->
+    <div class="ai-tabs" id="aiDrawerTabs" role="tablist">
+      <button type="button" class="ai-tab active" data-tab="tools" id="aiTabTools" data-i18n="aiTabTools">工具</button>
+      <button type="button" class="ai-tab" data-tab="translate" id="aiTabTranslate" data-i18n="aiTabTranslate">翻译</button>
+    </div>
+    <div class="ai-copilot-scroll" id="aiPaneTools" data-pane="tools">
+      <label class="sync-field"><span data-i18n="aiModelOnce">本次使用模型</span>
+        <select id="aiModelSelect"></select>
+      </label>
+      <div class="ai-section-head"><span data-i18n="aiDocActions">整篇操作</span></div>
+      <div class="ai-doc-actions" id="aiDocActions">
+        <button type="button" data-doc="title" data-i18n="aiTitleOpts">标题候选</button>
+        <button type="button" data-doc="summary" data-i18n="aiSummary">摘要</button>
+        <button type="button" data-doc="keywords" data-i18n="aiKeywords">SEO 关键词</button>
+        <button type="button" data-doc="outline" data-i18n="aiOutline">大纲提炼</button>
+        <button type="button" data-doc="intro" data-i18n="aiIntroBtn">公众号导语</button>
+        <button type="button" data-doc="layout" id="aiCoachBtn" data-i18n="aiCoachTitle">排版诊断</button>
+      </div>
+      <p class="ai-hint" data-i18n="aiToolsHint">这里处理整篇文档；选中文字后的润色、扩写等会显示在编辑区旁的独立卡片中，两处互不覆盖。</p>
+    </div>
+    <div class="ai-copilot-scroll" id="aiPaneTranslate" data-pane="translate" hidden>
+      <div class="ai-trans-card">
+        <div class="ai-trans-card-hd"><svg class="icon"><use href="#i-globe"/></svg><span data-i18n="aiTranslateTitle">整篇翻译</span><span class="ai-badge" data-i18n="aiTransNewDoc">另存新文档</span></div>
+        <div class="ai-trans-card-bd">
+          <label class="sync-field"><span data-i18n="aiTransLang">目标语言</span>
+            <select id="aiTranslateLang">
+              <option value="en">English</option>
+              <option value="zh-CN">简体中文</option>
+              <option value="zh-TW">繁體中文</option>
+              <option value="ja">日本語</option>
+              <option value="ko">한국어</option>
+              <option value="fr">Français</option>
+              <option value="de">Deutsch</option>
+              <option value="es">Español</option>
+            </select>
+          </label>
+          <button class="primary-btn wide" id="aiTranslate"><span data-i18n="aiTranslateBtn">翻译为新文档</span></button>
+          <p class="ai-hint" data-i18n="aiTranslateHint">译文另存为新文档，不会覆盖原文，并保留 Markdown 结构。</p>
+        </div>
+      </div>
+      <p class="ai-warning" data-i18n="aiDisclose">发布到平台时，请按平台规则声明 AI 辅助。</p>
+    </div>
+    <!-- Shared result dock: fixed in the lower half, visible under both tabs. -->
+    <div class="ai-result-dock" id="aiResultDock">
+      <div class="ai-result-head">
+        <span class="ai-result-title" id="aiResultTitle" data-i18n="aiResultLabel">AI 结果（可复制）</span>
+        <span class="badge" id="aiResultMeta"></span>
+      </div>
+      <pre class="ai-copilot-body" id="aiCopilotBody"></pre>
+    </div>
+    <div class="ai-copilot-foot">
+      <button class="ghost-btn small" id="aiCopyResult"><span data-i18n="aiCopyResult">复制结果</span></button>
+      <button class="primary-btn small" id="aiApplyTitle" hidden><span data-i18n="aiApplyTitle">设为标题</span></button>
+    </div>
+  </aside>
+
+  <!-- Inline result card for selected-text rewrites (polish / expand / concise /
+       formal / fix / heading / custom skills / selection translate). Kept
+       separate from the copilot drawer so the two never overwrite each other. -->
+  <div class="ai-rewrite-card" id="aiRewriteCard" hidden>
+    <div class="ai-rewrite-hd" id="aiRewriteHd" data-i18n-title="aiDragHint" title="拖动标题栏可移动卡片">
+      <span class="ai-drag-grip" aria-hidden="true"></span>
+      <span id="aiRewriteTitle" data-i18n="aiRewriteTitle">选中文字改写</span>
+      <button class="icon-btn" id="aiRewriteClose" data-i18n-title="close" title="关闭"><svg class="icon"><use href="#i-x"/></svg></button>
+    </div>
+    <div class="ai-rewrite-src" id="aiRewriteSrcWrap" hidden>
+      <button class="ai-rewrite-src-hd" id="aiRewriteSrcToggle" type="button">
+        <svg class="icon sm"><use href="#i-chevron"/></svg>
+        <span data-i18n="aiOriginalText">原文（用于对比）</span>
+      </button>
+      <div class="ai-rewrite-src-body" id="aiRewriteSrc"></div>
+    </div>
+    <div class="ai-rewrite-body" id="aiRewriteBody"></div>
+    <div class="ai-rewrite-foot">
+      <button class="ghost-btn small" id="aiRewriteCopy"><span data-i18n="aiCopyResult">复制结果</span></button>
+      <button class="primary-btn small" id="aiApplyReplace" hidden><span data-i18n="aiApplyReplace">替换原文</span></button>
+    </div>
+  </div>
 </main>
 
 <nav class="mobile-tabbar" id="mobileTabbar">
@@ -247,7 +365,7 @@
     </div>
     <div class="modal-body">
       <div class="about-version-row">
-        <div class="av-block"><span class="av-label" data-i18n="versionLabel">当前版本</span><b id="aboutVersion">v0.1.6</b></div>
+        <div class="av-block"><span class="av-label" data-i18n="versionLabel">当前版本</span><b id="aboutVersion">v0.2.0</b></div>
         <div class="av-block"><span class="av-label" data-i18n="envLabel">运行环境</span><b id="aboutEnv">网页版</b></div>
       </div>
       <div class="update-state" id="updateState"></div>
@@ -347,7 +465,80 @@
   </div>
 </div>
 
+<!-- Optional AI assist: user-provided API keys (BYOK), off by default -->
+<div class="modal-mask" id="aiModal" hidden>
+  <div class="modal ai-modal" role="dialog" aria-modal="true" aria-label="AI settings">
+    <div class="modal-head">
+      <div class="modal-title"><svg class="icon"><use href="#i-sparkles"/></svg><span data-i18n="aiTitle">AI 设置</span></div>
+      <button class="icon-btn" id="aiClose" data-i18n-title="close" title="关闭"><svg class="icon"><use href="#i-x"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <p class="ai-intro" data-i18n="aiIntro">使用你自己的 API Key 调用第三方模型。应用不托管模型，关闭 AI 不影响写稿与导出。</p>
+      <label class="sync-check"><input type="checkbox" id="aiEnable"><span data-i18n="aiEnable">启用 AI 功能（默认关闭）</span></label>
+      <p class="ai-hint" data-i18n="aiEnableHint">开启后需联网；所选文本会发送给你配置的第三方服务商。</p>
+      <div class="ai-section-head"><span data-i18n="aiProfiles">模型配置档</span><button class="ghost-btn small" id="aiAddProfile"><span data-i18n="aiAdd">添加配置档</span></button></div>
+      <div class="ai-profiles" id="aiProfiles"></div>
+      <div class="ai-profile-editor" id="aiProfileEditor" hidden>
+        <div class="ai-grid">
+          <label class="sync-field"><span data-i18n="aiName">名称</span><input id="aiProfileName" type="text"></label>
+          <label class="sync-field"><span data-i18n="aiModel">模型</span><input id="aiModel" type="text" spellcheck="false" placeholder="deepseek-chat"></label>
+        </div>
+        <label class="sync-field"><span>Base URL</span><input id="aiBaseUrl" type="text" spellcheck="false" placeholder="https://api.deepseek.com/v1"></label>
+        <label class="sync-field"><span>API Key</span><input id="aiKey" type="password" autocomplete="off" spellcheck="false"></label>
+        <label class="sync-field"><span data-i18n="aiMaxTokens">单次最大 token</span><input id="aiMaxTokens" type="number" value="2048"></label>
+        <input type="hidden" id="aiProfileId">
+        <div class="ai-editor-foot"><button class="ghost-btn small" id="aiProfileCancel"><span data-i18n="cancel">取消</span></button><button class="ghost-btn small" id="aiProfileSave"><span data-i18n="save">保存</span></button></div>
+      </div>
+      <div class="ai-section-head"><span data-i18n="aiSkills">自定义指令库</span><button class="ghost-btn small" id="aiAddSkill"><span data-i18n="aiSkillAdd">新建指令</span></button></div>
+      <div class="ai-profiles" id="aiSkills"></div>
+      <div class="ai-profile-editor" id="aiSkillEditor" hidden>
+        <label class="sync-field"><span data-i18n="aiSkillName">名称</span><input id="aiSkillName" type="text"></label>
+        <label class="sync-field"><span data-i18n="aiSkillPrompt">指令内容</span><textarea id="aiSkillPrompt" rows="3" spellcheck="false" placeholder="Summarize into 3 bullet points"></textarea></label>
+        <label class="sync-field"><span data-i18n="aiSkillScopes">适用范围（空格分隔：rewrite draft doc，留空=全部）</span><input id="aiSkillScopes" type="text" spellcheck="false" value="rewrite"></label>
+        <input type="hidden" id="aiSkillId">
+        <div class="ai-editor-foot"><button class="ghost-btn small" id="aiSkillCancel"><span data-i18n="cancel">取消</span></button><button class="ghost-btn small" id="aiSkillSave"><span data-i18n="save">保存</span></button></div>
+      </div>
+      <label class="sync-field"><span data-i18n="aiSystem">系统提示词（可选）</span><textarea id="aiSystemPrompt" rows="2" spellcheck="false"></textarea></label>
+      <p class="ai-warning" data-i18n="aiPrivacy">调用 AI 时，所选文本会发送给你配置的服务商。Key 只存本机，不随文稿同步。当前档失败不会自动切到其他档。</p>
+      <div class="ai-status" id="aiStatus"></div>
+    </div>
+    <div class="modal-foot">
+      <span class="foot-spacer"></span>
+      <button class="primary-btn" id="aiSave"><span data-i18n="saveSettings">保存设置</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- Slash command /ai: in-app instruction prompt (no window.prompt in WebView) -->
+<div class="modal-mask" id="aiDraftModal" hidden>
+  <div class="modal ai-draft-modal" role="dialog" aria-modal="true" aria-labelledby="aiDraftTitleText">
+    <div class="modal-head">
+      <div class="modal-title"><svg class="icon"><use href="#i-sparkles"/></svg><span id="aiDraftTitleText" data-i18n="aiDraftTitle">AI 续写</span></div>
+      <button class="icon-btn" id="aiDraftClose" data-i18n-title="close" title="关闭"><svg class="icon"><use href="#i-x"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <p class="ai-intro" data-i18n="aiDraftHint">输入你想续写的内容；留空则根据光标前的上下文直接生成。⌘/Ctrl+Enter 可直接生成。</p>
+      <label class="sync-field"><span data-i18n="aiDraftPromptLabel">AI 续写要求</span><textarea id="aiDraftPrompt" rows="3" spellcheck="false" data-i18n-placeholder="aiDraftPlaceholder" placeholder="例如：写一段城市夜色的开头"></textarea></label>
+    </div>
+    <div class="modal-foot">
+      <span class="foot-spacer"></span>
+      <button class="ghost-btn small" id="aiDraftCancel"><span data-i18n="cancel">取消</span></button>
+      <button class="primary-btn" id="aiDraftGo"><span data-i18n="aiDraftGo">生成续写</span></button>
+    </div>
+  </div>
+</div>
+
+<div class="ai-float" id="editorMenu" hidden>
+  <button type="button" data-ai="polish" data-i18n-title="aiPolish" title="润色"><span data-i18n="aiPolish">润色</span></button>
+  <button type="button" data-ai="concise" data-i18n-title="aiConcise" title="精简"><span data-i18n="aiConcise">精简</span></button>
+  <button type="button" data-ai="expand" data-i18n-title="aiExpand" title="扩写"><span data-i18n="aiExpand">扩写</span></button>
+  <button type="button" data-ai="formal" data-i18n-title="aiFormal" title="正式化"><span data-i18n="aiFormal">正式化</span></button>
+  <button type="button" data-ai="fix" data-i18n-title="aiFix" title="纠错"><span data-i18n="aiFix">纠错</span></button>
+  <button type="button" data-ai="translate" data-i18n-title="aiTranslateSel" title="翻译"><span data-i18n="aiTranslateSel">翻译</span></button>
+</div>
+
 <script src="js/version.js"></script>
+<script src="js/ai.js"></script>
 <script src="js/markdown.js"></script>
 <script src="js/i18n.js"></script>
 <script src="js/auth.js"></script>
