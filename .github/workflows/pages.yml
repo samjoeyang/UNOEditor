@@ -31,10 +31,11 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+  # 构建与上传拆成独立 job：新 runner (Ubuntu 26.04 / Node 24) 上若把 upload
+  # 与 deploy 放在同一 job，deploy 步骤有时查不到刚上传的 github-pages
+  # artifact（"No artifacts named github-pages were found"）。分成两 job 后，
+  # deploy 在 build 完全结束后才启动，artifact 元数据一定可见。
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -52,6 +53,13 @@ jobs:
         with:
           path: docs
 
+  deploy:
+    needs: build
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
